@@ -40,7 +40,7 @@ public class DestinationController {
             "7. 울산\n" +
             "8. 세종\n" +
             "9. 경기도\n" +
-            "10. 강원도")
+            "10. 강원도 ㅎㅎ")
     @GetMapping("/destination/seoul")
     public List<TourMainDTO> DestinationsSeoul(@RequestParam String areaCode, @RequestParam int limit) {
         return destinationService.getDestinationsByLocation(areaCode, limit);
