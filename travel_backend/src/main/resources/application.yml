@@ -1,0 +1,17 @@
+server :
+  port : 8080
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  config-location : classpath:mybatis-config.xml
+
+spring:
+  datasource :
+    driver-class-name : com.mysql.cj.jdbc.Driver
+    url : jdbc:mysql://127.0.0.1/travel
+    username : root
+    password : 1234
+
+travel:
+  api:
+    key: "abrXZqSKB5RN73E%2Bz6r0fR5RIAVvZ7PzboQZM3bBaz4lCyEJpKHFgPC23uZwV1FmxdKE9s%2Borm90FSmqbS4ghA%3D%3D"

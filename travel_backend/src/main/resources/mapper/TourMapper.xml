@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.travel_backend.mapper.TourMapper">
+
+    <!-- TourDTO 객체를 삽입하는 쿼리 -->
+    <insert id="insertTourDTO" parameterType="com.example.travel_backend.data.TourDTO">
+        INSERT INTO destination (location, cat1, cat2, firstimage, location_number, content_id, content_type_id, title,
+                                 map_x, map_y, tel, destination_description, cat3)
+        VALUES (#{location}, #{cat1}, #{cat2}, #{firstImage}, #{locationNumber}, #{contentId}, #{contentTypeId}, #{title},
+                #{mapX}, #{mapY}, #{tel}, #{destinationDescription}, #{cat3})
+    </insert>
+
+    <select id="getAllContentIds" resultType="String">
+        SELECT content_id FROM destination
+    </select>
+
+    <update id="updateDescriptionAndHomepageByContentId">
+        UPDATE destination SET destination_description = #{description}, homepage = #{homepage} WHERE content_id = #{contentId}
+    </update>
+
+    <update id="updateIntroduceByContentId">
+        UPDATE destination SET parking = #{parking}, use_time = #{useTime}, holiday = #{holiday} WHERE content_id = #{contentId}
+    </update>
+
+    <update id="updateImageByContentId">
+        UPDATE destination SET firstimage2 = #{firstimage2}, firstimage3 = #{firstimage3}, firstimage4 = #{firstimage4}, firstimage5 = #{firstimage5} WHERE content_id = #{contentId}
+    </update>
+
+    <update id="updateCat3ByContentId">
+        UPDATE destination SET cat3 = #{cat3} WHERE content_id = #{contentId}
+    </update>
+
+    <update id="updateAreaCodeByContentId">
+        UPDATE destination SET area_code = #{areaCode} WHERE content_id = #{contentId}
+    </update>
+
+</mapper>

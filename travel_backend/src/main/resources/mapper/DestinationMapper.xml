@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.travel_backend.mapper.DestinationMapper">
+
+    <select id="selectDestinationsByLocation" resultType="com.example.travel_backend.data.TourMainDTO">
+        SELECT location_number, title, firstimage, destination_description, content_id, content_type_id, area_code
+        FROM destination
+        WHERE area_code = #{areaCode}
+            LIMIT #{limit}
+    </select>
+
+    <select id="selectAllDestinations" resultType="com.example.travel_backend.data.TourDTO">
+        SELECT * FROM destination;
+    </select>
+</mapper>
