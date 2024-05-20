@@ -22,7 +22,11 @@ public class DestinationService {
         return destinationMapper.selectAllDestinations();
     }
 
-    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int limit) {
-        return destinationMapper.selectDestinationsByLocation(areaCode, limit);
+    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int count, int page) { // 메인 페이지
+        return destinationMapper.selectDestinationsByLocation(areaCode, count, page);
+    }
+
+    public List<TourDTO> getDestinationsByContentId(String contentId) { // 상세 페이지
+        return destinationMapper.selectDestinations(contentId);
     }
 }
