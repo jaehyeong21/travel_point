@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class TourMainDTO {
-    private String locationNumber;
+    private String location;
     private String title;
     private String firstimage;
     private String destinationDescription;
