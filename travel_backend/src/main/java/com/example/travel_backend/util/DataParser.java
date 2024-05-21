@@ -23,6 +23,7 @@ public class DataParser {
                 for (JsonNode itemNode : itemArrayNode) {
                     TourDTO tourDTO = new TourDTO();
                     tourDTO.setLocation(getTextOrNull(itemNode, "addr1"));
+                    tourDTO.setAreaCode(getTextOrNull(itemNode, "areacode"));
                     tourDTO.setCat1(getTextOrNull(itemNode, "cat1"));
                     tourDTO.setCat2(getTextOrNull(itemNode, "cat2"));
                     tourDTO.setCat3(getTextOrNull(itemNode, "cat3"));

@@ -36,9 +36,18 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi Destination() {
         return GroupedOpenApi.builder()
-                .group("관광 정보") //그룹 이름 설정
-                .pathsToMatch("/destination/*") // 그룹 안에 있는 api들이 어떤 경로인지 설정
-                .packagesToScan("com.example.travel_backend.controller.destination") // 실제 경로에 매핑된 api파일 경로
+                .group("관광 정보")
+                .pathsToMatch("/destination/*")
+                .packagesToScan("com.example.travel_backend.controller.destination")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi Festival() {
+        return GroupedOpenApi.builder()
+                .group("축제 정보")
+                .pathsToMatch("/festival/*")
+                .packagesToScan("com.example.travel_backend.controller.festival")
                 .build();
     }
 }

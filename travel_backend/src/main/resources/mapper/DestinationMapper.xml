@@ -5,9 +5,13 @@
     <select id="selectDestinationsByLocation" resultType="com.example.travel_backend.data.TourMainDTO">
         SELECT location, title, firstimage, destination_description, content_id, content_type_id, area_code
         FROM destination
-        WHERE area_code = #{areaCode}
-          AND firstimage != ''
-    LIMIT #{count} OFFSET #{page}
+        <where>
+            <if test="areaCode != null">
+                AND area_code = #{areaCode}
+            </if>
+            AND firstimage != ''
+        </where>
+        LIMIT #{count} OFFSET #{offset}
     </select>
 
     <select id="selectAllDestinations" resultType="com.example.travel_backend.data.TourDTO">

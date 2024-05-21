@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.travel_backend.service.TravelApiService;
 
@@ -29,7 +28,7 @@ public class TravelApiController {
     @GetMapping("/getAll/")
     public String saveToDb() { // 관광 데이터
         String apiUrl = "https://apis.data.go.kr/B551011/KorService1/areaBasedList1?numOfRows=40000&serviceKey=" + serviceKey +
-                        "&MobileOS=ETC&MobileApp=travelPoint&_type=json&contentTypeId=12";
+                        "&MobileOS=ETC&MobileApp=travelPoint&_type=json&contentTypeId=28";
         travelApiService.saveDataToDb(apiUrl);
         return "Data saved to database successfully!";
     }

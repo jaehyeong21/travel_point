@@ -41,22 +41,32 @@ public class DestinationController {
             "ulsan\n" +
             "sejong\n" +
             "gyeonggido\n" +
-            "gangwondo")
+            "gangwondo\n" +
+            "chungbuk\n" +
+            "chungnam\n" +
+            "gyeongbuk\n" +
+            "jeonbuk\n" +
+            "jeonnam\n" +
+            "jeju")
     @GetMapping("/destination/location")
-    public List<TourMainDTO> getDestinationsByLocation(@RequestParam String areaName,
+    public List<TourMainDTO> getDestinationsByLocation(@RequestParam(required = false) String areaName,
                                                        @RequestParam int count,
                                                        @RequestParam int page) {
-        String areaCode = AreaCodeMapper.getAreaCode(areaName);
-        if ("unknown area code".equals(areaCode)) {
-            throw new IllegalArgumentException("Invalid area name: " + areaName);
+        String areaCode = null;
+        if (areaName != null) {
+            areaCode = AreaCodeMapper.getAreaCode(areaName);
+            if ("unknown area code".equals(areaCode)) {
+                throw new IllegalArgumentException("Invalid area name: " + areaName);
+            }
         }
-        page = page * count; // OFFSET 계산
-        return destinationService.getDestinationsByLocation(areaCode, count, page);
+        // 페이지 번호를 1부터
+        int offset = (page - 1) * count; // OFFSET 계산
+        return destinationService.getDestinationsByLocation(areaCode, count, offset);
     }
 
     @Operation(summary = "해당 content_id 관광 데이터 호출", description = "content_id 입력 후 호출")
     @GetMapping("/destination/contentId")
-    public List<TourDTO> getDestinationsByContentId(@RequestParam String contentId) {
+    public TourDTO getDestinationsByContentId(@RequestParam String contentId) {
         return destinationService.getDestinationsByContentId(contentId);
     }
 }
