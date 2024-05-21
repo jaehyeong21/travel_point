@@ -3,7 +3,6 @@ package com.example.travel_backend.service;
 import com.example.travel_backend.data.TourDTO;
 import com.example.travel_backend.data.TourMainDTO;
 import com.example.travel_backend.mapper.DestinationMapper;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +17,15 @@ public class DestinationService {
         this.destinationMapper = destinationMapper;
     }
 
+    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int count, int offset) {
+        return destinationMapper.selectDestinationsByLocation(areaCode, offset, count);
+    }
+
     public List<TourDTO> getAllDestinations() {
         return destinationMapper.selectAllDestinations();
     }
 
-    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int count, int page) { // 메인 페이지
-        return destinationMapper.selectDestinationsByLocation(areaCode, count, page);
-    }
-
-    public List<TourDTO> getDestinationsByContentId(String contentId) { // 상세 페이지
+    public TourDTO getDestinationsByContentId(String contentId) {
         return destinationMapper.selectDestinations(contentId);
     }
 }

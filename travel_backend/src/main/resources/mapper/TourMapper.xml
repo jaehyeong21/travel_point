@@ -4,18 +4,18 @@
 
     <!-- TourDTO 객체를 삽입하는 쿼리 -->
     <insert id="insertTourDTO" parameterType="com.example.travel_backend.data.TourDTO">
-        INSERT INTO destination (location, cat1, cat2, firstimage, location_number, content_id, content_type_id, title,
-                                 map_x, map_y, tel, destination_description, cat3)
+        INSERT INTO test (location, cat1, cat2, firstimage, location_number, content_id, content_type_id, title,
+                                 map_x, map_y, tel, destination_description, cat3, area_code)
         VALUES (#{location}, #{cat1}, #{cat2}, #{firstImage}, #{locationNumber}, #{contentId}, #{contentTypeId}, #{title},
-                #{mapX}, #{mapY}, #{tel}, #{destinationDescription}, #{cat3})
+                #{mapX}, #{mapY}, #{tel}, #{destinationDescription}, #{cat3}, #{areaCode})
     </insert>
 
     <select id="getAllContentIds" resultType="String">
-        SELECT content_id FROM destination
+        SELECT content_id FROM test
     </select>
 
     <update id="updateDescriptionAndHomepageByContentId">
-        UPDATE destination SET destination_description = #{description}, homepage = #{homepage} WHERE content_id = #{contentId}
+        UPDATE test SET destination_description = #{description}, homepage = #{homepage} WHERE content_id = #{contentId}
     </update>
 
     <update id="updateIntroduceByContentId">

@@ -18,7 +18,12 @@ public class AreaCodeMapper {
         areaCodeToName.put("8", "sejong");
         areaCodeToName.put("9", "gyeonggido");
         areaCodeToName.put("10", "gangwondo");
-
+        areaCodeToName.put("33", "chungbuk");
+        areaCodeToName.put("34", "chungnam");
+        areaCodeToName.put("35", "gyeongbuk");
+        areaCodeToName.put("37", "jeonbuk");
+        areaCodeToName.put("38", "jeonnam");
+        areaCodeToName.put("39", "jeju");
         // 역 매핑
         for (Map.Entry<String, String> entry : areaCodeToName.entrySet()) {
             nameToAreaCode.put(entry.getValue(), entry.getKey());
