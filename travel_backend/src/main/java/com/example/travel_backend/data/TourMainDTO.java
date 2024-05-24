@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class TourMainDTO {
     private String location;
     private String title;
-    private String firstimage;
+    private String firstImage;
     private String destinationDescription;
     private String contentId;
     private String contentTypeId;

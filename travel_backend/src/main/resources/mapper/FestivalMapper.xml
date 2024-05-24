@@ -7,7 +7,7 @@
     </select>
 
     <select id="selectFestivalByLocation" resultType="com.example.travel_backend.data.FestivalMainDTO">
-        SELECT location, title, firstimage, id, area_code, description
+        SELECT location, title, firstimage, id, area_code, festival_description, start_date, end_date
         FROM festival
         <where>
             <if test="areaCode != null">
@@ -20,7 +20,7 @@
 
     <select id="selectFestivalById" resultType="com.example.travel_backend.data.FestivalDTO">
         SELECT id, title, tel, area_code, location, map_x, map_y, firstimage, homepage
-        ,introduction, start_date, end_date, use_time, charge, description
+        ,introduction, start_date, end_date, use_time, charge, festival_description
         FROM festival
         WHERE id = #{id}
     </select>
