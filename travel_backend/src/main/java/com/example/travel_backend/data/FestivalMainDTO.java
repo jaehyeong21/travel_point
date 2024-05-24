@@ -10,7 +10,9 @@ public class FestivalMainDTO {
     private Long id;
     private String location;
     private String title;
-    private String firstimage;
-    private String description;
+    private String firstImage;
+    private String festivalDescription;
     private String areaCode;
+    private String startDate;
+    private String endDate;
 }

@@ -50,4 +50,13 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.festival")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi Theme() {
+        return GroupedOpenApi.builder()
+                .group("테마 정보")
+                .pathsToMatch("/theme/*")
+                .packagesToScan("com.example.travel_backend.controller.theme")
+                .build();
+    }
 }

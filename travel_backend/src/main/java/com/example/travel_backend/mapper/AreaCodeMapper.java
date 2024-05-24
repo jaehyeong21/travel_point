@@ -15,12 +15,12 @@ public class AreaCodeMapper {
         areaCodeToName.put("5", "gwangju");
         areaCodeToName.put("6", "busan");
         areaCodeToName.put("7", "ulsan");
-        areaCodeToName.put("8", "sejong");
-        areaCodeToName.put("9", "gyeonggido");
-        areaCodeToName.put("10", "gangwondo");
+        areaCodeToName.put("31", "gyeonggi");
+        areaCodeToName.put("32", "gangwon");
         areaCodeToName.put("33", "chungbuk");
         areaCodeToName.put("34", "chungnam");
         areaCodeToName.put("35", "gyeongbuk");
+        areaCodeToName.put("36", "gyeongnam");
         areaCodeToName.put("37", "jeonbuk");
         areaCodeToName.put("38", "jeonnam");
         areaCodeToName.put("39", "jeju");

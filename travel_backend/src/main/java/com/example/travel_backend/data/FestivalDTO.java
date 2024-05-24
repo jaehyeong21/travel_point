@@ -20,5 +20,5 @@ public class FestivalDTO {
     private String endDate;
     private String useTime;
     private String charge;
-    private String description;
+    private String festivalDescription;
 }

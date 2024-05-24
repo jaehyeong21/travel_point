@@ -23,7 +23,7 @@
     </update>
 
     <update id="updateImageByContentId">
-        UPDATE destination SET firstimage2 = #{firstimage2}, firstimage3 = #{firstimage3}, firstimage4 = #{firstimage4}, firstimage5 = #{firstimage5} WHERE content_id = #{contentId}
+        UPDATE test SET firstimage2 = #{firstimage2}, firstimage3 = #{firstimage3}, firstimage4 = #{firstimage4}, firstimage5 = #{firstimage5} WHERE content_id = #{contentId}
     </update>
 
     <update id="updateCat3ByContentId">
