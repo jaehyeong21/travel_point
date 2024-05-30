@@ -1,0 +1,17 @@
+/* 페이지네이션 높이 */
+.swiper-pagination {
+  position: relative;
+  padding-top: 40px;
+}
+/* 페이지네이션 디자인 */
+.swiper-pagination-bullet {
+  
+  width: 10px; /* 너비 */
+  height: 10px; /* 높이 */
+  border-radius: 50%; /* 원형 디자인 */
+}
+
+/* 페이지네이션 active 색상 */
+.swiper-pagination-bullet-active{
+  @apply bg-slate-700/90
+}
