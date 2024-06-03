@@ -1,7 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.travel_backend.mapper.DestinationMapper">
 
+    <!-- 총 데이터 수를 계산하는 쿼리 -->
+    <select id="countDestinationsByLocation" resultType="int">
+        SELECT COUNT(*)
+        FROM destination
+        <where>
+            <if test="areaCode != null">
+                AND area_code = #{areaCode}
+            </if>
+            AND firstimage != ''
+        </where>
+    </select>
+
+    <!-- 범위 내 데이터를 가져오는 쿼리 -->
+    <select id="selectDestinationByNearby" resultType="com.example.travel_backend.data.TourNearbyDTO">
+        SELECT location, title, firstimage, destination_description, content_id, content_type_id, area_code,
+               map_x AS latitude, map_y AS longitude
+        FROM destination
+        WHERE CAST(map_x AS DECIMAL(10, 6)) BETWEEN CAST(#{latitude} AS DECIMAL(10, 6)) - 0.1 AND CAST(#{latitude} AS DECIMAL(10, 6)) + 0.1
+          AND CAST(map_y AS DECIMAL(10, 6)) BETWEEN CAST(#{longitude} AS DECIMAL(10, 6)) - 0.1 AND CAST(#{longitude} AS DECIMAL(10, 6)) + 0.1
+    </select>
+
+    <select id="selectAllTitles" resultType="com.example.travel_backend.data.TourTitleDTO">
+        SELECT title, content_id
+        FROM destination
+        WHERE firstimage != ''
+    </select>
+
+    <!-- 페이징된 데이터를 가져오는 쿼리 -->
     <select id="selectDestinationsByLocation" resultType="com.example.travel_backend.data.TourMainDTO">
         SELECT location, title, firstimage, destination_description, content_id, content_type_id, area_code
         FROM destination
@@ -23,6 +51,22 @@
                firstimage5, location_number, content_id, content_type_id, title, map_x, map_y, homepage, parking,
                use_time, tel, destination_description, holiday, area_code
         FROM destination
+        WHERE content_id = #{contentId} AND content_type_id = #{contentTypeId}
+    </select>
+
+    <select id="selectFestivalDetails" resultType="com.example.travel_backend.data.FestivalDTO">
+        SELECT content_id, title, tel, area_code, location, map_x, map_y, firstimage, homepage, introduction, start_date,
+               end_date, use_time, charge, content_type_id, destination_description
+        FROM festival
         WHERE content_id = #{contentId}
     </select>
+
+    <select id="selectDestinationDetails" resultType="com.example.travel_backend.data.TourDTO">
+        SELECT destination_id, location, cat1, cat2, cat3, firstimage, firstimage2, firstimage3, firstimage4,
+               firstimage5, location_number, content_id, content_type_id, title, map_x, map_y, homepage, parking,
+               use_time, tel, destination_description, holiday, area_code
+        FROM destination
+        WHERE content_id = #{contentId}
+    </select>
+
 </mapper>

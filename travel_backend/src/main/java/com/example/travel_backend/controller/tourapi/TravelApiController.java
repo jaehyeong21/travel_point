@@ -47,14 +47,14 @@ public class TravelApiController {
     }
 
     @Operation(summary = "Holiday, useTime, parking update", description = "DB에 저장된 관광 데이터 기준 공휴일, 이용 시간, 주차시설 업데이트")
-    @GetMapping("/getAll/update-all-introduce-informatin") // 공휴일, 이용 시간, 주차시설 업데이트
+    @GetMapping("/getAll/update-all-introduce-information") // 공휴일, 이용 시간, 주차시설 업데이트
     public String updateAllIntroduceInformationToDb() {
         travelApiService.updateAllIntroduceToDb();
         return "updated all introduce information successfully!";
     }
 
     @Operation(summary = "image update", description = "DB에 저장된 관광 데이터 기준 이미지 업데이트")
-    @GetMapping("/getAll/update-all-image") // 공휴일, 이용 시간, 주차시설 업데이트
+    @GetMapping("/getAll/update-all-image")
     public String updateAllImageToDb() {
         travelApiService.updateAllImageToDb();
         return "updated all image information successfully!";

@@ -59,4 +59,5 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.theme")
                 .build();
     }
+
 }
