@@ -21,11 +21,16 @@ public class FestivalService {
         return festivalMapper.selectFestival();
     }
 
-    public List<FestivalMainDTO> getLocationFestival(String areaCode, int offset, int count){
-        return festivalMapper.selectFestivalByLocation(areaCode, offset, count);
+    public List<FestivalMainDTO> getLocationFestival(String areaCode, int offset, int count, int sort){
+        return festivalMapper.selectFestivalByLocation(areaCode, offset, count, sort);
     }
 
-    public FestivalDTO getIdFestivalDTO(int id){
-        return festivalMapper.selectFestivalById(id);
+    public int getTotalFestivalCount(String areaCode) {
+        return festivalMapper.countFestivalByLocation(areaCode);
+    }
+
+
+    public FestivalDTO getIdFestivalDTO(Long contentId){
+        return festivalMapper.selectFestivalById(contentId);
     }
 }

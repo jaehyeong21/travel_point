@@ -7,10 +7,10 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-
 @Mapper
 public interface FestivalMapper {
-    List<FestivalDTO> selectFestival();//축제 모든 정보
-    List<FestivalMainDTO> selectFestivalByLocation(@Param("areaCode") String areaCode, @Param("offset") int offset, @Param("count") int count);
-    FestivalDTO selectFestivalById(@Param("id") int id);
+    List<FestivalDTO> selectFestival();
+    List<FestivalMainDTO> selectFestivalByLocation(@Param("areaCode") String areaCode, @Param("offset") int offset, @Param("count") int count, @Param("sort") int sort);
+    FestivalDTO selectFestivalById(@Param("contentId") Long contentId);
+    int countFestivalByLocation(@Param("areaCode") String areaCode);
 }

@@ -19,7 +19,7 @@
     </update>
 
     <update id="updateIntroduceByContentId">
-        UPDATE destination SET parking = #{parking}, use_time = #{useTime}, holiday = #{holiday} WHERE content_id = #{contentId}
+        UPDATE test SET parking = #{parking}, use_time = #{useTime}, holiday = #{holiday} WHERE content_id = #{contentId}
     </update>
 
     <update id="updateImageByContentId">

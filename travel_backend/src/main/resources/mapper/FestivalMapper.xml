@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.travel_backend.mapper.FestivalMapper">
 
     <select id="selectFestival" resultType="com.example.travel_backend.data.FestivalDTO">
@@ -7,7 +7,7 @@
     </select>
 
     <select id="selectFestivalByLocation" resultType="com.example.travel_backend.data.FestivalMainDTO">
-        SELECT location, title, firstimage, id, area_code, festival_description, start_date, end_date
+        SELECT location, title, firstimage, content_id, area_code, destination_description, start_date, end_date, content_type_id
         FROM festival
         <where>
             <if test="areaCode != null">
@@ -15,13 +15,41 @@
             </if>
             firstimage != ''
         </where>
+        <choose>
+            <when test="sort == 1">
+                ORDER BY
+                CASE
+                WHEN start_date >= CURDATE() THEN 0
+                ELSE 1
+                END,
+                ABS(DATEDIFF(start_date, CURDATE()))
+            </when>
+            <otherwise>
+                ORDER BY
+                CASE
+                WHEN start_date >= CURDATE() THEN 0
+                ELSE 1
+                END,
+                start_date DESC
+            </otherwise>
+        </choose>
         LIMIT #{count} OFFSET #{offset}
     </select>
 
-    <select id="selectFestivalById" resultType="com.example.travel_backend.data.FestivalDTO">
-        SELECT id, title, tel, area_code, location, map_x, map_y, firstimage, homepage
-        ,introduction, start_date, end_date, use_time, charge, festival_description
+    <select id="countFestivalByLocation" resultType="int">
+        SELECT COUNT(*)
         FROM festival
-        WHERE id = #{id}
+        <where>
+            <if test="areaCode != null">
+                area_code = #{areaCode} AND
+            </if>
+            firstimage != ''
+        </where>
+    </select>
+
+    <select id="selectFestivalById" resultType="com.example.travel_backend.data.FestivalDTO">
+        SELECT content_id, title, tel, area_code, location, map_x, map_y, firstimage, homepage, introduction, start_date, end_date, use_time, charge, destination_description, content_type_id
+        FROM festival
+        WHERE content_id = #{contentId}
     </select>
 </mapper>

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FestivalDTO {
-    private Long id;
+    private Long contentId;
     private String title;
     private String tel;
     private String areaCode;
@@ -20,5 +20,6 @@ public class FestivalDTO {
     private String endDate;
     private String useTime;
     private String charge;
-    private String festivalDescription;
+    private String contentTypeId;
+    private String destinationDescription;
 }

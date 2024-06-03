@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FestivalMainDTO {
-    private Long id;
+    private Long contentId;
+    private String contentTypeId;
     private String location;
     private String title;
     private String firstImage;
-    private String festivalDescription;
+    private String destinationDescription;
     private String areaCode;
     private String startDate;
     private String endDate;
