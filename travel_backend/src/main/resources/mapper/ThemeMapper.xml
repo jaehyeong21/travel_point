@@ -47,6 +47,9 @@
             </if>
             AND firstimage != ''
         </where>
+        <if test="random == true">
+            ORDER BY RAND()
+        </if>
         LIMIT #{count} OFFSET #{offset}
     </select>
 

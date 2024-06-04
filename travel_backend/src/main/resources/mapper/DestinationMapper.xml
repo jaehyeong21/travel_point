@@ -15,16 +15,30 @@
     </select>
 
     <!-- 범위 내 데이터를 가져오는 쿼리 -->
-    <select id="selectDestinationByNearby" resultType="com.example.travel_backend.data.TourNearbyDTO">
+    <select id="selectDestinationByNearby" resultType="com.example.travel_backend.data.TourMainDTO">
         SELECT location, title, firstimage, destination_description, content_id, content_type_id, area_code,
-               map_x AS latitude, map_y AS longitude
+        map_x AS latitude, map_y AS longitude
         FROM destination
-        WHERE CAST(map_x AS DECIMAL(10, 6)) BETWEEN CAST(#{latitude} AS DECIMAL(10, 6)) - 0.1 AND CAST(#{latitude} AS DECIMAL(10, 6)) + 0.1
-          AND CAST(map_y AS DECIMAL(10, 6)) BETWEEN CAST(#{longitude} AS DECIMAL(10, 6)) - 0.1 AND CAST(#{longitude} AS DECIMAL(10, 6)) + 0.1
+        WHERE 1=1
+        <if test="latitude != null and latitude != ''">
+            AND CAST(map_x AS DECIMAL(10, 6)) BETWEEN CAST(#{latitude} AS DECIMAL(10, 6)) - 0.1
+            AND CAST(#{latitude} AS DECIMAL(10, 6)) + 0.1
+        </if>
+        <if test="longitude != null and longitude != ''">
+            AND CAST(map_y AS DECIMAL(10, 6)) BETWEEN CAST(#{longitude} AS DECIMAL(10, 6)) - 0.1
+            AND CAST(#{longitude} AS DECIMAL(10, 6)) + 0.1
+        </if>
+        AND content_id != #{contentId}
+        <if test="areaCode != null and areaCode != ''">
+            AND area_code = #{areaCode}
+        </if>
+        AND firstimage != ''
+        LIMIT #{count}
     </select>
 
+
     <select id="selectAllTitles" resultType="com.example.travel_backend.data.TourTitleDTO">
-        SELECT title, content_id
+        SELECT title, content_id, location
         FROM destination
         WHERE firstimage != ''
     </select>

@@ -35,8 +35,19 @@ public class DestinationController {
 
     @Operation(summary = "주변 관광 데이터 호출",description = "주변 관광 데이터들을 호출합니다.")
     @GetMapping("/destination/nearby")
-    public List<TourNearbyDTO> DestinationByNearby(@RequestParam String latitude, @RequestParam String longitude ) {
-        return destinationService.getDestinationByNearby(latitude, longitude);
+    public List<TourMainDTO> DestinationByNearby(@RequestParam(required = false) String longitude,
+                                                 @RequestParam(required = false)String latitude,
+                                                 @RequestParam(required = false) String areaCode,
+                                                 @RequestParam int count,
+                                                 @RequestParam String contentId) {
+        String areaName = null;
+        if (areaCode != null) {
+            areaCode = AreaCodeMapper.getAreaCode(areaCode);
+            if ("unknown area code".equals(areaName)) {
+                throw new IllegalArgumentException("Invalid area name: " + areaCode);
+            }
+        }
+        return destinationService.getDestinationByNearby(latitude, longitude, areaCode, count, contentId);
     }
 
     @Operation(summary = "제목 , contentId 호출(축제 데이터 제외)", description = "제목과 content_id만 호출합니다")
