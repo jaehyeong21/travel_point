@@ -60,4 +60,12 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi Login() {
+        return GroupedOpenApi.builder()
+                .group("로그인")
+                .pathsToMatch("/login/*")
+                .packagesToScan("com.example.travel_backend.controller.login")
+                .build();
+    }
 }

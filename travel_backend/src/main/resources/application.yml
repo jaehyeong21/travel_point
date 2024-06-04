@@ -1,6 +1,10 @@
 server :
   port : 8080
 
+springdoc:
+  paths-to-match:
+    - /**
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   config-location : classpath:mybatis-config.xml
