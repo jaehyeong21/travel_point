@@ -29,11 +29,12 @@ public class ThemeController {
     public List<TourMainDTO> getTypeTheme(@RequestParam(required = false) String areaName,
                                           @RequestParam int count,
                                           @RequestParam int page,
+                                          @RequestParam(required = false, defaultValue = "false") boolean random,
                                           @RequestParam(required = false) String cat1,
                                           @RequestParam(required = false) String cat2,
                                           @RequestParam(required = false) String cat3) {
         validateParams(cat1, cat2, cat3);
-        return themeService.getThemes(areaName, count, page, cat1, cat2, cat3);
+        return themeService.getThemes(areaName, count, page, cat1, cat2, cat3, random);
     }
 
     private void validateParams(String cat1, String cat2, String cat3) {
