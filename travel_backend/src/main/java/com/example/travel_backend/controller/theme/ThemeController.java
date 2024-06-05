@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "테마 정보 호출", description = "테마 정보 호출이 가능합니다.")
 @RestController
@@ -26,15 +28,26 @@ public class ThemeController {
 
     @Operation(summary = "테마 데이터 호출", description = "테마별 데이터들을 호출합니다.")
     @GetMapping("/theme/type")
-    public List<TourMainDTO> getTypeTheme(@RequestParam(required = false) String areaName,
-                                          @RequestParam int count,
-                                          @RequestParam int page,
-                                          @RequestParam(required = false, defaultValue = "false") boolean random,
-                                          @RequestParam(required = false) String cat1,
-                                          @RequestParam(required = false) String cat2,
-                                          @RequestParam(required = false) String cat3) {
+    public Map<String, Object> getTypeTheme(@RequestParam(required = false) String areaCode,
+                                            @RequestParam int count,
+                                            @RequestParam int page,
+                                            @RequestParam(required = false, defaultValue = "false") boolean random,
+                                            @RequestParam(required = false) String cat1,
+                                            @RequestParam(required = false) String cat2,
+                                            @RequestParam(required = false) String cat3) {
         validateParams(cat1, cat2, cat3);
-        return themeService.getThemes(areaName, count, page, cat1, cat2, cat3, random);
+
+        List<TourMainDTO> themes = themeService.getThemes(areaCode, count, page, cat1, cat2, cat3, random);
+        int totalData = themeService.getTotalDataCount(areaCode, cat1, cat2, cat3); // 총 데이터 수 가져오기
+        int totalPages = (int) Math.ceil((double) totalData / count); // 총 페이지 수 계산
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalData", totalData);
+        response.put("totalPages", totalPages);
+        response.put("currentPage", page);
+        response.put("destinations", themes);
+
+        return response;
     }
 
     private void validateParams(String cat1, String cat2, String cat3) {
