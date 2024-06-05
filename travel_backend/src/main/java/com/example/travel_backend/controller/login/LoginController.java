@@ -3,7 +3,11 @@ package com.example.travel_backend.controller.login;
 import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.model.User;
 import com.example.travel_backend.repository.UserRepository;
+import com.example.travel_backend.validator.EmailValidator;
+import com.example.travel_backend.validator.PasswordValidator;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -81,32 +85,62 @@ public class LoginController {
 //        return "manager";
 //    }
 //
-//    //로그인화면
-//    @GetMapping("/loginForm")
-//    public Map<String, Object> loginForm() {
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("response", "ok");
-//        response.put("result", new HashMap<>());
-//
-//        return response; // JSON 형식으로 응답
-//    }
-//
-//    //회원가입 화면
-//    @GetMapping("/joinForm")
-//    public Map<String, Object> joinForm() {
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("response", "ok");
-//        response.put("result", new HashMap<>());
-//
-//        return response; // JSON 형식으로 응답
-//    }
+
+    //로그인
+    @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
+    @PostMapping("/loginForm")
+    public ResponseEntity<?> loginForm(@RequestBody Map<String, String> loginData) {
+        String userEmail = loginData.get("email");
+        String password = loginData.get("password");
+        System.out.println("입력받은 userEmail ==>" + userEmail);
+
+        User user = userRepository.findByEmail(userEmail);
+
+        if (user == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", false);
+            System.out.println("이메일 오류");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // 이메일이 존재하므로 비밀번호를 검증
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", false);
+            System.out.println("비밀번호 오류");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("userEmail", userEmail);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("response", "ok");
+        response.put("result", result);
+
+        return ResponseEntity.ok(response);
+    }
+    
 
     //스프링시큐리티 해당주소를 낚아채버린다. -> SecurityConfig 파일 생성 후 작동안함.
+    //회원가입
+    @Operation(summary = "회원가입", description = "userEmail과 password를 입력받아, 회원가입을 진행합니다.")
     @PostMapping("/join") //joinForm에서 Post방식으로 보냄
-    public Map<String, Object> join(@RequestBody User user) {
-        System.out.println("Received user: " + user); // 로깅 추가
-        if (user.getPassword() == null) {
-            throw new IllegalArgumentException("Password cannot be null");
+    public  ResponseEntity<?> join(@RequestBody User user) {
+        // 이메일 형식을 검증
+        if (!EmailValidator.isValidEmail(user.getEmail())) {
+            System.out.println("이메일 형식 에러");
+            System.out.println("===>"   + user.getEmail());
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", false);
+            return ResponseEntity.badRequest().body(response);
+        }
+        // 패스워드 형식을 검증
+        if (!PasswordValidator.isValid(user.getPassword())) {
+            System.out.println("패스워드 에러");
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", false);
+            return ResponseEntity.badRequest().body(response);
         }
 
         user.setRole("ROLE_USER");
@@ -116,11 +150,14 @@ public class LoginController {
 
         userRepository.save(user);
 
+        Map<String, Object> result = new HashMap<>();
+        result.put("userEmail", user.getEmail());
+
         Map<String, Object> response = new HashMap<>();
         response.put("response", "ok");
-        response.put("result", new HashMap<>());
+        response.put("result", result);
 
-        return response; // JSON 형식으로 응답
+        return ResponseEntity.ok(response);
     }
 //
 //    @Secured("ROLE_ADMIN") //@EnableMethodSecurity에 의해 동작, 권한이  ADMIN일때 접속 가능
