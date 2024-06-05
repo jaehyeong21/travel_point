@@ -1,13 +1,15 @@
-package com.example.travel_backend;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
+//package com.example.travel_backend;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
 //@SpringBootTest
-class TravelBackendApplicationTests {
+//class TravelBackendApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}
 
-	@Test
-	void contextLoads() {
-	}
-
-}

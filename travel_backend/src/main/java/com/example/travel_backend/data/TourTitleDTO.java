@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 public class TourTitleDTO {
     private String title;
     private String contentId;
+    private String location;
 }

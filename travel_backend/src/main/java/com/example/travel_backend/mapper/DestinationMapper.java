@@ -32,6 +32,9 @@ public interface DestinationMapper {
     // 특정 축제 상세 정보를 가져오는 메서드
     FestivalDTO selectFestivalDetails(@Param("contentId") String contentId);
 
-    List<TourNearbyDTO> selectDestinationByNearby(@Param("latitude") String latitude,
-                                                  @Param("longitude") String longitude);
+    List<TourMainDTO> selectDestinationByNearby(@Param("latitude") String latitude,
+                                                @Param("longitude") String longitude,
+                                                @Param("areaCode") String areaCode,
+                                                @Param("count") int count,
+                                                @Param("contentId") String contentId);
 }

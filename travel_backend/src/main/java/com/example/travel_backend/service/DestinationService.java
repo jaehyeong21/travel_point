@@ -35,8 +35,9 @@ public class DestinationService {
         return destinationMapper.selectAllTitles();
     }
 
-    public List<TourNearbyDTO> getDestinationByNearby(String latitude, String longitude) {
-        return destinationMapper.selectDestinationByNearby(latitude,longitude);
+    public List<TourMainDTO> getDestinationByNearby(String latitude, String longitude, String areaCode, int count,
+                                                    String contentId) {
+        return destinationMapper.selectDestinationByNearby(latitude, longitude, areaCode, count, contentId);
     }
 
     // contentId와 contentTypeId로 관광 데이터를 가져오는 메서드
