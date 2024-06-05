@@ -53,6 +53,29 @@
         LIMIT #{count} OFFSET #{offset}
     </select>
 
+    <select id="countByTheme" resultType="int">
+        SELECT COUNT(*)
+        FROM destination
+        <where>
+            <if test="areaCode != null">
+                area_code = #{areaCode}
+            </if>
+            <if test="areaCode == null and (cat1 != null or cat2 != null or cat3 != null)">
+                1=1
+            </if>
+            <if test="cat1 != null">
+                AND cat1 = #{cat1}
+            </if>
+            <if test="cat2 != null">
+                AND cat2 = #{cat2}
+            </if>
+            <if test="cat3 != null">
+                AND cat3 = #{cat3}
+            </if>
+            AND firstimage != ''
+        </where>
+    </select>
+
     <select id="selectByContentId" resultType="com.example.travel_backend.data.TourDTO">
         SELECT destination_id, location, cat1, cat2, cat3, firstimage, firstimage2, firstimage3, firstimage4,
                firstimage5, location_number, content_id, content_type_id, title, map_x, map_y, homepage, parking,
