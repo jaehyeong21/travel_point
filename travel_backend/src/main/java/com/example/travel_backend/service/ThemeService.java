@@ -29,11 +29,18 @@ public class ThemeService {
         }
 
         int offset = (page - 1) * count;
-
         return themeMapper.selectByTheme(areaCode, count, offset, cat1, cat2, cat3, random);
     }
 
-    public int getTotalDataCount(String areaCode, String cat1, String cat2, String cat3) {
+    public int getTotalDataCount(String areaName, String cat1, String cat2, String cat3) {
+        String areaCode = null;
+        if (areaName != null) {
+            areaCode = AreaCodeMapper.getAreaCode(areaName);
+            if ("unknown area code".equals(areaCode)) {
+                throw new IllegalArgumentException("Invalid area name: " + areaName);
+            }
+        }
+
         return themeMapper.countByTheme(areaCode, cat1, cat2, cat3);
     }
 
