@@ -1,7 +1,7 @@
 package com.example.travel_backend.config.auth;
 
-import com.example.travel_backend.model.User;
-import com.example.travel_backend.repository.UserRepository;
+import com.example.travel_backend.model.Member;
+import com.example.travel_backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrincipalDetailsService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     //시큐리티 session(내부 Authentication(내부 UserDetails))
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         System.out.println("username ===>"+ username);
-        User userEntity = userRepository.findByUsername(username);
+        Member userEntity = memberRepository.findByUsername(username);
         if (userEntity != null) {
             System.out.println("Null이 아닌 경우");
             System.out.println("userEntity==>" + userEntity);

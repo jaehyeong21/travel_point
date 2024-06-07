@@ -2,22 +2,30 @@ package com.example.travel_backend.config.oauth.provider;
 
 import java.util.Map;
 
-public class GoogleUserInfo implements OAuth2UserInfo{
+/*
+{resultcode=00, message=success,
+response={id=,
+            nickname=,
+            profile_image=,
+            email=,
+            name= }}
+ */
+public class NaverMemberInfo implements OAuth2MemberInfo {
 
     private Map<String, Object> attributes; //oauth2User.getAttributes()
 
-    public GoogleUserInfo(Map<String, Object> attributes) {
+    public NaverMemberInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
     @Override
     public String getProviderId() {
-        return (String)attributes.get("sub");
+        return (String)attributes.get("id");
     }
 
     @Override
     public String getProvider() {
-        return "google";
+        return "naver";
     }
 
     @Override
@@ -32,6 +40,6 @@ public class GoogleUserInfo implements OAuth2UserInfo{
 
     @Override
     public String getUserImgUrl() {
-        return (String)attributes.get("picture");
+        return (String)attributes.get("profile_image");
     }
 }

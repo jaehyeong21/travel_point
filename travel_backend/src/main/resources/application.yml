@@ -10,6 +10,9 @@ mybatis:
   config-location : classpath:mybatis-config.xml
 
 spring:
+  mvc:
+    static-path-pattern: /assets/**
+
   datasource :
     driver-class-name : com.mysql.cj.jdbc.Driver
     url : jdbc:mysql://pingulion.shop/travel

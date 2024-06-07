@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @NoArgsConstructor
-public class User {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -46,7 +46,7 @@ public class User {
     private Timestamp createDate;
 
     @Builder
-    public User(String username, String password, String userImgUrl, String email, String role, String provider, String providerId, Timestamp createDate) {
+    public Member(String username, String password, String userImgUrl, String email, String role, String provider, String providerId, Timestamp createDate) {
         this.username = username;
         this.password = password;
         this.userImgUrl = userImgUrl;
