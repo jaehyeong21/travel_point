@@ -1,11 +1,11 @@
 package com.example.travel_backend.config.oauth;
 
 import com.example.travel_backend.config.auth.PrincipalDetails;
-import com.example.travel_backend.config.oauth.provider.GoogleUserInfo;
-import com.example.travel_backend.config.oauth.provider.NaverUserInfo;
-import com.example.travel_backend.config.oauth.provider.OAuth2UserInfo;
-import com.example.travel_backend.model.User;
-import com.example.travel_backend.repository.UserRepository;
+import com.example.travel_backend.config.oauth.provider.GoogleMemberInfo;
+import com.example.travel_backend.config.oauth.provider.NaverMemberInfo;
+import com.example.travel_backend.config.oauth.provider.OAuth2MemberInfo;
+import com.example.travel_backend.model.Member;
+import com.example.travel_backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,22 +17,19 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service //타입은 정해져있다.  -> DefaultOAuth2UserService
-public class PrincipleOauth2UserService extends DefaultOAuth2UserService {
+public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     //구글로부터 받은 userRuest 데이터에 대한 후 처리가 되는 함수
     //함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
     @Override 
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("user Request ==> " + userRequest);
-        System.out.println("userRequest.getAccessToken() ==> " + userRequest.getAccessToken());
-        System.out.println("getTokenValue ==> " + userRequest.getAccessToken().getTokenValue());
-        System.out.println("getClientRegistration() ==> " + userRequest.getClientRegistration()); //registration으로 어떤 OAuth로 로그인 했는지 확인 가능
+
         /*
             구글 로그인 버튼 클릭 -> 구글 로그인 창 -> 로그인 완료 -> code를 리턴(OAuth2-Client 라이브러리) -> AccessToken을 요청
                                         --------여기까지가 userRequest정보-------
@@ -44,29 +41,29 @@ public class PrincipleOauth2UserService extends DefaultOAuth2UserService {
         System.out.println("getAttributes ==>" + oAuth2User.getAttributes());
 
         //회원가입을 진행
-        OAuth2UserInfo oAuth2UserInfo = null;
+        OAuth2MemberInfo oAuth2MemberInfo = null;
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
             System.out.println("===========구글 요청============");
-            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+            oAuth2MemberInfo = new GoogleMemberInfo(oAuth2User.getAttributes());
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             System.out.println("===========네이버 요청============");
             //리턴타입이 Map이된다.
-            oAuth2UserInfo = new NaverUserInfo((Map)oAuth2User.getAttributes().get("response"));
+            oAuth2MemberInfo = new NaverMemberInfo((Map)oAuth2User.getAttributes().get("response"));
         }
 //        String provider = userRequest.getClientRegistration().getRegistrationId(); //google
-        String provider = oAuth2UserInfo.getProvider();
+        String provider = oAuth2MemberInfo.getProvider();
 //        String providerId = oAuth2User.getAttribute("sub");
-        String providerId = oAuth2UserInfo.getProviderId();
+        String providerId = oAuth2MemberInfo.getProviderId();
         String username = provider + "_" + providerId; // google_sub
         String password = bCryptPasswordEncoder.encode("겟인데어");
-        String userImgUrl = oAuth2UserInfo.getUserImgUrl();
+        String userImgUrl = oAuth2MemberInfo.getUserImgUrl();
 //        String email = oAuth2User.getAttribute("email");
-        String email = oAuth2UserInfo.getEmail();
+        String email = oAuth2MemberInfo.getEmail();
         String role = "ROLE_USER";
 
-        User userEntity = userRepository.findByUsername(username);
+        Member userEntity = memberRepository.findByUsername(username);
         if (userEntity == null) {
-            userEntity = User.builder()
+            userEntity = Member.builder()
                     .username(username)
                     .password(password)
                     .userImgUrl(userImgUrl)
@@ -75,7 +72,7 @@ public class PrincipleOauth2UserService extends DefaultOAuth2UserService {
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            userRepository.save(userEntity);
+            memberRepository.save(userEntity);
         }
 
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes());

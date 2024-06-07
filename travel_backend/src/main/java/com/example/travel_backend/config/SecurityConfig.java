@@ -1,6 +1,6 @@
 package com.example.travel_backend.config;
 
-import com.example.travel_backend.config.oauth.PrincipleOauth2UserService;
+import com.example.travel_backend.config.oauth.PrincipleOauth2MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig  {
 
     @Autowired
-    private PrincipleOauth2UserService principleOauth2UserService;
+    private PrincipleOauth2MemberService principleOauth2MemberService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,7 +33,7 @@ public class SecurityConfig  {
                 .oauth2Login()
                 .loginPage("/loginForm") //구글 로그인이 완료 된 뒤의 후처리가 필요함, 구글 로그인이 되면 엑세스 토큰 + 사용자 프로필 정보를 함께 받음음
                 .userInfoEndpoint()
-                .userService(principleOauth2UserService); //Service내부에 들어가는 것은 Oauth2UserService가 되어야한다.
+                .userService(principleOauth2MemberService); //Service내부에 들어가는 것은 Oauth2UserService가 되어야한다.
 
 
         // 사이트 위변조 요청 방지

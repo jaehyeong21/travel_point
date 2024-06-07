@@ -1,19 +1,13 @@
 package com.example.travel_backend.controller.login;
 
-import com.example.travel_backend.config.auth.PrincipalDetails;
-import com.example.travel_backend.model.User;
-import com.example.travel_backend.repository.UserRepository;
+import com.example.travel_backend.model.Member;
+import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,68 +17,9 @@ import java.util.Map;
 public class LoginController {
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-//    @GetMapping("/test/login")
-//    public @ResponseBody String testLogin(
-//            Authentication authentication,
-//
-//            @AuthenticationPrincipal PrincipalDetails userDetails){
-//
-//        System.out.println("/test/login ==================");
-//        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-//        System.out.println("principalDetails : "+ principalDetails.getUser());
-//        //principalDetails : User(id=7, username=test, password=$2a$10$m/eYj1q3i0F/CHqltezgyuAoMv9cIhUP/LSU3OrHueUSJnH9hAFfy, email=test@test.com, role=ROLE_USER, createDate=2024-05-11 01:10:49.0)
-//
-//
-//        System.out.println("authentication : " + authentication.getPrincipal());
-//        //authentication.getPrincipal() => com.example.oauth2_test.config.auth.PrincipalDetails@79a1f15c
-//        //return 타입이 Object이다.
-//
-//        System.out.println("userDetails : "+ userDetails.getUsername());
-//        System.out.println("userDetails : "+ userDetails.getUser());
-//        return "세션 정보 확인하기";
-//    }
-//
-//
-//    @GetMapping("/test/oauth/login")
-//    public @ResponseBody String testOAuthLogin(
-//            Authentication authentication,
-//            @AuthenticationPrincipal OAuth2User oauth){
-//
-//        System.out.println("/test/oauth/login ==================");
-//        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-//        System.out.println("principalDetails : "+ oAuth2User.getAttributes());
-//
-//        System.out.println("oauth2User : "+ oauth.getAttributes());
-//        return "OAuth 세션 정보 확인하기";
-//    }
-//
-//    //mustache 실험 -> src/main/resources/templates/index.mustache
-//    @GetMapping({"","/"})
-//    public String index(){
-//        return "index";
-//    }
-//
-//    //OAuth 로그인을 해도 PrincipalDetails로 받을 수 있음
-//    @GetMapping("/user")
-//    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-//        System.out.println("principalDetails : "+ principalDetails.getUser());
-//        return "user";
-//    }
-//
-//    @GetMapping("/admin")
-//    public @ResponseBody String admin() {
-//        return "admin";
-//    }
-//
-//    @GetMapping("/manager")
-//    public @ResponseBody String manager() {
-//        return "manager";
-//    }
-//
 
     //로그인
     @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
@@ -92,86 +27,102 @@ public class LoginController {
     public ResponseEntity<?> loginForm(@RequestBody Map<String, String> loginData) {
         String userEmail = loginData.get("email");
         String password = loginData.get("password");
-        System.out.println("입력받은 userEmail ==>" + userEmail);
 
-        User user = userRepository.findByEmail(userEmail);
+        Member member = memberRepository.findByEmail(userEmail);
 
-        if (user == null) {
+        if (member == null) {
             Map<String, Object> response = new HashMap<>();
             response.put("response", false);
-            System.out.println("이메일 오류");
+            response.put("message", "Invalid Email");
+            response.put("errorCode", "AUTH001");
             return ResponseEntity.badRequest().body(response);
         }
 
         // 이메일이 존재하므로 비밀번호를 검증
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
             Map<String, Object> response = new HashMap<>();
             response.put("response", false);
-            System.out.println("비밀번호 오류");
+            response.put("message", "Invalid Password");
+            response.put("errorCode", "AUTH001");
             return ResponseEntity.badRequest().body(response);
         }
 
         Map<String, Object> result = new HashMap<>();
+        result.put("id", member.getId());
+        result.put("createDate", member.getCreateDate());
+        result.put("userName", member.getUsername());
+        result.put("userImgUrl", member.getUserImgUrl());
         result.put("userEmail", userEmail);
+
 
         Map<String, Object> response = new HashMap<>();
         response.put("response", "ok");
         response.put("result", result);
+        response.put("token", "test");
 
         return ResponseEntity.ok(response);
     }
-    
+
 
     //스프링시큐리티 해당주소를 낚아채버린다. -> SecurityConfig 파일 생성 후 작동안함.
     //회원가입
     @Operation(summary = "회원가입", description = "userEmail과 password를 입력받아, 회원가입을 진행합니다.")
     @PostMapping("/join") //joinForm에서 Post방식으로 보냄
-    public  ResponseEntity<?> join(@RequestBody User user) {
+    public ResponseEntity<?> join(@RequestBody Member member) {
         // 이메일 형식을 검증
-        if (!EmailValidator.isValidEmail(user.getEmail())) {
-            System.out.println("이메일 형식 에러");
-            System.out.println("===>"   + user.getEmail());
+        if (!EmailValidator.isValidEmail(member.getEmail())) {
             Map<String, Object> response = new HashMap<>();
             response.put("response", false);
+            response.put("message", "Invalid Email");
+            response.put("errorCode", "EmailError");
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("member", member);
+            response.put("result", result);
             return ResponseEntity.badRequest().body(response);
         }
         // 패스워드 형식을 검증
-        if (!PasswordValidator.isValid(user.getPassword())) {
-            System.out.println("패스워드 에러");
+        if (!PasswordValidator.isValid(member.getPassword())) {
             Map<String, Object> response = new HashMap<>();
             response.put("response", false);
+            response.put("message", "Invalid Password");
+            response.put("errorCode", "PasswordError");
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("member", member);
+            response.put("result", result);
             return ResponseEntity.badRequest().body(response);
         }
 
-        user.setRole("ROLE_USER");
-        String rawPassword = user.getPassword();
+        member.setRole("ROLE_USER");
+        String rawPassword = member.getPassword();
         String encPassword = bCryptPasswordEncoder.encode(rawPassword);
-        user.setPassword(encPassword);
+        member.setPassword(encPassword);
 
-        userRepository.save(user);
+        memberRepository.save(member);
+
+        String userImgUrl = "http://localhost:8080/assets/image/characters/anonymous.png";
+
+        if (member.getUserImgUrl() == null || member.getUserImgUrl().isEmpty()) {
+            member.setUserImgUrl(userImgUrl);
+        }
+
+        Map<String, Object> memberMap = new HashMap<>();
+        memberMap.put("id", member.getId());
+        memberMap.put("createDate", member.getCreateDate());
+        memberMap.put("username", member.getUsername());
+        memberMap.put("userImgUrl", member.getUserImgUrl());
+        memberMap.put("email", member.getEmail());
 
         Map<String, Object> result = new HashMap<>();
-        result.put("userEmail", user.getEmail());
+        result.put("user", memberMap);
+        result.put("token", "jwt-token-string");  // 여기에 실제 JWT 토큰 생성 및 설정
 
         Map<String, Object> response = new HashMap<>();
-        response.put("response", "ok");
+        response.put("response", true);
         response.put("result", result);
 
         return ResponseEntity.ok(response);
     }
-//
-//    @Secured("ROLE_ADMIN") //@EnableMethodSecurity에 의해 동작, 권한이  ADMIN일때 접속 가능
-//    @GetMapping("/info")
-//    public @ResponseBody String info(){
-//        return "개인정보";
-//    }
-//
-//    //두개의 제한을 걸고 싶다면 PreAuthorize를 활용, prePostEnabled = true에 의해동작
-//    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//    @GetMapping("/data")
-//    public @ResponseBody String data(){
-//        return "데이터정보";
-//    }
-
 
 }

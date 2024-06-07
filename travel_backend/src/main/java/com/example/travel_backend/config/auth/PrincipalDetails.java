@@ -1,6 +1,6 @@
 package com.example.travel_backend.config.auth;
 
-import com.example.travel_backend.model.User;
+import com.example.travel_backend.model.Member;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,17 +12,17 @@ import java.util.Map;
 
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
-    private User user;//콤포지션
+    private Member member;//콤포지션
     private Map<String, Object> attributes;
 
     //일반 로그인
-    public PrincipalDetails(User user) {
-        this.user = user;
+    public PrincipalDetails(Member member) {
+        this.member = member;
     }
 
     //OAuth  로그인
-    public PrincipalDetails(User user, Map<String, Object> attributes) {
-        this.user = user;
+    public PrincipalDetails(Member member, Map<String, Object> attributes) {
+        this.member = member;
         this.attributes = attributes;
     }
 
@@ -35,7 +35,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         collect.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole();
+                return member.getRole();
             }
         });
         return collect;
@@ -43,12 +43,12 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return member.getUsername();
     }
 
     //계정 만료
