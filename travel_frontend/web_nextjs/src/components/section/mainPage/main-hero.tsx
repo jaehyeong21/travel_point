@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -59,7 +60,7 @@ export default function MainHero() {
       style={{ backgroundColor: swiperState.bgColor }}
       className='relative flex justify-center items-center w-full transition-colors'
     >
-      <Image src={heroImages[swiperState.currentIndex - 1].image} alt={`backgound blur image`} width={1200} height={450}
+      <img src={heroImages[swiperState.currentIndex - 1].image} alt={`backgound blur image`} width={1200} height={450}
         className='w-full inset-x-0 h-[450px] absolute blur-[20px] xl:block hidden' />
       <Swiper
         onSwiper={setSwiperInstance}
@@ -70,13 +71,13 @@ export default function MainHero() {
       >
         {heroImages.map((item, i) => (
           <SwiperSlide key={i}>
-            <Image
+            <img
               src={item.image}
               width={1200}
               height={450}
               className='max-h-[450px]'
               alt={`${item.title} hero image`}
-              priority={i === 0 ? true : false}
+              // priority={i === 0 ? true : false}
             />
             {navBtn}
           </SwiperSlide>

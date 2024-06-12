@@ -26,7 +26,7 @@ export default function RegionArticle({ region, count }: RegionArticleProps) {
 
   // 다음 페이지로 이동
   const handleNextPage = () => {
-    if (data && currentPage < Math.ceil(data.length / itemsPerPage) - 1) {
+    if (data && currentPage < Math.ceil(data.destinations.length / itemsPerPage) - 1) {
       setCurrentPage(currentPage + 1);
     } else {
       setCurrentPage(0); // 마지막 페이지에서는 다시 처음으로
@@ -54,18 +54,18 @@ export default function RegionArticle({ region, count }: RegionArticleProps) {
             <DestinationCard key={i} isError />
           ))
         ) : (
-          data && data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map((item: DestinationType, i: number) => (
+          data && data.destinations.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map((item: DestinationType, i: number) => (
             <DestinationCard key={i}
               priority={i === 0 ? true : false}
               contentId={item.contentId} imageSrc={item.firstImage} location={item.location} title={item.title} description={item.destinationDescription} />
           ))
         )}
       </CardLayout>
-      {!isLoading && !isError && data && data.length > 0 && (
+      {!isLoading && !isError && data && data.destinations.length > 0 && (
         <nav className='flex justify-center pt-10'>
           <button onClick={handleNextPage}>
             <span className='flex justify-center text-sm border px-8 py-2 rounded-sm'>
-              다른 여행지 추천 {currentPage + 1} <span className='text-slate-500 pl-1'>/ {Math.ceil(data.length / itemsPerPage)}</span>
+              다른 여행지 추천 {currentPage + 1} <span className='text-slate-500 pl-1'>/ {Math.ceil(data.destinations.length / itemsPerPage)}</span>
             </span>
           </button>
         </nav>

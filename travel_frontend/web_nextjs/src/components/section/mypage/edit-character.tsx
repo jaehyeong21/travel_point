@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogTrigger, DialogTitle, DialogDescription, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog";
 import { Sticker } from "lucide-react";
-import Image from "next/image";
 
 const CharacterIconData = [
   '/assets/image/characters/m1.png', '/assets/image/characters/m2.png', '/assets/image/characters/m3.png', '/assets/image/characters/m4.png', '/assets/image/characters/m5.png',
@@ -19,10 +19,10 @@ export default function EditCharacter() {
     setSelectedImage(image);
   };
 
-  const handleSaveChanges = () => {    
+  const handleSaveChanges = () => {
     if (selectedImage) {
       console.log("Updating profile image to:", selectedImage);
-    
+
       setIsOpen(false);
     } else {
       alert("캐릭터를 선택해주세요.");
@@ -44,12 +44,12 @@ export default function EditCharacter() {
         </DialogHeader>
         <div className="grid grid-cols-5 gap-3 py-4">
           {CharacterIconData.map((image, index) => (
-            <Image 
-              src={image} 
-              key={index} 
-              width={128} 
-              height={128} 
-              alt="character image icon" 
+            <img
+              src={image}
+              key={index}
+              width={128}
+              height={128}
+              alt="character image icon"
               className={`cursor-pointer ${selectedImage === image ? 'border-2 rounded-full border-slate-600' : ''}`}
               onClick={() => handleImageClick(image)}
             />

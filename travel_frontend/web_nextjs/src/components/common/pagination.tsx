@@ -41,6 +41,7 @@ export function renderPageNumbers({ pageNumbers, currentPage, totalPages, onPage
   const showLeftEllipsis = currentPage > 3;
   const showRightEllipsis = currentPage < totalPages - 2;
 
+  if (totalPages < 1) return;
   return (
     <div className="hidden sm:flex">
       {showLeftEllipsis && (
@@ -82,11 +83,8 @@ export function renderPageNumbers({ pageNumbers, currentPage, totalPages, onPage
           </PaginationLink>
         </PaginationItem>
       ))}
-      {showRightEllipsis && (
-        <>
-          <PaginationItem>
-            <PaginationEllipsis className="px-3 py-1" />
-          </PaginationItem>
+      {showRightEllipsis &&
+        totalPages === 5 ? <>
           <PaginationItem>
             <PaginationLink
               href={createPageUrl ? createPageUrl(totalPages) : '#mainSection'}
@@ -101,8 +99,29 @@ export function renderPageNumbers({ pageNumbers, currentPage, totalPages, onPage
               {totalPages}
             </PaginationLink>
           </PaginationItem>
-        </>
-      )}
+        </> :
+        totalPages < 4 ? '' :
+          totalPages < 15 ? (
+            <>
+              <PaginationItem>
+                <PaginationEllipsis className="px-3 py-1" />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink
+                  href={createPageUrl ? createPageUrl(totalPages) : '#mainSection'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!isDisabled) {
+                      onPageChange(totalPages);
+                    }
+                  }}
+                  disabled={isDisabled}
+                >
+                  {totalPages}
+                </PaginationLink>
+              </PaginationItem>
+            </>
+          ) : <PaginationEllipsis className="px-3 py-1" />}
     </div>
   );
 }

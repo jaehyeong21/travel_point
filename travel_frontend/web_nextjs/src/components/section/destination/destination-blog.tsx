@@ -7,7 +7,7 @@ import Link from 'next/link';
 // 페이지를 동적으로 렌더링하도록 설정
 export const dynamic = 'force-dynamic';
 
-interface DestinationBlogPageProps{
+interface DestinationBlogPageProps {
   title: string;
 }
 
@@ -32,7 +32,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function DestinationBlogPage({ title }: DestinationBlogPageProps) {
-  
+
   const [blogData, setBlogData] = useState<BlogData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +61,9 @@ export default function DestinationBlogPage({ title }: DestinationBlogPageProps)
         {blogData.items.map((item: BlogPost, index: number) => (
           <div className='flex flex-col p-2.5' key={index}>
             <div className='flex'>
-              <a dangerouslySetInnerHTML={{ __html: item.title }} target='_blank' href={item.link} className='truncate max-w-[400px] text-blue-700/90'></a>
+              <a dangerouslySetInnerHTML={{ __html: item.title }} target='_blank'
+                aria-label={`${item.title} 네이버 블로그 링크`}
+                href={item.link} className='truncate max-w-[400px] text-blue-700/90'></a>
               <time className='ml-6 flex text-[10px] sm:text-sm items-center text-slate-600'>
                 <span className='mr-1.5'>|</span>{formatDate(item.postdate)}
               </time>

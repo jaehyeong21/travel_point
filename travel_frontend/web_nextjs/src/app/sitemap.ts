@@ -11,13 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const monopolyPage = {
-    url: `${siteUrl}/monopoly`,
-    lastModified: new Date().toISOString().split("T")[0],
-    changeFrequency: "weekly" as "weekly",
-    priority: 0.8,
-  };
-
   return [
     {
       url: siteUrl,
@@ -26,6 +19,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...routes,
-    monopolyPage
   ];
 }

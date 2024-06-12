@@ -19,7 +19,7 @@ export function getStyles(page: PageName, active: boolean) {
   if (!bg || !ring) return '';
 
   const baseRing = ring === 'ring-0' ? 'ring-0' : `${ring} ring-2 ring-offset-1`;
-  return active ? `${bg} ${baseRing} hover:${ring}` : ring;
+  return active ? `font-medium ${bg} ${baseRing} hover:${ring}` : ring;
 }
 
 export default function RegionSelection({ className, page, title, activeRegion, onRegionChange }: RegionSelectionProps) {

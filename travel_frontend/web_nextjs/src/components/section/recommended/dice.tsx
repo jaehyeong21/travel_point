@@ -7,7 +7,7 @@ interface DiceProps {
   onRoll: (diceNumbers: number[]) => void;
 }
 
-const Dice = ({ onRoll }: DiceProps) => {
+export default function Dice({ onRoll }: DiceProps) {
   const [diceNumbers, setDiceNumbers] = useState([1, 1, 1, 1]);
   const [isRolling, setIsRolling] = useState(false);
 
@@ -24,7 +24,7 @@ const Dice = ({ onRoll }: DiceProps) => {
   };
 
   return (
-    <div className="absolute left-1/2 right-1/2 flex items-center justify-center">
+    <div className="absolute left-1/2 right-1/2 flex items-center justify-center select-none">
       <div className="flex justify-center items-center h-screen">
         <div className='flex space-x-2 sm:space-x-4 hover:animate-bounce'>
           {diceNumbers.map((diceNumber, i) => (
@@ -97,4 +97,3 @@ const getDots = (sideNumber: number) => {
   return dotPositions[sideNumber];
 };
 
-export default Dice;

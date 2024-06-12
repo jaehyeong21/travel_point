@@ -5,18 +5,19 @@ import { FaChessPawn } from "react-icons/fa6";
 import Dice from "@/components/section/recommended/dice";
 import { useFetchThemeDestinationByCat } from "@/hooks/use-fetch-destination";
 import { REGIONS } from "@/data/data";
-import { Theme } from "@/store/themeStore";
-import { useRecommendStore } from "@/store/recommendStore";
 import { DestinationType } from "@/types/destination-types";
+import { useRecommendStore } from "@/store/recommendStore";
+import { ThemeType } from "@/types/categoriy-types";
 
 interface MonopolyContentProps {
   areaName: string;
-  theme: Theme;
+  theme: ThemeType;
+  setIsGameCompleted: (completed: boolean) => void;
 }
 
-export default function MonopolyContent({ theme, areaName }: MonopolyContentProps) {
+export default function MonopolyContent({ theme, areaName, setIsGameCompleted }: MonopolyContentProps) {
   const regionPath = REGIONS.find((r) => r.name === areaName)?.path || '';
-  const { data } = useFetchThemeDestinationByCat({ areaName: regionPath, count: '24', theme: theme, page: '1' });
+  const { data } = useFetchThemeDestinationByCat({ areaName: regionPath, count: '24', theme: theme, page: '1', random: 'true' });
 
   const { setMovedPositions, movedPositions: previousMovedPositions } = useRecommendStore((state) => ({
     setMovedPositions: state.setMovedPositions,
@@ -39,7 +40,7 @@ export default function MonopolyContent({ theme, areaName }: MonopolyContentProp
     const cellMap = new Map<number, string>();
     path.forEach((pos, index) => {
       if (data) {
-        cellMap.set(pos, data[index]?.title || '');
+        cellMap.set(pos, data.destinations[index]?.title || '');
       }
     });
     return cellMap;
@@ -86,8 +87,8 @@ export default function MonopolyContent({ theme, areaName }: MonopolyContentProp
           if (i === diceNumber) {
             newBoard[newPosition] = 'bg-green-100/70';
             const dataIndex = path.indexOf(newPosition);
-            if (data && data[dataIndex]) {
-              const position = data[dataIndex];
+            if (data && data.destinations[dataIndex]) {
+              const position = data.destinations[dataIndex];
               if (!movedPositions.some(item => item.title === position.title)) {
                 movedPositions.push(position);
               }
@@ -98,15 +99,15 @@ export default function MonopolyContent({ theme, areaName }: MonopolyContentProp
       }
       totalDelay += 500;
     });
-    
-    
+
     setTimeout(() => {
       setIsMoving(false);
       setMovedPositions(movedPositions);
+      setIsGameCompleted(true); // 게임 완료 상태를 true로 설정
       console.log(movedPositions);
     }, totalDelay);
   };
-  
+
   // 보드의 각 셀을 렌더링하는 함수
   const renderBoardCell = (i: number) => {
     const { content, needsPadding } = getCellContent(i);
@@ -135,7 +136,7 @@ export default function MonopolyContent({ theme, areaName }: MonopolyContentProp
           {Array.from({ length: boardCols * boardRows }, (_, i) => renderBoardCell(i))}
         </div>
         {/* 작은 화면에서 보드 셀을 렌더링 */}
-        <div className="grid md:hidden grid-cols-7 grid-rows-7 gap-0.5 sm:gap-1 xsm:w-[88%] xsm:mx-auto">
+        <div className="grid md:hidden grid-cols-7 grid-rows-7 gap-0.5 sm:gap-1 xsm:w-[88%] xsm:mx-auto select-none">
           {Array.from({ length: boardCols * boardRows }, (_, i) => (
             <div
               key={i}

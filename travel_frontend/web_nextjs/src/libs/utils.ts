@@ -3,10 +3,12 @@ import { CategoryName } from "@/types/categoriy-types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+// 클래스 merge
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// null or ''인 경우 제거하고 리스트로 만듬
 export const filterArray = (arr: (string | null)[]): string[] => {
   return arr.filter((item): item is string => item !== null && item !== "");
 };
@@ -22,7 +24,7 @@ export function calculateStarRating(rating: number) {
 
 // 기본 데이터 생성 함수 - 임시
 export function generateData() {
-  return [...Array(16)].map((_, i) => ({
+  return [...Array(4)].map((_, i) => ({
     location: '강원특별자치도 춘천시',
     title: `대관령 삼양목장 ${i}`,
     description: '정답게 이야기를 나눌 수 있는',
@@ -72,6 +74,7 @@ export function getCategoryName(cat1: string, cat2: string, cat3: string): Categ
   };
 }
 
+// throttleHelper - 과한 스크롤 추적 방지
 export function throttleHelper(callback: () => void, waitTime: number): () => void {
   let timerId: ReturnType<typeof setTimeout> | null = null;
 
@@ -83,4 +86,29 @@ export function throttleHelper(callback: () => void, waitTime: number): () => vo
       }, waitTime);
     }
   };
+}
+
+// 축제 상세 정보 포매팅
+export function formatFestivalIntro(intro: string): string {
+  // Split the intro by new lines and filter out empty lines
+  const lines = intro.trim().split('\n').filter(line => line.trim() !== '');
+  
+  let formattedIntro = '';
+  let currentSection = '';
+
+  lines.forEach(line => {
+    if (line.match(/^\d+\./)) {
+      // If the line starts with a number followed by a dot, it's a section header
+      currentSection = line.trim();
+      formattedIntro += `<br><b>${currentSection}</b><br>`;
+    } else if (line.startsWith('-')) {
+      // If the line starts with a dash, it's a list item
+      formattedIntro += `${line.trim()}<br>`;
+    } else {
+      // Otherwise, it's part of the previous item
+      formattedIntro += ` ${line.trim()}`;
+    }
+  });
+
+  return formattedIntro;
 }

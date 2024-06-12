@@ -8,8 +8,15 @@ export interface DestinationType {
   areaCode: string;
 }
 
+export interface DestinationResultType {
+  totalData: string;
+  destinations: DestinationType[];
+  totalPages: string;
+  currentPage: string;
+}
+
 export interface DestinationDetailType extends DestinationType {
-  destinationId: number;
+  destinationId: string;
   cat1: string;
   cat2: string;
   cat3: string;
@@ -31,8 +38,15 @@ export interface FestivalType extends DestinationType{
   endDate: string;
 }
 
+export interface FestivalResultType {
+  totalData: string;
+  destinations: FestivalType[];
+  totalPages: string;
+  currentPage: string;
+}
+
 export interface FestivalDetailType {
-  contentId: number;
+  contentId: string;
   title: string;
   tel: string;
   areaCode: string;

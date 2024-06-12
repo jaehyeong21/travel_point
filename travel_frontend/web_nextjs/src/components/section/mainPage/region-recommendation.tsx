@@ -4,7 +4,7 @@ import RegionArticle from '@/components/section/mainPage/region-article';
 
 export default function RegionRecommendation() {
   return (
-    <section className='flex flex-col sm:grid sm:grid-cols-2 gap-6 sm:gap-12 relative mt-6 sm:mt-10 mx-2 xsm:mx-6 sm:mx-0 mb-10 xsm:mb-0'>
+    <section className='flex flex-col sm:grid sm:grid-cols-2 gap-6 sm:gap-12 relative mt-6 sm:mt-10 mx-1 xsm:mx-6 sm:mx-0 mb-10 xsm:mb-0'>
       <RegionArticle region='서울' count='10' />
       <RegionArticle region='울산' count='10'/>
       {/* 경계선 */}

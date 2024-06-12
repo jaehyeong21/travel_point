@@ -4,16 +4,15 @@ import useKakaoLoader from "@/contexts/use-kakao-loader";
 import { useState } from "react";
 import { cn } from "@/libs/utils";
 
-interface KakaoMapProps {
+export interface MapProps {
   latitude: number;
   longitude: number;
   className?: string
 }
 
-export default function KakaoMap({ latitude, longitude, className }: KakaoMapProps) {
+export default function KakaoMap({ latitude, longitude, className }: MapProps) {
   useKakaoLoader();
   const [state, setState] = useState({ lat: latitude, lng: longitude-0.000085 });
-  const [isOpen, setIsOpen] = useState(false);
 
   const resetCenter = () => {
     // 기존 위치로 재설정
@@ -23,13 +22,13 @@ export default function KakaoMap({ latitude, longitude, className }: KakaoMapPro
       setState(prevState => ({ lat: prevState.lat, lng: prevState.lng - 0.000000001 }));
     }, 10);
   };
-
+  
   return (
     <div className={cn('relative', className)}>
       <Map
         className="w-full aspect-[16/11]"
         id="map"
-        level={3} // 지도의 확대 레벨
+        level={6} // 지도의 확대 레벨
         center={state}
         isPanto={true}
       >

@@ -34,18 +34,18 @@ export function ThemesContent() {
 
   return (
     <>
-      <RegionSelection title='테마 여행 지역 탐색' page='themes' activeRegion={activeRegion} />
-      <Separator className='my-10 sm:my-20' />
       <PageLayout>
+        <RegionSelection title='테마 여행 지역 탐색' page='themes' activeRegion={activeRegion} />
+        <Separator className='my-10 sm:my-14' />
         <ExploreDestinations
-          data={data || []}
+          data={data?.destinations || []}
           region={region}
           page='themes'
           isLoading={isLoading}
           isError={isError}
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          totalPages={10}
+          totalPages={Number(data?.totalPages)}
         />
       </PageLayout>
     </>

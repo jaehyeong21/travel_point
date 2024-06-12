@@ -1,3 +1,5 @@
+import { themeCategories } from "@/types/destination-fetch-props";
+
 interface CategoryDetails {
   [key: string]: string;
 }
@@ -23,3 +25,5 @@ export interface CategoryName {
   cat2?: string;
   cat3?: string;
 }
+
+export type ThemeType = keyof typeof themeCategories;

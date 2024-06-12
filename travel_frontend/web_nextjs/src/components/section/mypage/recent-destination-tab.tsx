@@ -68,7 +68,9 @@ export default function RecentDestinationsTab() {
           </div>
         </div>
       ) : (
-        <div>최근 본 여행지가 없습니다.</div>
+        <div className="flex flex-col items-center justify-center text-center space-y-4 text-sm">
+          <p className="text-gray-600">최근 본 여행지가 없습니다.</p>
+        </div>
       )}
     </>
   );

@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function SiteFooter() {
   return (
-    < footer className="bg-gray-50/40 shadow" >
+    <footer className="bg-gray-50/40 shadow pb-[66px] sm:pb-0" >
       <div className="mx-auto px-4 pb-6 sm:px-6 lg:px-8">
         <div className="border-t border-gray-100 pt-6">
           <div className="text-center flex justify-between max-w-screen-lg mx-auto px-2 sm:px-5">
@@ -15,7 +15,8 @@ export default function SiteFooter() {
               </a>{' '}
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com/jaehyeong21/travel_point" target="_blank">
+              <a href="https://github.com/jaehyeong21/travel_point" target="_blank"
+                aria-label="github external link">
                 <ImGithub className="size-5" />
               </a>
             </div>

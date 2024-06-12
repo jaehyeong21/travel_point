@@ -1,78 +1,58 @@
 'use client';
 
-import { useState } from 'react';
 import StepProgress from '@/components/section/recommended/step-progress';
 import StartSection from '@/components/section/recommended/start-section';
 import RegionSelection from '@/components/section/recommended/region-selection-step';
 import PreferenceSelection from '@/components/section/recommended/preference-selection';
-import TravelGameStep from '@/components/section/recommended/travel-game'; // 경로 수정
-import { Theme } from '@/store/themeStore';
+import TravelGameStep from '@/components/section/recommended/travel-game'; 
 import ResultStep from '@/components/section/recommended/result-step';
-
+import { useRecommendStore } from '@/store/recommendStore';
+import { ThemeType } from '@/types/categoriy-types';
 
 export default function TravelRecommendations() {
+  const { step, theme, areaName, setStep, setTheme, setAreaName, resetState } = useRecommendStore();
 
-  const [state, setState] = useState<{
-    step: number;
-    theme: Theme;
-    areaName: string;
-  }>({
-    step: 0,
-    theme: 'all',
-    areaName: 'all',
-  });
-
-  const handlePreferenceChange = (newValue: Theme) => {
-    setState(prevState => ({
-      ...prevState,
-      theme: newValue
-    }));
+  const handlePreferenceChange = (newValue: ThemeType) => {
+    setTheme(newValue);
   };
 
   const handleRegionChange = (region: string) => {
-    setState(prevState => ({
-      ...prevState,
-      areaName: region
-    }));
+    setAreaName(region);
   };
 
+  // 브루마블 height이 더 높아서 0.1초 뒤에 스크롤 내리기
   const goToNextStep = () => {
-    setState(prevState => ({
-      ...prevState,
-      step: prevState.step + 1
-    }));
+    setStep(step + 1);
+    if (step === 2 || step === 3) {
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100); 
+    }
   };
 
   const goToPreviousStep = () => {
-    setState(prevState => ({
-      ...prevState,
-      step: prevState.step - 1
-    }));
+    setStep(step - 1);
   };
 
   const skipToGameStep = () => {
-    setState(prevState => ({
-      ...prevState,
-      step: 3
-    }));
+    setStep(3);
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 100); 
   };
 
   const restart = () => {
-    setState({
-      step: 0,
-      theme: 'all',
-      areaName: 'all',
-    });
+    resetState();
   };
 
   const renderStep = () => {
-    switch (state.step) {
+    switch (step) {
     case 0:
       return <StartSection onNext={goToNextStep} onSkip={skipToGameStep} />;
     case 1:
       return (
         <RegionSelection
-          areaName={state.areaName}
+          areaName={areaName}
           onRegionChange={handleRegionChange}
           onNext={goToNextStep}
           onPrevious={goToPreviousStep}
@@ -81,14 +61,14 @@ export default function TravelRecommendations() {
     case 2:
       return (
         <PreferenceSelection
-          preference={state.theme}
+          preference={theme}
           onPreferenceChange={handlePreferenceChange}
           onNext={goToNextStep}
           onPrevious={goToPreviousStep}
         />
       );
     case 3:
-      return <TravelGameStep onNext={goToNextStep} onPrevious={goToPreviousStep} theme={state.theme} areaName={state.areaName} />;
+      return <TravelGameStep onNext={goToNextStep} onPrevious={goToPreviousStep} theme={theme} areaName={areaName} />;
     case 4:
       return <ResultStep onRestart={restart} />;
     default:
@@ -98,7 +78,7 @@ export default function TravelRecommendations() {
 
   return (
     <>
-      <StepProgress step={state.step + 1} />
+      <StepProgress step={step + 1} />
       {renderStep()}
     </>
   );

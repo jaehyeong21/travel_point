@@ -2,18 +2,23 @@
 import {
   fetchDestination,
   fetchDestinationById,
-  fetchFestivals,
+  fetchFestival,
+  fetchFestivalDetail,
+  fetchNearby,
   fetchThemeDestinationByCat,
 } from "@/services/fetch-destination";
 import {
   fetchDestinationDetailProps,
   FetchDestinationProps,
+  fetchNearbyProps,
   fetchThemeDestinationByCatProps,
 } from "@/types/destination-fetch-props";
 import {
   DestinationDetailType,
+  DestinationResultType,
   DestinationType,
-  FestivalType,
+  FestivalDetailType,
+  FestivalResultType,
 } from "@/types/destination-types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,7 +27,7 @@ export function useFetchDestination({
   count,
   page,
 }: FetchDestinationProps) {
-  return useQuery<DestinationType[], Error>({
+  return useQuery<DestinationResultType, Error>({
     queryKey: ["destinationData", { areaName, count, page }],
     queryFn: ({ queryKey }) =>
       fetchDestination(queryKey[1] as FetchDestinationProps),
@@ -45,9 +50,10 @@ export function useFetchThemeDestinationByCat({
   count,
   page,
   theme,
+  random = 'false',
 }: fetchThemeDestinationByCatProps) {
-  return useQuery<DestinationType[], Error>({
-    queryKey: ["themedestinationData", { areaName, count, page, theme }],
+  return useQuery<DestinationResultType, Error>({
+    queryKey: ["themedestinationData", { areaName, count, page, theme, random }],
     queryFn: ({ queryKey }) =>
       fetchThemeDestinationByCat(
         queryKey[1] as fetchThemeDestinationByCatProps
@@ -59,11 +65,32 @@ export function useFetchFestival({
   areaName,
   count,
   page,
-  sort
+  sort,
 }: FetchDestinationProps) {
-  return useQuery<FestivalType[], Error>({
+  return useQuery<FestivalResultType, Error>({
     queryKey: ["festivalData", { areaName, count, page, sort }],
     queryFn: ({ queryKey }) =>
-      fetchFestivals(queryKey[1] as FetchDestinationProps),
+      fetchFestival(queryKey[1] as FetchDestinationProps),
+  });
+}
+
+export function useFetchFestivalbyId({
+  contentId,
+  contentTypeId,
+}: fetchDestinationDetailProps) {
+  return useQuery<FestivalDetailType, Error>({
+    queryKey: ["festivalDetail", { contentId, contentTypeId }],
+    queryFn: ({ queryKey }) =>
+      fetchFestivalDetail(queryKey[1] as fetchDestinationDetailProps),
+  });
+}
+
+export function useFetchNearby({ latitude, longitude, areaCode, count, contentId }: fetchNearbyProps) {
+  return useQuery<DestinationType[], Error>({
+    queryKey: [
+      "nearbyData",
+      { latitude, longitude, areaCode, count, contentId },
+    ],
+    queryFn: ({ queryKey }) => fetchNearby(queryKey[1] as fetchNearbyProps),
   });
 }

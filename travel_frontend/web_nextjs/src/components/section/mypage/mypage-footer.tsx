@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function MypageFooter() {
   return (
-    <div className='flex justify-between items-start pt-5 px-6'>
+    <div className='flex justify-between items-start max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0 mx-auto mb-6'>
       <div className='flex flex-col space-y-2'>
         <AlertDialog>
           <AlertDialogTrigger asChild className='max-w-[70px]'>

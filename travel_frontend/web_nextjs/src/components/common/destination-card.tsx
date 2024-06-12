@@ -72,14 +72,18 @@ export default function DestinationCard({
   const formattedDateRange = FestivalDate ? formatDateRange(FestivalDate.startDate, FestivalDate.endDate) : null;
   return (
     <div className={`${cn('flex-1', className)}`} {...props}>
-      <Link href={`/destinations/${contentId}?title=${title}&location=${location}`}>
+      <Link href={
+        Number(contentId) < 100 ? 
+          `/festivals/${contentId}?title=${title}&location=${location}`
+          : `/destinations/${contentId}?title=${title}&location=${location}`
+      }>
         <div className='relative' >
           <Image
             width={isSmallSize ? 180 : 300}
             height={isSmallSize ? 123 : 200}
             src={imageSrc || '/img/sample.avif'}
             alt={`${title} image` || 'sample image'}
-            className='rounded-sm w-full object-cover aspect-[16/11]'
+            className='rounded-sm w-full object-cover aspect-[16/11] h-auto'
             quality={isSmallSize ? 40 : 60}
             sizes={isSmallSize ? "(max-width: 640px) 173px, (max-width: 1200px) 148px, 180px" : "(max-width: 640px) 300px, (max-width: 1200px) 180px, 220px"}
             priority={priority}
@@ -105,7 +109,7 @@ export default function DestinationCard({
         <p className='mt-4 text-xs sm:text-sm'>{location && location.split(' ').slice(0, 2).join(' ')}</p>
         <h3 className='text-sm sm:text-base font-semibold pt-1 pb-px sm:py-1 truncate'>{title && title.split('(')[0].split('/')[0]}</h3>
         <div className='text-sm two-line-truncate'>{description && description.replace(/<\/?[^>]+(>|$)/g, "")}</div>
-        {formattedDateRange && <p className='pt-1.5 text-xs sm:text-sm text-slate-700/90'>{formattedDateRange}</p>}
+        {formattedDateRange && <p className='pt-1.5 text-xs text-slate-700/90'>{formattedDateRange}</p>}
       </Link>
     </div>
   );

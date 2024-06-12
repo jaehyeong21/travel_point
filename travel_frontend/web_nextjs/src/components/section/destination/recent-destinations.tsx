@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 
@@ -15,10 +15,12 @@ interface RecentDestinationsProps {
 }
 
 const ITEMS_PER_PAGE = 6;
+const MAX_RECENT_DESTINATIONS = 30;
 
 export default function RecentDestinations({ newDestination }: RecentDestinationsProps) {
   const [destinations, setDestinations] = useState<DestinationType[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const shouldUpdateLocalStorage = useRef(true);
 
   useEffect(() => {
     const storedDestinations = localStorage.getItem('recentDestinations');
@@ -28,23 +30,37 @@ export default function RecentDestinations({ newDestination }: RecentDestination
   }, []);
 
   useEffect(() => {
-    if (newDestination) {
+    if (newDestination && shouldUpdateLocalStorage.current) {
       setDestinations(prevDestinations => {
-        const isDuplicate = prevDestinations.some(d => d.contentId === newDestination.contentId);
-        if (!isDuplicate) {
-          const updatedDestinations = [newDestination, ...prevDestinations];
-          localStorage.setItem('recentDestinations', JSON.stringify(updatedDestinations));
-          return updatedDestinations;
+        const isDuplicateIndex = prevDestinations.findIndex(d => d.contentId === newDestination.contentId);
+        let updatedDestinations;
+
+        if (isDuplicateIndex !== -1) {
+          // 최근 본 여행지를 리스트의 맨앞으로 옮김- 기존의 리스트에 있을 경우
+          const [existingDestination] = prevDestinations.splice(isDuplicateIndex, 1);
+          updatedDestinations = [existingDestination, ...prevDestinations];
+        } else {
+          // 최근 본 여행지를 리스트의 맨앞으로 옮김
+          updatedDestinations = [newDestination, ...prevDestinations];
         }
-        return prevDestinations;
+
+        if (updatedDestinations.length > MAX_RECENT_DESTINATIONS) {
+          updatedDestinations = updatedDestinations.slice(0, MAX_RECENT_DESTINATIONS);
+        }
+
+        localStorage.setItem('recentDestinations', JSON.stringify(updatedDestinations));
+        return updatedDestinations;
       });
+    } else {
+      shouldUpdateLocalStorage.current = true;
     }
   }, [newDestination]);
 
   const removeDestination = (contentId: string) => {
+    shouldUpdateLocalStorage.current = false; // 현재 페이지에서 삭제 버튼 눌렀을때, 다시 저장 방지.
     const updatedDestinations = destinations.filter(d => d.contentId !== contentId);
-    setDestinations(updatedDestinations);
     localStorage.setItem('recentDestinations', JSON.stringify(updatedDestinations));
+    setDestinations(updatedDestinations);
   };
 
   const totalPages = Math.ceil(destinations.length / ITEMS_PER_PAGE);
@@ -64,9 +80,12 @@ export default function RecentDestinations({ newDestination }: RecentDestination
             <p className="text-xs text-gray-700">최근 본 여행지가 없습니다.</p>
           ) : (
             paginatedDestinations.map(destination => (
-              <Link href={`/destinations/${destination.contentId}`}
-                key={destination.contentId}
-                className="flex justify-between items-center border-b border-gray-200 pb-2"
+              <Link href=
+                {Number(destination.contentId) > 100 ?
+                  `/destinations/${destination.contentId}` :
+                  `/festivals/${destination.contentId}`}
+              key={destination.contentId}
+              className="flex justify-between items-center border-b border-gray-200 pb-2"
               >
                 <p className="text-xs text-gray-700 hover:text-gray-900/90">{destination.title}</p>
                 <button
@@ -98,7 +117,5 @@ export default function RecentDestinations({ newDestination }: RecentDestination
         )}
       </div>
     </aside>
-
-
   );
 }

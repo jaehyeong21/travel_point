@@ -27,21 +27,21 @@ export function RegionsContent() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
+  
   return (
     <>
-      <RegionSelection page='regions' title='여행지 지역 탐색' activeRegion={activeRegion} />
-      <Separator className='my-10 sm:my-20' />
       <PageLayout>
+        <RegionSelection page='regions' title='여행지 지역 탐색' activeRegion={activeRegion} />
+        <Separator className='my-10 sm:my-14' />
         <ExploreDestinations
-          data={data || []}
+          data={data?.destinations || []}
           region={region}
           page='regions'
           isLoading={isLoading}
           isError={isError}
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          totalPages={10}
+          totalPages={Number(data?.totalPages)}
         />
       </PageLayout>
     </>

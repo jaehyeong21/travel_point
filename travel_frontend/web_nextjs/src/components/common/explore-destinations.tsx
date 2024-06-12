@@ -6,12 +6,14 @@ import Title from '@/components/common/title';
 import { Separator } from '@/components/ui/separator';
 import DestinationCard from '@/components/common/destination-card';
 import DestinationPagination from '@/components/common/destination-pagination';
-import { DestinationType } from '@/types/destination-types';
-import { Theme, useThemeStore } from '@/store/themeStore';
+import { DestinationType, FestivalType } from '@/types/destination-types';
 import { themeCategories } from '@/types/destination-fetch-props';
+import { pageColors } from '@/data/data';
+import { useThemeStore } from '@/store/themeStore';
+import { ThemeType } from '@/types/categoriy-types';
 
 interface ExploreDestinationsProps {
-  data: DestinationType[];
+  data: DestinationType[] | FestivalType[];
   region?: string;
   page: string;
   isLoading: boolean;
@@ -19,6 +21,10 @@ interface ExploreDestinationsProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   totalPages: number;
+}
+
+function isFestivalType(destination: DestinationType | FestivalType): destination is FestivalType {
+  return (destination as FestivalType).startDate !== undefined;
 }
 
 // 브라우저 창 크기에 따라 카드 나누는 수를 계산하는 함수
@@ -79,7 +85,7 @@ export default function ExploreDestinations({
   };
 
   // 필터 - 테마 변경함수
-  const handleThemeChange = (theme: Theme) => {
+  const handleThemeChange = (theme: ThemeType) => {
     setSelectedTheme(theme);
     const params = new URLSearchParams(searchParams);
     params.set('theme', theme);
@@ -91,14 +97,13 @@ export default function ExploreDestinations({
   return (
     <section id="mainSection">
       <Title>{region && region !== 'all' ? `${region} 지역의 이런 여행지 어때요?` : '이런 여행지 어때요?'}</Title>
-      <Separator />
-
-      <div className="flex h-5 items-center space-x-3 xsm:space-x-5 text-xs xsm:text-sm m-3 pl-1 list-none text-nowrap">
-        {page === 'themes' ? (
-          <>
+      {page === 'themes' ? (
+        <>
+          <Separator />
+          <div className="flex h-5 items-center space-x-3 xsm:space-x-5 text-xs xsm:text-sm m-3 pl-1 list-none text-nowrap">
             <li
               onClick={() => handleThemeChange('all')}
-              className={`cursor-pointer ${selectedTheme === 'all' ? 'font-semibold' : ''}`}
+              className={`cursor-pointer ${selectedTheme === 'all' ? `font-medium ${pageColors.themes.ring} ring rounded-full ring-offset-2 px-1.5` : ''}`}
             >
               전체
             </li>
@@ -106,23 +111,29 @@ export default function ExploreDestinations({
               <React.Fragment key={index}>
                 <Separator orientation="vertical" />
                 <li
-                  onClick={() => handleThemeChange(theme as Theme)}
-                  className={`cursor-pointer ${selectedTheme === theme ? 'font-semibold' : ''}`}
+                  onClick={() => handleThemeChange(theme as ThemeType)}
+                  className={`cursor-pointer ${selectedTheme === theme ? `font-medium ${pageColors.themes.ring} ring rounded-full ring-offset-2 px-1.5` : ''}`}
                 >
                   {theme}
                 </li>
               </React.Fragment>
             ))}
-          </>
-        ) : (
+          </div>
+          <Separator />
+        </>
+      ) : page === 'festivals' ? ''
+        : page === 'regions' ? (
           <>
-            <li>전체</li>
-            <Separator orientation="vertical" />
-            <li>후기순</li>
+            <Separator />
+            <div className="flex h-5 items-center space-x-3 xsm:space-x-5 text-xs xsm:text-sm m-3 pl-1 list-none text-nowrap">
+              <li>전체</li>
+              <Separator orientation="vertical" />
+              <li>후기순</li>
+            </div>
+            <Separator />
           </>
-        )}
-      </div>
-      <Separator />
+        ) : ''
+      }
 
       <section className="p-3 sm:p-6 grid grid-cols-2 xsm:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-5 gap-y-8 pt-7 sm:pt-12">
         {isLoading ?
@@ -137,6 +148,11 @@ export default function ExploreDestinations({
                 <DestinationCard
                   isSmallSize
                   className="col-span-1 first:ml-0"
+                  FestivalDate={
+                    isFestivalType(destination)
+                      ? { startDate: destination.startDate, endDate: destination.endDate }
+                      : undefined
+                  }
                   contentId={destination.contentId}
                   imageSrc={destination.firstImage}
                   location={destination.location}
@@ -157,6 +173,6 @@ export default function ExploreDestinations({
         onPageChange={onPageChange}
         createPageUrl={createPageUrl}
       />
-    </section>
+    </section >
   );
 }

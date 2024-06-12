@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import React, { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import DestinationCard from '@/components/common/destination-card';
 import { Separator } from '@/components/ui/separator';
@@ -32,21 +32,36 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
   const [swiper, setSwiper] = useState<SwiperCore | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     if (swiper) {
-      const slidesPerView = typeof swiper.params.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
-      setTotalPages(Math.ceil(swiper.slides.length / slidesPerView));
+      const slidesPerView = typeof swiper.params?.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
+
+      const updateTotalPages = () => {
+        if (swiper && swiper.slides && swiper.slides.length > 0) {
+          setTotalPages(Math.ceil(swiper.slides.length / slidesPerView));
+        }
+      };
+
+      updateTotalPages(); // Swiper 초기화 시 슬라이드 수 업데이트
+
+      swiper.on('slidesLengthChange', updateTotalPages); // 슬라이드 길이 변경 시 업데이트
       swiper.on('slideChange', () => {
         setCurrentPage(Math.floor(swiper.realIndex / slidesPerView));
       });
+
+      return () => {
+        swiper.off('slidesLengthChange', updateTotalPages);
+        swiper.off('slideChange');
+      };
     }
   }, [swiper]);
 
+
   const handlePageClick = (index: number) => {
-    const slidesPerView = typeof swiper?.params.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
+    const slidesPerView = typeof swiper?.params?.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
     swiper?.slideTo(index * slidesPerView);
   };
-
 
   return (
     <>
@@ -56,7 +71,7 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
           <Title className='flex md:hidden'>당신만의 힐링 여행</Title>
         </>
       )}
-      <div className='relative mb-[260px] md:mb-[200px]'>
+      <div className='relative mb-[245px] xsm:mb-[260px] md:mb-[200px]'>
         <div className='absolute -top-7 right-0 flex items-center'>
           <div className="flex gap-1.5 mr-6">
             {Array.from({ length: totalPages }, (_, index) => (
@@ -76,8 +91,9 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
             <span className='flex items-center text-sm'>더보기 <ChevronRight className='size-[15px] ml-[3px]' strokeWidth={1} /></span>
           </button>
         </div>
-        <Image width={496} height={300} src={themeImages.image} alt={themeImages.title} className='md:h-[280px] w-full max-h-[300px] sm:block hidden overflow-hidden' priority />
-        <div className='absolute top-[75%] md:top-[85%] left-0 right-0 mx-auto bg-white w-full sm:w-[90%] p-4'>
+        <img width={496} height={300} src={themeImages.image} alt={themeImages.title} className='md:h-[280px] w-full max-h-[300px] sm:block hidden overflow-hidden' />
+        <div className='absolute top-[75%] md:top-[85%] left-0 right-0 mx-auto bg-white w-full sm:w-[90%] px-1 sm:p-4'>
+
           <Swiper
             onSwiper={setSwiper}
             slidesPerView={2}
@@ -92,21 +108,30 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
                 spaceBetween: 20,
               },
             }}
+            onInit={(swiper) => {
+              const slidesPerView = typeof swiper.params?.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
+              setTotalPages(Math.ceil(swiper.slides.length / slidesPerView));
+            }}
           >
-            {isLoading ? [...Array(count)].map((_, index) => (
-              <SwiperSlide key={index}>
-                <DestinationCard isLoading />
-              </SwiperSlide>
-            )) : isError ? (
-              [...Array(itemsPerPage)].map((_, index) => (
-                <SwiperSlide key={index}>
-                  <DestinationCard isError />
-                </SwiperSlide>)
-              )) : (
-              data && data.map((item, index) => (
+            {isLoading ? (
+              <div className='grid grid-cols-2 gap-x-5'>
+                {[...Array(itemsPerPage)].map((_, index) => (
+                  <div key={index}>
+                    <DestinationCard isLoading />
+                  </div>
+                ))}</div>
+            ) : isError ? (
+              <div className='grid grid-cols-2 gap-x-5'>
+                {[...Array(itemsPerPage)].map((_, index) => (
+                  <div key={index}>
+                    <DestinationCard isError />
+                  </div>))}
+              </div>
+            ) : (
+              data && data.destinations.map((item, index) => (
                 <SwiperSlide key={index}>
                   <DestinationCard
-                    priority={index === 0 ? true : false}
+                    priority={false}
                     imageSrc={item.firstImage}
                     location={item.location}
                     title={item.title}
@@ -114,7 +139,8 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
                     contentId={item.contentId}
                   />
                 </SwiperSlide>
-              )))}
+              ))
+            )}
           </Swiper>
         </div>
       </div>

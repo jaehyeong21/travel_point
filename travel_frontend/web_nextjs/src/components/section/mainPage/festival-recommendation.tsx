@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import DestinationCard from '@/components/common/destination-card';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-
 import Title from '@/components/common/title';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -76,7 +75,7 @@ export default function FestivalRecommendation({ count }: { count: string }) {
   );
 
   return (
-    <section>
+    <section className='px-1'>
       <Title navBtn={navBtn}>이런 축제 어때요?</Title>
       <Swiper
         onSwiper={handleSwiper}
@@ -109,23 +108,28 @@ export default function FestivalRecommendation({ count }: { count: string }) {
         }}
       >
         {isLoading
-          ? [...Array(itemsPerPage)].map((_, i) => (
-            <SwiperSlide key={i}>
-              <DestinationCard isLoading />
-            </SwiperSlide>
-          ))
+          ?
+          <div className={`grid grid-cols-4 gap-x-6`}>
+            {[...Array(itemsPerPage)].map((_, i) => (
+              <div key={i}>
+                <DestinationCard isLoading />
+              </div>
+            ))}</div>
           : isError
-            ? [...Array(itemsPerPage)].map((_, i) => (
-              <SwiperSlide key={i}>
-                <DestinationCard isError />
-              </SwiperSlide>
-            ))
+            ?
+            <div className={`grid grid-cols-4 gap-x-6`}>
+              {[...Array(itemsPerPage)].map((_, i) => (
+                <div key={i}>
+                  <DestinationCard isError />
+                </div>
+              ))}
+            </div>
             : data &&
-            data.map((item, i) => (
+            data.destinations.map((item, i) => (
               <SwiperSlide key={i}>
                 <DestinationCard
                   FestivalDate={{ startDate: item.startDate, endDate: item.endDate }}
-                  priority={i === 0 ? true : false}
+                  priority={false}
                   location={item.location}
                   title={item.title}
                   description={item.destinationDescription}

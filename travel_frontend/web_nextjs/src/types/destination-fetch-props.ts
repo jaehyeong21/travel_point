@@ -1,9 +1,9 @@
 export const themeCategories = {
-  '역사': { cat1: "A02", cat2: "A0201" },
-  '힐링': { cat1: "A02", cat2: "A0202" },
-  '자연': { cat1: "A01", cat2: "A0101" },
-  '체험': { cat1: "A02", cat2: "A0203" },
-  '엑티비티': { cat1: "A03", cat2: "A0303" },
+  역사: { cat1: "A02", cat2: "A0201" },
+  힐링: { cat1: "A02", cat2: "A0202" },
+  자연: { cat1: "A01", cat2: "A0101" },
+  체험: { cat1: "A02", cat2: "A0203" },
+  엑티비티: { cat1: "A03", cat2: "A0303" },
   all: { cat1: "", cat2: "" },
 };
 
@@ -18,11 +18,19 @@ export interface fetchThemeDestinationByCatProps {
   areaName?: string;
   count: string;
   page: string;
+  random?: 'true' | 'false';
   theme: keyof typeof themeCategories;
 }
 
-export interface fetchDestinationDetailProps{
+export interface fetchDestinationDetailProps {
   contentId: string;
-  contentTypeId?: string
+  contentTypeId?: string;
 }
 
+export interface fetchNearbyProps {
+  latitude?: string;
+  longitude?: string;
+  areaCode?: string;
+  count: string;
+  contentId: string;
+}

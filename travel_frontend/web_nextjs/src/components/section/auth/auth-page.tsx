@@ -9,7 +9,7 @@ interface AuthPageProps {
   isModal?: boolean;
 }
 
-const AuthPage: React.FC<AuthPageProps> = ({ isModal = true }) => {
+export default function AuthPage({ isModal }: AuthPageProps) {
   const router = useRouter();
 
   const backbtn = useCallback(() => {
@@ -20,13 +20,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ isModal = true }) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (isModal && event.key === 'Escape') {
         backbtn();
       }
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (isModal && modalRef.current && !modalRef.current.contains(event.target as Node)) {
         backbtn();
       }
     };
@@ -41,23 +41,23 @@ const AuthPage: React.FC<AuthPageProps> = ({ isModal = true }) => {
   }, [backbtn, isModal]);
 
   return (
-    <div className={`w-full h-full ${isModal ? 'fixed z-50 bg-opacity-70 backdrop-blur-sm overflow-auto bg-gray-500' : 'py-20'} `}>
+    <div className={`w-full h-full pt-7 sm:pt-10 ${isModal ? 'fixed z-50 bg-opacity-70 backdrop-blur-sm overflow-auto bg-gray-500 sm:py-10' : ''} `}>
       <div className={`${isModal ? 'sticky top-40' : ''} flex justify-center`}>
         <div
-          className={`max-w-md w-full h-auto flex flex-col text-gray-900 space-y-8 bg-white rounded-lg p-8 ${isModal ? 'shadow-lg' : ''}`}
+          className={` max-w-md w-full h-auto flex flex-col text-gray-900 space-y-8 bg-white rounded-lg p-8 ${isModal ? 'shadow-lg' : ''}`}
           ref={modalRef}
         >
           <div className='relative'>
-            <button className={`${isModal ? 'absolute top-2 right-0' : 'hidden'}`} onClick={backbtn}>
+            <button className={`${isModal ? 'absolute top-0 right-0' : 'hidden'}`} onClick={backbtn}>
               <X className="size-5 text-gray-900" />
             </button>
             <AuthForm />
           </div>
         </div>
       </div>
-      {isModal ? '' : <Separator className='my-10 sm:my-20' />}
+      {isModal ? '' : <Separator className='my-10 sm:my-14 hidden sm:flex' />}
     </div>
   );
 };
 
-export default AuthPage;
+

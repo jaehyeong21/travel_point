@@ -23,12 +23,19 @@ const config: Config = {
         "0%, 100%": { transform: "translateY(0)" },
         "50%": { transform: "translateY(-10%)" },
       },
+      ping: {
+        "75%, 100%": {
+          transform: "scale(2)",
+          opacity: "0",
+        },
+      },
     },
     extend: {
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "ping-slow": "ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite",
       },
       keyframes: {
         "accordion-down": {
@@ -87,10 +94,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require("@tailwindcss/forms"),    
-  ],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
 };
 
 export default config;

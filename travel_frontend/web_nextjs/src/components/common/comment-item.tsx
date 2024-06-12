@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { IoMdHeartEmpty } from "react-icons/io";
 import { PiSirenFill } from "react-icons/pi";
@@ -17,7 +17,7 @@ export default function CommentItem({ className }: CommentItemProps) {
   return (
     <li className={`${cn('border-t relative list-none', className)}`}>
       <div className='absolute top-0 left-0'>
-        <Image src={'/assets/image/characters/m1.png'} alt='character image' width={46} height={46} />
+        <img src={'/assets/image/characters/m1.png'} alt='character image' width={46} height={46} />
       </div>
       <div className='w-full py-2 pl-[50px]'>
         <div className='flex justify-between'>
@@ -42,7 +42,7 @@ export default function CommentItem({ className }: CommentItemProps) {
           <p className='text-sm'>간단히 산책하기도 좋고 특히 겹벚꽃 폈을때 넘 이뻐서 사진 찍으러도 많이들 가시더라구요 ㅎㅎ 저도 앞전에 보고 왔는데 이뻤어요!간단히 산책하기도 좋고 특히 겹벚꽃 폈을때 넘 이뻐서 사진 찍으러도 많이들 가시더라구요 ㅎㅎ 저도 앞전에 보고 왔는데 이뻤어요!</p>
           {isImage &&
             <div className='py-2'>
-              <Image width={420} height={240} src={'/img/sample.avif'} alt='sample img' className='max-h-[240px]' />
+              <img width={420} height={240} src={'/img/sample.avif'} alt='sample img' className='max-h-[240px]' />
             </div>}
         </div>
       </div>

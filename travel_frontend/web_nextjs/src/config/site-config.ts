@@ -1,3 +1,5 @@
+import { LiaMapMarkedAltSolid, LiaTheaterMasksSolid, LiaHollyBerrySolid, LiaGripfire } from "react-icons/lia";
+
 export const siteConfig = {
   url: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000",
   title: "Travel-point",
@@ -48,6 +50,7 @@ export const headerMenus = [
   {
     name: "지역",
     path: "/regions",
+    icon: LiaMapMarkedAltSolid,
     subMenus: [
       "서울",
       "경기",
@@ -70,16 +73,19 @@ export const headerMenus = [
   {
     name: "테마",
     path: "/themes",
+    icon: LiaTheaterMasksSolid,
     subMenus: ["자연", "역사", "체험", "레저", "웰니스"],
   },
   {
     name: "축제",
     path: "/festivals",
+    icon: LiaGripfire,
     subMenus: ["진행 중", "진행 예정"],
   },
   {
     name: "추천",
     path: "/recommended",
+    icon: LiaHollyBerrySolid,
     subMenus: ["진행 중", "진행 예정"],
   },
 ];

@@ -87,7 +87,7 @@ export default function DestinationBody({ data, isLoading, isError }: Destinatio
     location: data.location.split(' ').slice(0, 2).join(' '),
     title: data.title,
     firstImage: data.firstImage,
-    destinationDescription: data.destinationDescription.slice(0, 55),
+    destinationDescription:  data.destinationDescription ? data.destinationDescription.slice(0, 55): '',
     contentId: data.contentId
   };
 
@@ -97,11 +97,11 @@ export default function DestinationBody({ data, isLoading, isError }: Destinatio
         <main className="flex p-2.5 flex-col sm:p-6 xl:p-0 w-full">
           <DestinationImages images={filteredImages} title={data.title}/>
           <Suspense fallback={null}>
-            <DestinationDescription description={data.destinationDescription.replace(/<\/?[^>]+(>|$)/g, "")} />
+            <DestinationDescription description={data.destinationDescription && data.destinationDescription.replace(/<\/?[^>]+(>|$)/g, "")} />
             <KakaoMap latitude={Number(data.mapY)} longitude={Number(data.mapX)} className='my-10' />
             <DestinationInfo details={destinationDetails} contentTypeId={data.contentTypeId} />            
             <DestinationComment />
-            <Nearby />
+            <Nearby count='4' contentId={data.contentId} latitude={Number(data.mapY)} longitude={Number(data.mapX)}/>
             <DestinationBlog title={data.title} />
           </Suspense>
         </main>

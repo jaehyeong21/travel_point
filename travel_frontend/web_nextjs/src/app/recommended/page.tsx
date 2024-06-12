@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 export default function RecommendedPage() {
 
   return (
-    <main>
+    <main className='min-h-dvh'>
       <HeroSection page='recommended' title='여행지 추천' subtitle='당신만의 완벽한 여행지를 발견하세요' />
-      <div className='min-h-dvh mt-20 w-full overflow-hidden'>
+      <div className='mt-12 sm:mt-20 w-full overflow-hidden'>
         <Onboarding />
       </div>
     </main>

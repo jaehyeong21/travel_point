@@ -13,7 +13,8 @@ export default function Title({ children, className, naverImg, navBtn }: TitlePr
   return (
     <header className={cn('flex justify-center mb-8 relative', className)}>
       <h2 className={`${naverImg ? 'font-semibold' : 'font-bold'} pb-1 text-lg sm:text-xl`}>{children}</h2>
-      {naverImg && <img src="/assets/svg/naver_blog.svg" width={80} height={20} alt="naver blog icon" />}
+      {naverImg && <a href='https://section.blog.naver.com' target='_blank' className='hover:cursor-pointer'>
+        <img src="/assets/svg/naver_blog.svg" width={80} height={20} alt="naver blog icon" /></a>}
       {navBtn}
     </header>
   );

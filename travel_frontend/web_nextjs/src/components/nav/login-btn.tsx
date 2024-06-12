@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 export default function LoginBtn() {
-  const token = true;
+  const token = false;
   const router = useRouter();
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -61,7 +61,8 @@ export default function LoginBtn() {
         </Popover>
       ) : (
         <button onClick={openModal}
-          className='hidden sm:flex cursor-pointer items-center rounded-lg py-[9px] px-3 text-xs bg-secondary transition-colors hover:bg-slate-200/80'>Login</button>
+          className='sm:mx-0 flex border-[0.5px] border-slate-200/60 cursor-pointer items-center rounded-lg py-[9px] px-3 text-xs bg-secondary transition-colors hover:bg-slate-200/80'>
+          Login</button>
       )}
     </>
   );
