@@ -139,5 +139,9 @@ public class LoginController {
 
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/test")
+    public String test(){
+        return "success";
+    }
 
 }
