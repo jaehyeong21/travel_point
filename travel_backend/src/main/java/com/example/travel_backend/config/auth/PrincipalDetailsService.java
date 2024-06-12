@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 //시큐리티 설정에서 loginProcessingUrl("/login");'
 @Service
 public class PrincipalDetailsService implements UserDetailsService {
@@ -19,8 +21,9 @@ public class PrincipalDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         System.out.println("username ===>"+ username);
-        Member userEntity = memberRepository.findByUsername(username);
-        if (userEntity != null) {
+        Optional<Member> userEntityOptional = memberRepository.findByUsername(username);
+        if (userEntityOptional != null) {
+            Member userEntity = userEntityOptional.get();
             System.out.println("Null이 아닌 경우");
             System.out.println("userEntity==>" + userEntity);
             return new PrincipalDetails(userEntity);

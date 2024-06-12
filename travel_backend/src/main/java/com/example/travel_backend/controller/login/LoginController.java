@@ -1,9 +1,13 @@
-package com.example.travel_backend.controller.login;
+package com.example.travel_backend.controller.Login;
 
+import com.example.travel_backend.data.LoginDto;
+import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import com.example.travel_backend.service.MemberService;
 import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
+import io.jsonwebtoken.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,48 +25,59 @@ public class LoginController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    //로그인
+    @Autowired
+    private MemberService memberService;
+
+//    //로그인
+//    @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
+//    @PostMapping("/loginForm")
+//    public ResponseEntity<?> loginForm(@RequestBody Map<String, String> loginData) {
+//        String userEmail = loginData.get("email");
+//        String password = loginData.get("password");
+
+//        Member member = memberRepository.findByEmail(userEmail);
+//
+//        if (member == null) {
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("response", false);
+//            response.put("message", "Invalid Email");
+//            response.put("errorCode", "AUTH001");
+//            return ResponseEntity.badRequest().body(response);
+//        }
+//
+//        // 이메일이 존재하므로 비밀번호를 검증
+//        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("response", false);
+//            response.put("message", "Invalid Password");
+//            response.put("errorCode", "AUTH001");
+//            return ResponseEntity.badRequest().body(response);
+//        }
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("id", member.getId());
+//        result.put("createDate", member.getCreateDate());
+//        result.put("userName", member.getUsername());
+//        result.put("userImgUrl", member.getUserImgUrl());
+//        result.put("userEmail", userEmail);
+//
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("response", "ok");
+//        response.put("result", result);
+//        response.put("token", "test");
+//
+//        return ResponseEntity.ok(response);
+//    }
     @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
     @PostMapping("/loginForm")
-    public ResponseEntity<?> loginForm(@RequestBody Map<String, String> loginData) {
-        String userEmail = loginData.get("email");
-        String password = loginData.get("password");
+    public JwtToken login(@RequestBody LoginDto loginDto){
+        String userEmail = loginDto.getEmail();
+        String password = loginDto.getPassword();
+        JwtToken jwtToken = memberService.login(userEmail,password);
 
-        Member member = memberRepository.findByEmail(userEmail);
-
-        if (member == null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("response", false);
-            response.put("message", "Invalid Email");
-            response.put("errorCode", "AUTH001");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        // 이메일이 존재하므로 비밀번호를 검증
-        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("response", false);
-            response.put("message", "Invalid Password");
-            response.put("errorCode", "AUTH001");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", member.getId());
-        result.put("createDate", member.getCreateDate());
-        result.put("userName", member.getUsername());
-        result.put("userImgUrl", member.getUserImgUrl());
-        result.put("userEmail", userEmail);
-
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("response", "ok");
-        response.put("result", result);
-        response.put("token", "test");
-
-        return ResponseEntity.ok(response);
+        return jwtToken;
     }
-
 
     //스프링시큐리티 해당주소를 낚아채버린다. -> SecurityConfig 파일 생성 후 작동안함.
     //회원가입

@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service //타입은 정해져있다.  -> DefaultOAuth2UserService
 public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
@@ -48,7 +49,7 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             System.out.println("===========네이버 요청============");
             //리턴타입이 Map이된다.
-            oAuth2MemberInfo = new NaverMemberInfo((Map)oAuth2User.getAttributes().get("response"));
+            oAuth2MemberInfo = new NaverMemberInfo((Map) oAuth2User.getAttributes().get("response"));
         }
 //        String provider = userRequest.getClientRegistration().getRegistrationId(); //google
         String provider = oAuth2MemberInfo.getProvider();
@@ -61,21 +62,39 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
         String email = oAuth2MemberInfo.getEmail();
         String role = "ROLE_USER";
 
-        Member userEntity = memberRepository.findByUsername(username);
-        if (userEntity == null) {
-            userEntity = Member.builder()
+//        Member userEntity = memberRepository.findByUsername(username);
+//        if (userEntity == null) {
+//            userEntity = Member.builder()
+//                    .username(username)
+//                    .password(password)
+//                    .userImgUrl(userImgUrl)
+//                    .email(email)
+//                    .role(role)
+//                    .provider(provider)
+//                    .providerId(providerId)
+//                    .build();
+//            memberRepository.save(userEntity);
+//        }
+//
+//        return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
+//        return super.loadUser(userRequest);
+
+        Optional<Member> userEntityOptional = memberRepository.findByUsername(username);
+
+        Member userEntity = userEntityOptional.orElseGet(() -> {
+            System.out.println("사용자가 존재하지 않으므로 새 사용자 생성");
+            Member newUser = Member.builder()
                     .username(username)
-                    .password(password)
+                    .password(password) // 비밀번호는 인코딩하여 저장
                     .userImgUrl(userImgUrl)
                     .email(email)
                     .role(role)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            memberRepository.save(userEntity);
-        }
-
-        return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
-//        return super.loadUser(userRequest);
+            return memberRepository.save(newUser);
+        });
+        return new PrincipalDetails(userEntity);
     }
+
 }

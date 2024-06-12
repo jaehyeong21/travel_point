@@ -1,44 +1,48 @@
 package com.example.travel_backend.config;
 
 import com.example.travel_backend.config.oauth.PrincipleOauth2MemberService;
+import com.example.travel_backend.jwt.JwtAuthenticationFilter;
+import com.example.travel_backend.jwt.JwtToken;
+import com.example.travel_backend.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig  {
-
     @Autowired
-    private PrincipleOauth2MemberService principleOauth2MemberService;
+    private JwtTokenProvider jwtTokenProvider;
+
+
+//    private PrincipleOauth2MemberService principleOauth2MemberService;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        // 인가(접근권한) 설정
-        http.authorizeHttpRequests().requestMatchers("/user/**").authenticated()
-                .requestMatchers("/manager/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
-                .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                .anyRequest().permitAll();
-
-        http.formLogin().loginPage("/loginForm")
-                .loginProcessingUrl("/login") //login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행 -> Controller에 /login 안만들어도됨
-                .defaultSuccessUrl("/")
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                // REST API이므로 basic auth 및 csrf 보안을 사용하지 않음
+                .httpBasic().disable()
+                .csrf().disable()
+                // JWT를 사용하기 때문에 세션을 사용하지 않음
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .oauth2Login()
-                .loginPage("/loginForm") //구글 로그인이 완료 된 뒤의 후처리가 필요함, 구글 로그인이 되면 엑세스 토큰 + 사용자 프로필 정보를 함께 받음음
-                .userInfoEndpoint()
-                .userService(principleOauth2MemberService); //Service내부에 들어가는 것은 Oauth2UserService가 되어야한다.
-
-
-        // 사이트 위변조 요청 방지
-        http.csrf().disable();
-
-        return http.build();
+                .authorizeHttpRequests()
+                // 해당 API에 대해서는 모든 요청을 허가
+                .requestMatchers("/loginForm").permitAll()
+                .requestMatchers("/join").permitAll()
+                // USER 권한이 있어야 요청할 수 있음
+//                .requestMatchers("/loginForm/men").hasRole("USER")
+                // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
+                .anyRequest().authenticated()
+                .and()
+                // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class).build();
     }
 }
