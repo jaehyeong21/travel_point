@@ -1,0 +1,9 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {    
+    "semi": ["error", "always"], // 코드 끝에 세미콜론이 항상 있어야 함을 나타냅니다.
+    // "no-unused-vars": "warn", // 사용되지 않는 변수가 있을 경우 경고를 표시합니다.
+    "eqeqeq": ["error", "always"], // 항상 === 또는 !==를 사용하여 등가 비교를 수행하도록 강제합니다.
+    "indent": ["error", 2] // 들여쓰기를 스페이스 2개로 설정합니다.
+  }
+}
