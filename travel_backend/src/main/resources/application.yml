@@ -65,3 +65,6 @@ cloudflare:
     url: "https://api.cloudflare.com/client/v4/accounts/af4e045aec566b1f645ae7b3557552f7/images/v1"
     token: "KpDEuHiEPq1WG6xxIyvepTXlA6-Jsy7XngMtW4hD"
     accountHash: "ftV1RpijrL892iGuP8Q6zQ"
+
+jwt:
+  secret: f9bf63696be834db3cc418e1e1f1e7d089226c5fa05724d24c352f9f162d7cc1
