@@ -33,8 +33,12 @@
             AND area_code = #{areaCode}
         </if>
         AND firstimage != ''
+        <if test="random == true">
+            ORDER BY RAND()
+        </if>
         LIMIT #{count}
     </select>
+
 
 
     <select id="selectAllTitles" resultType="com.example.travel_backend.data.TourTitleDTO">
@@ -53,6 +57,9 @@
             </if>
             AND firstimage != ''
         </where>
+        <if test="random == true">
+            ORDER BY RAND()
+        </if>
         LIMIT #{count} OFFSET #{offset}
     </select>
 

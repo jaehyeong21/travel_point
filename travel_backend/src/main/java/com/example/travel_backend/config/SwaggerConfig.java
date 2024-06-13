@@ -61,6 +61,15 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi Cloud() {
+        return GroupedOpenApi.builder()
+                .group("이미지 업로드")
+                .pathsToMatch("/cloudImages/*")
+                .packagesToScan("com.example.travel_backend.controller.cloudImages")
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi Login() {
         return GroupedOpenApi.builder()
                 .group("로그인")

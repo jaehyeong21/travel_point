@@ -56,3 +56,9 @@ spring:
 travel:
   api:
     key: "abrXZqSKB5RN73E%2Bz6r0fR5RIAVvZ7PzboQZM3bBaz4lCyEJpKHFgPC23uZwV1FmxdKE9s%2Borm90FSmqbS4ghA%3D%3D"
+
+cloudflare:
+  api:
+    url: "https://api.cloudflare.com/client/v4/accounts/af4e045aec566b1f645ae7b3557552f7/images/v1"
+    token: "KpDEuHiEPq1WG6xxIyvepTXlA6-Jsy7XngMtW4hD"
+    accountHash: "ftV1RpijrL892iGuP8Q6zQ"
