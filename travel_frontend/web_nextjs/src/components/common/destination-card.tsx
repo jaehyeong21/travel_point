@@ -1,8 +1,11 @@
+'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { placeholderImageBase64 } from '@/data/data';
 import { cn, formatDateRange, getEventStatus } from '@/libs/utils';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { MdError } from "react-icons/md";
 
 interface DestinationCardProps {
@@ -36,6 +39,13 @@ export default function DestinationCard({
   priority,
   ...props
 }: DestinationCardProps) {
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageLoading(true);
+    setImageError(false);
+  }, [imageSrc]);
 
   if (isLoading) {
     return (
@@ -73,24 +83,57 @@ export default function DestinationCard({
   return (
     <div className={`${cn('flex-1', className)}`} {...props}>
       <Link href={
-        Number(contentId) < 100 ? 
+        Number(contentId) < 100 ?
           `/festivals/${contentId}?title=${title}&location=${location}`
           : `/destinations/${contentId}?title=${title}&location=${location}`
       }>
-        <div className='relative' >
-          <Image
-            width={isSmallSize ? 180 : 300}
-            height={isSmallSize ? 123 : 200}
-            src={imageSrc || '/img/sample.avif'}
-            alt={`${title} image` || 'sample image'}
-            className='rounded-sm w-full object-cover aspect-[16/11] h-auto'
-            quality={isSmallSize ? 40 : 60}
-            sizes={isSmallSize ? "(max-width: 640px) 173px, (max-width: 1200px) 148px, 180px" : "(max-width: 640px) 300px, (max-width: 1200px) 180px, 220px"}
-            priority={priority}
-            placeholder='blur'
-            blurDataURL={placeholderImageBase64}
-          />
-
+        <div className='relative'>
+          {FestivalDate ? (
+            <Image
+              width={isSmallSize ? 180 : 300}
+              height={isSmallSize ? 123 : 200}
+              src={imageSrc || '/img/sample.avif'}
+              alt={`${title} image` || 'sample image'}
+              className='rounded-sm w-full object-cover aspect-[16/11] h-auto'
+              quality={isSmallSize ? 40 : 60}
+              sizes={isSmallSize ? "(max-width: 640px) 173px, (max-width: 1200px) 148px, 180px" : "(max-width: 640px) 300px, (max-width: 1200px) 180px, 220px"}
+              priority={priority}
+              placeholder='blur'
+              blurDataURL={placeholderImageBase64}
+            />
+          ) : (
+            <>
+              {imageLoading && (
+                <div className={`${cn('flex-1 animate-pulse', className)}`}>
+                  <div className='relative bg-gray-300 aspect-[16/11] w-full rounded-sm'></div>
+                </div>
+              )}
+              {imageError && (
+                <div className={`${cn('flex-1 animate-pulse-slow', className)}`}>
+                  <div className='relative bg-gray-300 aspect-[16/11] w-full rounded-sm'>
+                    <div className='p-2 sm:p-2.5'>
+                      <MdError className='text-red-500 size-4.5' />
+                      <p className='mt-2 text-sm font-semibold text-red-600'>Error</p>
+                      <p className='mt-1 text-xs text-red-500 mb-0.5'>문제가 발생했습니다.</p>
+                      <p className='text-xs text-red-500 text-nowrap'>현재 백엔드 db 수정 중입니다.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <img
+                width={isSmallSize ? 180 : 300}
+                height={isSmallSize ? 123 : 200}
+                src={isSmallSize ? `${imageSrc}/firstimageSmall` : `${imageSrc}/firstimageMedium` || '/img/sample.avif'}
+                alt={`${title} image` || 'sample image'}
+                className={`rounded-sm w-full object-cover aspect-[16/11] h-auto ${imageLoading || imageError ? 'hidden' : ''}`}
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                  setImageLoading(false);
+                  setImageError(true);
+                }}
+              />
+            </>
+          )}
           {FestivalDate && (
             <div>
               {eventStatus?.dDay && (

@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import SiteHeader from "@/components/site-header";
 import { ViewTransitions } from 'next-view-transitions';
-import QueryProvider from "@/contexts/query-provider";
+import QueryProvider from "@/context/query-provider";
 import { cn } from "@/libs/utils";
 import SiteFooter from "@/components/site-footer";
 import KbarLayout from "@/components/kbar/kbar-layout";

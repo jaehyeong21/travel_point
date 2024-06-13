@@ -126,13 +126,22 @@ export default function ExploreDestinations({
           <>
             <Separator />
             <div className="flex h-5 items-center space-x-3 xsm:space-x-5 text-xs xsm:text-sm m-3 pl-1 list-none text-nowrap">
-              <li>전체</li>
-              <Separator orientation="vertical" />
-              <li>후기순</li>
+              <li
+                onClick={() => handleThemeChange('all')}
+                className={`cursor-pointer font-medium ${pageColors.regions.ring} ring rounded-full ring-offset-2 px-1.5`}
+              >
+                전체
+              </li>
+              <li className={`font-medium rounded-full ring-offset-2 px-1.5`}>
+                후기순
+              </li>
+
             </div>
             <Separator />
           </>
-        ) : ''
+        )
+
+          : ''
       }
 
       <section className="p-3 sm:p-6 grid grid-cols-2 xsm:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-5 gap-y-8 pt-7 sm:pt-12">
