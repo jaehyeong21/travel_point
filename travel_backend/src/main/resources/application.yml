@@ -10,6 +10,9 @@ mybatis:
   config-location : classpath:mybatis-config.xml
 
 spring:
+  resources:
+    static-path-pattern: /**
+
   mvc:
     static-path-pattern: /assets/**
 
