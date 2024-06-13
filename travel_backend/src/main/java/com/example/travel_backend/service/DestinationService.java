@@ -22,8 +22,8 @@ public class DestinationService {
     }
 
     // 지역별 페이징된 데이터를 가져오는 메서드
-    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int count, int offset) {
-        return destinationMapper.selectDestinationsByLocation(areaCode, offset, count);
+    public List<TourMainDTO> getDestinationsByLocation(String areaCode, int count, int offset, boolean random) {
+        return destinationMapper.selectDestinationsByLocation(areaCode, offset, count, random);
     }
 
     // 모든 관광지 정보를 가져오는 메서드
@@ -36,8 +36,8 @@ public class DestinationService {
     }
 
     public List<TourMainDTO> getDestinationByNearby(String latitude, String longitude, String areaCode, int count,
-                                                    String contentId) {
-        return destinationMapper.selectDestinationByNearby(latitude, longitude, areaCode, count, contentId);
+                                                    String contentId, boolean random) {
+        return destinationMapper.selectDestinationByNearby(latitude, longitude, areaCode, count, contentId, random);
     }
 
     // contentId와 contentTypeId로 관광 데이터를 가져오는 메서드

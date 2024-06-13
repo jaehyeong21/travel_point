@@ -38,6 +38,7 @@ public class DestinationController {
     public List<TourMainDTO> DestinationByNearby(@RequestParam(required = false) String longitude,
                                                  @RequestParam(required = false)String latitude,
                                                  @RequestParam(required = false) String areaCode,
+                                                 @RequestParam(required = false, defaultValue = "false") boolean random,
                                                  @RequestParam int count,
                                                  @RequestParam String contentId) {
         String areaName = null;
@@ -47,7 +48,7 @@ public class DestinationController {
                 throw new IllegalArgumentException("Invalid area name: " + areaCode);
             }
         }
-        return destinationService.getDestinationByNearby(latitude, longitude, areaCode, count, contentId);
+        return destinationService.getDestinationByNearby(latitude, longitude, areaCode, count, contentId, random);
     }
 
     @Operation(summary = "제목 , contentId 호출(축제 데이터 제외)", description = "제목과 content_id만 호출합니다")
@@ -76,6 +77,7 @@ public class DestinationController {
             "jeju")
     @GetMapping("/destination/location")
     public Map<String, Object> getDestinationsByLocation(@RequestParam(required = false) String areaName,
+                                                         @RequestParam(required = false, defaultValue = "false") boolean random,
                                                          @RequestParam int count,
                                                          @RequestParam int page) {
         String areaCode = null;
@@ -90,7 +92,7 @@ public class DestinationController {
         int totalPages = (int) Math.ceil((double) totalData / count);
         int offset = (page - 1) * count;
 
-        List<TourMainDTO> destinations = destinationService.getDestinationsByLocation(areaCode, count, offset);
+        List<TourMainDTO> destinations = destinationService.getDestinationsByLocation(areaCode, count, offset, random);
 
         Map<String, Object> response = new HashMap<>();
         response.put("totalData", totalData);
