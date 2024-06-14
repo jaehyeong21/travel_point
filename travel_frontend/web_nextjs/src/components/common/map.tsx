@@ -1,6 +1,6 @@
 'use client';
 import { Map, MapMarker, ZoomControl } from "react-kakao-maps-sdk";
-import useKakaoLoader from "@/contexts/use-kakao-loader";
+import useKakaoLoader from "@/context/use-kakao-loader";
 import { useState } from "react";
 import { cn } from "@/libs/utils";
 

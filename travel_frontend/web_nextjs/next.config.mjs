@@ -27,6 +27,11 @@ const nextConfig = {
         hostname: "tong.visitkorea.or.kr",
         pathname: "/cms/resource/**",
       },
+      {
+        protocol: "https",
+        hostname:"imagedelivery.net",
+        pathname:"/ftV1RpijrL892iGuP8Q6zQ/**"
+      }
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60, // 이미지 캐시 최소 시간 설정

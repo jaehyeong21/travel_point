@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("NEXT_PUBLIC_DATABASE_URL")
+}
+
+model Member {
+  id         Int       @id @default(autoincrement())
+  createDate DateTime? @db.DateTime(6)
+  email      String?   @db.VarChar(255)
+  password   String?   @db.VarChar(255)
+  provider   String?   @db.VarChar(255)
+  providerId String?   @db.VarChar(255)
+  role       String?   @db.VarChar(255)
+  userImgUrl String?   @db.VarChar(255)
+  username   String?   @db.VarChar(255)
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  createDate DateTime? @db.DateTime(6)
+  email      String?   @db.VarChar(255)
+  password   String?   @db.VarChar(255)
+  provider   String?   @db.VarChar(255)
+  providerId String?   @db.VarChar(255)
+  role       String?   @db.VarChar(255)
+  userImgUrl String?   @db.VarChar(255)
+  username   String?   @db.VarChar(255)
+}
+
+model user {
+  id         Int       @id @default(autoincrement())
+  createDate DateTime? @db.DateTime(6)
+  email      String?   @db.VarChar(255)
+  password   String?   @db.VarChar(255)
+  provider   String?   @db.VarChar(255)
+  providerId String?   @db.VarChar(255)
+  role       String?   @db.VarChar(255)
+  userImgUrl String?   @db.VarChar(255)
+  username   String?   @db.VarChar(255)
+}
+
+model destination {
+  destination_id          BigInt               @id @default(autoincrement())
+  location                String?              @db.VarChar(100)
+  cat1                    String?              @db.VarChar(15)
+  cat2                    String?              @db.VarChar(15)
+  firstimage              String?              @db.VarChar(200)
+  firstimage2             String?              @db.VarChar(200)
+  firstimage3             String?              @db.VarChar(200)
+  firstimage4             String?              @db.VarChar(200)
+  firstimage5             String?              @db.VarChar(200)
+  location_number         String?              @db.VarChar(5)
+  content_id              String?              @db.VarChar(20)
+  content_type_id         String?              @db.VarChar(5)
+  title                   String?              @db.VarChar(200)
+  map_x                   String?              @db.VarChar(30)
+  map_y                   String?              @db.VarChar(30)
+  homepage                String?              @db.VarChar(3000)
+  parking                 String?              @db.VarChar(255)
+  use_time                String?              @db.VarChar(1000)
+  tel                     String?              @db.VarChar(200)
+  destination_description String?              @db.VarChar(10000)
+  holiday                 String?              @db.VarChar(300)
+  cat3                    String?              @db.VarChar(15)
+  area_code               String?              @db.VarChar(5)
+  cloud_image_url         String?              @db.VarChar(155)
+  destination_images      destination_images[]
+}
+
+model destination_images {
+  id             Int                            @id @default(autoincrement())
+  destination_id BigInt?
+  image_type     destination_images_image_type?
+  image_url      String?                        @db.VarChar(255)
+  destination    destination?                   @relation(fields: [destination_id], references: [destination_id], onDelete: NoAction, onUpdate: NoAction, map: "destination_images_ibfk_1")
+
+  @@index([destination_id], map: "destination_id")
+}
+
+model festival {
+  id                      Int     @id
+  title                   String? @db.VarChar(50)
+  tel                     String? @db.VarChar(50)
+  area_code               String? @db.VarChar(5)
+  location                String? @db.VarChar(200)
+  map_x                   String? @db.VarChar(20)
+  map_y                   String? @db.VarChar(20)
+  firstimage              String? @db.VarChar(500)
+  homepage                String? @db.VarChar(500)
+  introduction            String? @db.VarChar(2000)
+  start_date              String? @db.VarChar(20)
+  end_date                String? @db.VarChar(20)
+  use_time                String? @db.VarChar(100)
+  charge                  String? @db.VarChar(500)
+  destination_description String? @db.VarChar(10000)
+  content_type_id         Int?
+  content_id              String? @db.VarChar(255)
+}
+
+enum destination_images_image_type {
+  firstimage_small
+  firstimage_medium
+  firstimage_large
+  firstimage2
+  firstimage3
+  firstimage4
+  firstimage5
+}
