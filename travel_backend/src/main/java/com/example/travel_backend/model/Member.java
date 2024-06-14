@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.cglib.core.Local;
 
 import java.sql.Timestamp;
 
@@ -15,7 +16,9 @@ import java.sql.Timestamp;
 @Setter
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +31,8 @@ public class Member {
     private String password;
 
     @JsonProperty("userImgUrl")
-    private String userImgUrl;
+    @Builder.Default
+    private String userImgUrl  = "/assets/image/characters/anonymous.png";
 
     @JsonProperty("email")
     private String email;
@@ -45,7 +49,10 @@ public class Member {
     @CreationTimestamp
     private Timestamp createDate;
 
-    @Builder
+    @CreationTimestamp
+    private Timestamp emailVerified;
+
+
     public Member(String username, String password, String userImgUrl, String email, String role, String provider, String providerId, Timestamp createDate) {
         this.username = username;
         this.password = password;
