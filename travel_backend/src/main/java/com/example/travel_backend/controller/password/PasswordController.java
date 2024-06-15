@@ -29,7 +29,16 @@ public class PasswordController {
     private final MemberService memberService;
     private static final Logger log = LoggerFactory.getLogger(PasswordController.class);
 
-    @Operation(summary = "비밀번호를 찾기 위한 이메일로 인증번호 발송", description = "비밀번호 재설정을 위해 사용자의 이메일로 인증번호를 발송합니다.")
+    @Operation(summary = "비밀번호를 찾기 위한 이메일로 인증번호 발송",
+            description = "비밀번호 재설정을 위해 사용자의 이메일로 인증번호를 발송합니다. " +
+                    "이메일을 전송할 때는 요청 본문에 사용자의 이메일 주소만 포함하면 됩니다. " +
+                    "인증번호는 이메일로 전송되며, 이후 비밀번호 재설정 API에서 필요합니다.\n\n" +
+                    "Example request body:\n" +
+                    "```\n" +
+                    "{\n" +
+                    "  \"email\": \"example@example.com\"\n" +
+                    "}\n" +
+                    "```")
     @PostMapping("/reset-request")
     public ResponseEntity<ApiResponse> sendVerificationCode(@RequestBody EmailVerificationDto emailVerificationDto) {
         try {
@@ -43,7 +52,18 @@ public class PasswordController {
         }
     }
 
-    @Operation(summary = "비밀번호 재설정", description = "인증번호를 사용하여 새로운 비밀번호로 재설정합니다.")
+    @Operation(summary = "비밀번호 재설정",
+            description = "인증번호를 사용하여 새로운 비밀번호로 재설정합니다. \n" +
+                    "기존 비밀번호와 새로운 비밀번호는 달라야합니다."+
+                    "이메일, 발송된 인증 코드, 그리고 변경할 새로운 비밀번호를 요청 본문에 포함하여 보내야 합니다.\n\n" +
+                    "Example request body:\n" +
+                    "```\n" +
+                    "{\n" +
+                    "  \"email\": \"example@example.com\",\n" +
+                    "  \"verificationCode\": \"발송된 인증 코드\",\n" +
+                    "  \"newPassword\": \"변경 할 비밀번호\"\n" +
+                    "}\n" +
+                    "```")
     @PostMapping("/reset")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
         String email = passwordResetDto.getEmail();

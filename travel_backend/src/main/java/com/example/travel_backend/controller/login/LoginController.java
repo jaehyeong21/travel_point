@@ -35,7 +35,15 @@ public class LoginController {
     private MailService mailService;
 
     // 로그인
-    @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
+    @Operation(summary = "로그인",
+            description = "사용자의 이메일 주소와 비밀번호로 로그인을 진행합니다.\n\n" +
+                    "Example request body:\n" +
+                    "```json\n" +
+                    "{\n" +
+                    "  \"email\": \"example@example.com\",\n" +
+                    "  \"password\": \"비밀번호\"\n" +
+                    "}\n" +
+                    "```")
     @PostMapping("/loginForm")
     public ResponseEntity<ApiResponse> loginForm(@RequestBody LoginDto loginDto) {
         String userEmail = loginDto.getEmail();
@@ -73,7 +81,8 @@ public class LoginController {
     }
 
     // 회원가입
-    @Operation(summary = "회원가입", description = "userEmail과 password를 입력받아, 회원가입을 진행합니다.")
+    @Operation(summary = "회원가입", description = "userEmail, password, userEmail로 발급된 인증번호를 입력받아, 회원가입을 진행합니다."
+            + "비밀번호의 경우 최소 8자 이상, 하나 이상의 대문자, 소문자, 숫자, 특수문자 포함 조건에 만족해야합니다.")
     @PostMapping("/join")
     public ResponseEntity<ApiResponse> join(@RequestBody LoginDto loginDto) {
         String userEmail = loginDto.getEmail();
