@@ -39,34 +39,51 @@ public class MailService {
         return key.toString();
     }
 
-    public MimeMessage createMail(String mail, String number) throws MessagingException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-
-        message.setFrom(senderEmail);
-        message.setRecipients(MimeMessage.RecipientType.TO, mail);
-        message.setSubject("이메일 인증");
-        String body = "";
-        body += "<h3>요청하신 인증 번호입니다.</h3>";
-        body += "<h1>" + number + "</h1>";
-        body += "<h3>감사합니다.</h3>";
-        message.setText(body, "UTF-8", "html");
-
-        return message;
-    }
-
-    // 메일 발송
-    public void sendVerificationEmail(String sendEmail) throws MessagingException {
+    // 회원가입을 위한 이메일 인증 코드 발송
+    public void sendVerificationEmail(String email) throws MessagingException {
         String verificationCode = createNumber(); // 랜덤 인증번호 생성
 
-        MimeMessage message = createMail(sendEmail, verificationCode); // 메일 생성
+        MimeMessage message = createMail(email, verificationCode, "회원가입"); // 메일 생성
         try {
             javaMailSender.send(message); // 메일 발송
         } catch (MailException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
         }
+
         // 생성된 인증번호를 저장
-        verificationCodes.put(sendEmail, verificationCode);
+        verificationCodes.put(email, verificationCode);
+    }
+
+    // 비밀번호 재설정을 위한 이메일 인증 코드 발송
+    public void sendPasswordResetEmail(String email) throws MessagingException {
+        String verificationCode = createNumber(); // 랜덤 인증번호 생성
+
+        MimeMessage message = createMail(email, verificationCode, "비밀번호 재설정"); // 메일 생성
+        try {
+            javaMailSender.send(message); // 메일 발송
+        } catch (MailException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
+        }
+
+        // 생성된 인증번호를 저장
+        verificationCodes.put(email, verificationCode);
+    }
+
+    // 이메일 생성
+    private MimeMessage createMail(String recipient, String verificationCode, String subject) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(senderEmail);
+        message.setRecipients(MimeMessage.RecipientType.TO, recipient);
+        message.setSubject(subject);
+        String body = "<h3>요청하신 인증 번호입니다.</h3>"
+                + "<h1>" + verificationCode + "</h1>"
+                + "<h3>감사합니다.</h3>";
+        message.setText(body, "UTF-8", "html");
+
+        return message;
     }
 
     // 저장된 인증 코드 가져오기
