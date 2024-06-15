@@ -86,4 +86,13 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.mail")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi PasswordReset() {
+        return GroupedOpenApi.builder()
+                .group("비밀번호 변경")
+                .pathsToMatch("/password/*")
+                .packagesToScan("com.example.travel_backend.controller.password")
+                .build();
+    }
 }
