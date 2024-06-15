@@ -71,3 +71,21 @@ cloudflare:
 
 jwt:
   secret: f9bf63696be834db3cc418e1e1f1e7d089226c5fa05724d24c352f9f162d7cc1
+
+#Email 인증
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: parkjuncheol77@gmail.com
+  password: frrd wika tewd vcqf
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000
+  auth-code-expiration-millis: 1800000  # 30 * 60 * 1000 == 30?

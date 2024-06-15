@@ -4,6 +4,7 @@ import com.example.travel_backend.data.LoginDto;
 import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import com.example.travel_backend.service.MailService;
 import com.example.travel_backend.service.MemberService;
 import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
@@ -28,6 +29,9 @@ public class LoginController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private MailService mailService;
 
     //로그인
     @Operation(summary = "로그인", description = "userEmail과 password를 입력받아, 로그인을 진행합니다.")
@@ -64,33 +68,47 @@ public class LoginController {
     // 회원가입
     @Operation(summary = "회원가입", description = "userEmail과 password를 입력받아, 회원가입을 진행합니다.")
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody Member member) {
+    public ResponseEntity<?> join(@RequestBody LoginDto loginDto) {
+
+        String userEmail = loginDto.getEmail();
+        String password = loginDto.getPassword();
+        String verificationCode = loginDto.getVerificationCode();
+
+
         // 이메일 형식을 검증
-        if (!EmailValidator.isValidEmail(member.getEmail())) {
+        if (!EmailValidator.isValidEmail(userEmail)) {
             return ResponseEntity.badRequest().body(createErrorResponse("Invalid Email", "EmailError"));
         }
         // 패스워드 형식을 검증
-        if (!PasswordValidator.isValid(member.getPassword())) {
+        if (!PasswordValidator.isValid(password)) {
             return ResponseEntity.badRequest().body(createErrorResponse("Invalid Password", "PasswordError"));
         }
 
+        // 이메일로 전송된 인증 코드 가져오기
+        String storedVerificationCode = mailService.getStoredVerificationCode(userEmail);
+
+        // 클라이언트가 입력한 인증 코드와 저장된 인증 코드가 일치하는지 확인
+        if (!verificationCode.equals(storedVerificationCode)) {
+            return ResponseEntity.badRequest().body(createErrorResponse("Invalid Verification Code", "VerificationError"));
+        }
+
         // 패스워드 인코딩
-        String rawPassword = member.getPassword();
-        String encPassword = bCryptPasswordEncoder.encode(rawPassword);
-        member.setPassword(encPassword);
+        String encPassword = bCryptPasswordEncoder.encode(password);
 
         // 회원 저장
+        Member member = new Member();
+        member.setEmail(userEmail);
+        member.setPassword(encPassword);
         member.setRole("USER");
         memberRepository.save(member);
 
         // JWT 토큰 생성
-        JwtToken jwtToken = memberService.login(member.getEmail(), rawPassword);
+        JwtToken jwtToken = memberService.login(userEmail, password);
 
         // 회원 정보 응답 생성
         Map<String, Object> response = new HashMap<>();
         response.put("response", "ok");
         response.put("result", createJoinResponse(member, jwtToken));
-
 
         return ResponseEntity.ok(response);
     }
