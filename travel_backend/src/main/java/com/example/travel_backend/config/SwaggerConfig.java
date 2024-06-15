@@ -77,4 +77,13 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.login")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi Email() {
+        return GroupedOpenApi.builder()
+                .group("이메일 인증")
+                .pathsToMatch("/mail/*")
+                .packagesToScan("com.example.travel_backend.controller.mail")
+                .build();
+    }
 }
