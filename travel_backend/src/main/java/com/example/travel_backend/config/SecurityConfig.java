@@ -36,7 +36,8 @@ public class SecurityConfig  {
                 .authorizeHttpRequests()
                 // 해당 API에 대해서는 모든 요청을 허가
                 .requestMatchers("/loginForm").permitAll()
-                .requestMatchers("/join").permitAll()
+                .requestMatchers("/signup/verify").permitAll()
+                .requestMatchers("/signup/request").permitAll()
 //                .requestMatchers("/sign-up/emailCheck").permitAll() // 추가된 부분
                 // USER 권한이 있어야 요청할 수 있음
 //                .requestMatchers("/loginForm/men").hasRole("USER")

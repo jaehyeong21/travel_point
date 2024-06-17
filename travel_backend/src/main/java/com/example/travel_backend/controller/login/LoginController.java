@@ -11,7 +11,9 @@ import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
 import io.jsonwebtoken.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+@Slf4j
 @RestController("loginController")
 public class LoginController {
 
@@ -80,10 +84,49 @@ public class LoginController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    //회원가입 요청(이메일)
+    @Operation(summary = "회원가입 요청", description = "이메일과 비밀번호를 검증하고, 해당 이메일로 인증번호를 발송합니다.\n\n" +
+            "Example request body:\n" +
+            "```json\n" +
+            "{\n" +
+            "  \"email\": \"example@example.com\",\n" +
+            "  \"password\": \"비밀번호\"\n" +
+            "}\n" +
+            "```")
+    @PostMapping("/signup/request")
+    public ResponseEntity<ApiResponse> requestSignup(@RequestBody LoginDto loginDto) {
+        String email = loginDto.getEmail();
+        String password = loginDto.getPassword();
+
+        // 이메일 형식 검증
+        if (!EmailValidator.isValidEmail(email)) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("EmailError", "Invalid Email Format"));
+        }
+
+        // 이메일 중복 확인
+        if (memberRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("EmailExists", "This email is already registered"));
+        }
+
+        // 비밀번호 형식 검증
+        if (!PasswordValidator.isValid(password)) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("PasswordError", "Invalid Password Format"));
+        }
+
+        // 이메일 전송 시도
+        try {
+            mailService.sendVerificationEmail(email);
+            return ResponseEntity.ok(ApiResponse.success("Verification code sent successfully to " + email));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("SendEmailError", "Failed to send verification code: " + e.getMessage()));
+        }
+    }
+
     // 회원가입
     @Operation(summary = "회원가입", description = "userEmail, password, userEmail로 발급된 인증번호를 입력받아, 회원가입을 진행합니다."
             + "비밀번호의 경우 최소 8자 이상, 하나 이상의 대문자, 소문자, 숫자, 특수문자 포함 조건에 만족해야합니다.")
-    @PostMapping("/join")
+    @PostMapping("/signup/verify")
     public ResponseEntity<ApiResponse> join(@RequestBody LoginDto loginDto) {
         String userEmail = loginDto.getEmail();
         String password = loginDto.getPassword();
@@ -134,4 +177,6 @@ public class LoginController {
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+
 }
