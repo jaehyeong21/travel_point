@@ -19,9 +19,9 @@ public class SwaggerConfig {
     public OpenAPI openAPI(){
         return new OpenAPI().addServersItem(new Server().url("/"))
                 .info(new Info()
-                .title("Travel_Point")
-                .description("관광지 후기 리뷰")
-                .version("1.0"));
+                        .title("Travel_Point")
+                        .description("관광지 후기 리뷰")
+                        .version("1.0"));
     }
 
     @Bean
@@ -72,7 +72,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi Login() {
         return GroupedOpenApi.builder()
-                .group("로그인 및 회원정보")
+                .group("로그인 및 회원정보관리")
                 .pathsToMatch("/login/*")
                 .packagesToScan("com.example.travel_backend.controller.login")
                 .build();

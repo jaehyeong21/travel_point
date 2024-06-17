@@ -112,7 +112,6 @@ public class LoginController {
         if (!PasswordValidator.isValid(password)) {
             return ResponseEntity.badRequest().body(ApiResponse.error("PasswordError", "Invalid Password Format"));
         }
-
         // 이메일 전송 시도
         try {
             mailService.sendVerificationEmail(email);
@@ -125,7 +124,15 @@ public class LoginController {
 
     // 회원가입
     @Operation(summary = "회원가입", description = "userEmail, password, userEmail로 발급된 인증번호를 입력받아, 회원가입을 진행합니다."
-            + "비밀번호의 경우 최소 8자 이상, 하나 이상의 대문자, 소문자, 숫자, 특수문자 포함 조건에 만족해야합니다.")
+            + "비밀번호의 경우 최소 8자 이상, 하나 이상의 대문자, 소문자, 숫자, 특수문자 포함 조건에 만족해야합니다."+"Example request body:\n" +
+            "```json\n" +
+            "{\n" +
+            "  \"email\": \"example@example.com\",\n" +
+            "  \"password\": \"비밀번호\"\n" +
+            "  \"verificationCode\": \"인증번호\"\n" +
+            "}\n" +
+            "```"
+    )
     @PostMapping("/signup/verify")
     public ResponseEntity<ApiResponse> join(@RequestBody LoginDto loginDto) {
         String userEmail = loginDto.getEmail();
@@ -176,6 +183,36 @@ public class LoginController {
         result.put("token", jwtToken);
 
         return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+
+
+    @Operation(summary = "회원탈퇴", description = "로그인된 사용자가 자신의 비밀번호를 입력하여 회원탈퇴를 진행합니다. Headers에서 Authorization를 Key로 하고 " +
+            "Bearer " + "+accessToken" + " 값을 Value로 하여 유저를 검증하고, 유저의 비밀번호를 입력받아 탈퇴를 진행합니다." +
+            "\n\n" +
+            "Example request body:\n" +
+            "```json\n" +
+            "{\n" +
+            "  \"password\": \"비밀번호\"\n" +
+            "}\n" +
+            "```")
+    @DeleteMapping("/deleteAccount")
+    public ResponseEntity<ApiResponse> deleteAccount(@RequestBody String password, @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            log.debug("Delete account request received.");
+
+            // Retrieve token from Authorization header
+            String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            log.debug("accessToken =>"+ accessToken);
+
+            ApiResponse response = memberService.deleteAccount(password, accessToken);
+
+            log.debug("Delete account request processed successfully.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error processing delete account request.", e);
+            return ResponseEntity.status(500).body(ApiResponse.error("ServerError", "Failed to delete account: " + e.getMessage()));
+        }
     }
 
 

@@ -119,4 +119,13 @@ public class JwtTokenProvider {
         }
     }
 
+    //token값으로 해당 user의 정보 조회
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
 }

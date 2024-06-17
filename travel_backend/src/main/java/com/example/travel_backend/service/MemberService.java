@@ -5,6 +5,7 @@ import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,6 +29,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public JwtToken login(String email, String password) {
@@ -72,6 +76,42 @@ public class MemberService {
             return ApiResponse.success("Password reset successfully.");
         } else {
             return ApiResponse.error("MemberError", "Member not found.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponse deleteAccount(String passwordJson, String accessToken) {
+        try {
+            // JSON 문자열을 Map<String, String> 객체로 변환합니다.
+            Map<String, String> passwordMap = objectMapper.readValue(passwordJson, Map.class);
+
+            // Map에서 password 키에 해당하는 값을 추출합니다.
+            String password = passwordMap.get("password");
+
+            String email = jwtTokenProvider.getUsernameFromToken(accessToken);
+            Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+            if (!memberOptional.isPresent()) {
+                return ApiResponse.error("AUTH001", "Invalid Email");
+            }
+
+            Member member = memberOptional.get();
+
+
+            if (!passwordEncoder.matches(password, member.getPassword())) {
+                return ApiResponse.error("AUTH002", "Invalid Password");
+            }
+
+            memberRepository.delete(member);
+
+            return ApiResponse.success("Account deleted successfully");
+        } catch (IOException e) {
+            log.error("Error parsing password JSON", e);
+            return ApiResponse.error("ServerError", "Failed to parse password JSON: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Error deleting account", e);
+            return ApiResponse.error("ServerError", "Failed to delete account: " + e.getMessage());
         }
     }
 }
