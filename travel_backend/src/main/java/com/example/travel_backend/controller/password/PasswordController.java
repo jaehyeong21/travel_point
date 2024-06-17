@@ -3,6 +3,8 @@ package com.example.travel_backend.controller.password;
 import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.EmailVerificationDto;
 import com.example.travel_backend.data.PasswordResetDto;
+import com.example.travel_backend.model.Member;
+import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.service.MailService;
 import com.example.travel_backend.service.MemberService;
 import com.example.travel_backend.validator.PasswordValidator;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/password")
 @Tag(name = "비밀번호 관리", description = "비밀번호 재설정 및 관리 API")
@@ -27,6 +31,7 @@ public class PasswordController {
 
     private final MailService mailService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private static final Logger log = LoggerFactory.getLogger(PasswordController.class);
 
     @Operation(summary = "비밀번호를 찾기 위한 이메일로 인증번호 발송",
@@ -43,6 +48,14 @@ public class PasswordController {
     public ResponseEntity<ApiResponse> sendVerificationCode(@RequestBody EmailVerificationDto emailVerificationDto) {
         try {
             String email = emailVerificationDto.getEmail();
+
+            Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+            //이메일 존재하는지 검증
+            if (!memberOptional.isPresent()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("AUTH001", "Email doesn't exist"));
+            }
+
             mailService.sendPasswordResetEmail(email); // 입력받은 email로 비밀번호 재설정을 위한 인증번호 발송
             return ResponseEntity.ok(ApiResponse.success("Verification code sent successfully to " + email));
         } catch (MessagingException e) {

@@ -72,7 +72,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi Login() {
         return GroupedOpenApi.builder()
-                .group("로그인")
+                .group("로그인 및 회원정보")
                 .pathsToMatch("/login/*")
                 .packagesToScan("com.example.travel_backend.controller.login")
                 .build();
@@ -90,7 +90,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi PasswordReset() {
         return GroupedOpenApi.builder()
-                .group("비밀번호 변경")
+                .group("비밀번호 관리")
                 .pathsToMatch("/password/*")
                 .packagesToScan("com.example.travel_backend.controller.password")
                 .build();
