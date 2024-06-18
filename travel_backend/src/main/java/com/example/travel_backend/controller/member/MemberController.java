@@ -18,8 +18,11 @@ public class MemberController {
 
     // 이미지 업로드
     @Operation(summary = "이미지 업로드", description = "JWT 토큰으로 인증된 사용자가 이미지 URL을 업로드합니다.\n\n" +
-            "Example request body:\n" +
-            "```json\n" +
+            "예시 요청:\n\n" +
+            "Headers:\n" +
+            "```\n" +
+            "Authorization: Bearer <accessToken>\n" +
+            "Body (JSON):\n" +
             "{\n" +
             "  \"imageUrl\": \"이미지 URL\"\n" +
             "}\n" +
