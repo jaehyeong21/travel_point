@@ -1,10 +1,12 @@
 package com.example.travel_backend.service;
 
 import com.example.travel_backend.data.ApiResponse;
+import com.example.travel_backend.data.PasswordChangeDto;
 import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import com.example.travel_backend.validator.PasswordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,7 @@ public class MemberService {
         return jwtToken;
     }
 
+    //이메일로 비밀번호 찾기 -> 비밀번호 변경
     @Transactional
     public ApiResponse resetPassword(String email, String verificationCode, String newPassword) {
         String storedVerificationCode = mailService.getStoredVerificationCode(email);
@@ -80,6 +83,7 @@ public class MemberService {
     }
 
 
+    //계정을 삭제
     @Transactional
     public ApiResponse deleteAccount(String passwordJson, String accessToken) {
         try {
@@ -112,6 +116,53 @@ public class MemberService {
         } catch (Exception e) {
             log.error("Error deleting account", e);
             return ApiResponse.error("ServerError", "Failed to delete account: " + e.getMessage());
+        }
+    }
+
+    
+    //로그인 한 상태에서 비밀번호 변경
+    @Transactional
+    public ApiResponse changePassword(PasswordChangeDto passwordChangeDto, String accessToken) {
+        try {
+            String currentPassword = passwordChangeDto.getCurrentPassword();
+            String newPassword = passwordChangeDto.getNewPassword();
+
+            // Validate new password format
+            if (!PasswordValidator.isValid(newPassword)) {
+                return ApiResponse.error("PasswordError", "Invalid password format.");
+            }
+
+            String email = jwtTokenProvider.getUsernameFromToken(accessToken);
+            Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+            if (!memberOptional.isPresent()) {
+                return ApiResponse.error("AUTH001", "Invalid Email");
+            }
+
+            Member member = memberOptional.get();
+
+            //입력받은 비밀번호가 회원의 비밀번호와 일치하는지 검증
+            if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
+                return ApiResponse.error("AUTH002", "Invalid current password");
+            }
+
+            //패스워드 검증
+            if (!PasswordValidator.isValid(newPassword)) {
+                return ApiResponse.error("PasswordError", "Invalid new password format.");
+            }
+            
+            // 기존 비밀번호와 새로운 비밀번호가 동일하지 않은지 확인
+            if (passwordEncoder.matches(newPassword, member.getPassword())) {
+                return ApiResponse.error("PasswordError", "New password must be different from the current password.");
+            }
+
+            member.setPassword(passwordEncoder.encode(newPassword));
+            memberRepository.save(member);
+
+            return ApiResponse.success("Password changed successfully");
+        } catch (Exception e) {
+            log.error("Error changing password", e);
+            return ApiResponse.error("ServerError", "Failed to change password: " + e.getMessage());
         }
     }
 }
