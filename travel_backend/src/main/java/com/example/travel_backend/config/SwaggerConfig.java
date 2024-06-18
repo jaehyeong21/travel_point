@@ -95,4 +95,13 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.password")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi Member() {
+        return GroupedOpenApi.builder()
+                .group("개인정보 관리")
+                .pathsToMatch("/member/*")
+                .packagesToScan("com.example.travel_backend.controller.member")
+                .build();
+    }
 }

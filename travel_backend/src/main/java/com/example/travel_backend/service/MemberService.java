@@ -165,4 +165,33 @@ public class MemberService {
             return ApiResponse.error("ServerError", "Failed to change password: " + e.getMessage());
         }
     }
+
+
+    @Transactional
+    public ApiResponse uploadImage(Map<String, String> imageMap, String accessToken) {
+        try {
+            // JWT 토큰에서 이메일 추출
+            String email = jwtTokenProvider.getUsernameFromToken(accessToken);
+
+            // 이메일로 회원 조회
+            Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+            if (memberOptional.isPresent()) {
+                Member member = memberOptional.get();
+
+                // 이미지 URL 업데이트
+                String imageUrl = imageMap.get("imageUrl"); // Get imageUrl from Map
+                member.setUserImgUrl(imageUrl);
+                memberRepository.save(member);
+
+                return ApiResponse.success("Image uploaded successfully.");
+            } else {
+                return ApiResponse.error("MemberError", "Member not found.");
+            }
+        } catch (Exception e) {
+            log.error("Error uploading image", e);
+            return ApiResponse.error("ServerError", "Failed to upload image: " + e.getMessage());
+        }
+    }
+
 }
