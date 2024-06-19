@@ -3,7 +3,23 @@
 <mapper namespace="com.example.travel_backend.mapper.CloudImagesMapper">
 
     <select id="getAllImages" resultType="com.example.travel_backend.data.CloudImagesDTO">
-        SELECT content_id AS contentId, firstimage, firstimage2, firstimage3, firstimage4, firstimage5 FROM destination
+        SELECT content_id, firstimage, firstimage2, firstimage3, firstimage4, firstimage5
+        FROM destination
+    </select>
+
+    <select id="getFailedImages" resultType="com.example.travel_backend.data.CloudImagesDTO">
+        SELECT content_id, firstimage, firstimage2, firstimage3, firstimage4, firstimage5
+        FROM destination
+        WHERE firstimage LIKE '%/' OR firstimage2 LIKE '%/' OR firstimage3 LIKE '%/' OR firstimage4 LIKE '%/' OR firstimage5 LIKE '%/';
+    </select>
+
+    <select id="getBackupImagesByIds" resultType="com.example.travel_backend.data.CloudImagesDTO" parameterType="java.util.List">
+        SELECT content_id, firstimage, firstimage2, firstimage3, firstimage4, firstimage5
+        FROM current_images
+        WHERE content_id IN
+        <foreach item="contentId" collection="list" open="(" separator="," close=")">
+            #{contentId}
+        </foreach>
     </select>
 
     <update id="updateImageUrls">
