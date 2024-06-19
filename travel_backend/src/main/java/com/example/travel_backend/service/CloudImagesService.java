@@ -12,13 +12,20 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.imageio.ImageIO;
 
 @Service
 public class CloudImagesService {
@@ -26,7 +33,7 @@ public class CloudImagesService {
     @Autowired
     private CloudImagesMapper cloudImagesMapper;
 
-    @Value("${cloudflare.api.url}") // yml 파일에서 가져옴
+    @Value("${cloudflare.api.url}")
     private String apiUrl;
 
     @Value("${cloudflare.api.token}")
@@ -36,9 +43,9 @@ public class CloudImagesService {
     private String accountHash;
 
     public void processImages() {
-        List<CloudImagesDTO> allImages = cloudImagesMapper.getAllImages(); //db에서 모든 이미지 url 정보 가져옴
+        List<CloudImagesDTO> allImages = cloudImagesMapper.getAllImages();
         if (allImages != null && !allImages.isEmpty()) {
-            for (CloudImagesDTO image : allImages) { // 각 이미지 url 순회
+            for (CloudImagesDTO image : allImages) {
                 String contentId = image.getContentId();
                 String firstimage = image.getFirstimage();
 
@@ -60,11 +67,46 @@ public class CloudImagesService {
         }
     }
 
+    public void processFailedUploads() {
+        List<CloudImagesDTO> failedImages = cloudImagesMapper.getFailedImages();
+
+        List<CloudImagesDTO> backupImages = cloudImagesMapper.getBackupImagesByIds(
+                failedImages.stream().map(CloudImagesDTO::getContentId).collect(Collectors.toList())
+        );
+
+        Map<String, CloudImagesDTO> backupImagesMap = new HashMap<>();
+        for (CloudImagesDTO image : backupImages) {
+            backupImagesMap.put(image.getContentId(), image);
+        }
+
+        for (CloudImagesDTO failedImage : failedImages) {
+            String contentId = failedImage.getContentId();
+            CloudImagesDTO backupImage = backupImagesMap.get(contentId);
+
+            if (backupImage != null) {
+                String uploadedFirstImage = checkAndReuploadImage(backupImage.getFirstimage(), failedImage.getFirstimage());
+                String uploadedFirstImage2 = checkAndReuploadImage(backupImage.getFirstimage2(), failedImage.getFirstimage2());
+                String uploadedFirstImage3 = checkAndReuploadImage(backupImage.getFirstimage3(), failedImage.getFirstimage3());
+                String uploadedFirstImage4 = checkAndReuploadImage(backupImage.getFirstimage4(), failedImage.getFirstimage4());
+                String uploadedFirstImage5 = checkAndReuploadImage(backupImage.getFirstimage5(), failedImage.getFirstimage5());
+
+                cloudImagesMapper.updateImageUrls(contentId, uploadedFirstImage, uploadedFirstImage2, uploadedFirstImage3, uploadedFirstImage4, uploadedFirstImage5);
+            }
+        }
+    }
+
+    private String checkAndReuploadImage(String backupUrl, String failedUrl) {
+        if (failedUrl == null || failedUrl.isEmpty() || failedUrl.endsWith("/")) {
+            return uploadAndBuildUrl(backupUrl);
+        }
+        return failedUrl;
+    }
+
     private String uploadAndBuildUrl(String imageUrl) {
         if (imageUrl == null || imageUrl.isEmpty()) {
             return null;
         }
-        String cloudflareImageId = uploadImageToCloudflare(imageUrl); //이미지를 Cloudflare에 업로드
+        String cloudflareImageId = uploadImageToCloudflare(imageUrl);
         return cloudflareImageId != null ? buildBaseImageUrl(cloudflareImageId) : null;
     }
 
@@ -72,24 +114,31 @@ public class CloudImagesService {
         String imageId = null;
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost uploadRequest = new HttpPost(apiUrl); //HttpPost 객체를 생성하고, 요청 URL(apiUrl)을 지정
+            HttpPost uploadRequest = new HttpPost(apiUrl);
             uploadRequest.setHeader("Authorization", "Bearer " + apiToken);
-            //요청 헤더에 인증 토큰을 설정
-            URL url = new URL(imageUrl); // URL 객체를 생성
-            InputStream imageStream = url.openStream(); // URL에서 이미지 스트림을 연다.
 
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create(); // 멀티파트 엔티티 빌더를 생성
-            builder.addBinaryBody("file", imageStream, ContentType.DEFAULT_BINARY, "image.jpg");
-            //  이미지 파일을 바이너리로 추가
-            uploadRequest.setEntity(builder.build()); // 요청 엔티티를 설정
+            URL url = new URL(imageUrl);
+            BufferedImage bufferedImage = ImageIO.read(url);
+            if (bufferedImage == null) {
+                System.out.println("Failed to read image: " + imageUrl);
+                return null;
+            }
 
-            HttpResponse response = httpClient.execute(uploadRequest); //요청을 실행하고 응답을 받는다.
-            String responseString = EntityUtils.toString(response.getEntity()); // 응답 내용을 문자열로 변환
-            System.out.println("Response from Cloudflare: " + responseString); // 응답을 출력
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", baos);
+            byte[] imageBytes = baos.toByteArray();
 
-            imageId = extractImageIdFromResponse(responseString); // 응답에서 이미지 ID를 추출
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addBinaryBody("file", imageBytes, ContentType.IMAGE_JPEG, "image.jpg");
+            uploadRequest.setEntity(builder.build());
 
-        } catch (Exception e) {
+            HttpResponse response = httpClient.execute(uploadRequest);
+            String responseString = EntityUtils.toString(response.getEntity());
+            System.out.println("Response from Cloudflare: " + responseString);
+
+            imageId = extractImageIdFromResponse(responseString);
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -112,5 +161,6 @@ public class CloudImagesService {
         return String.format("https://imagedelivery.net/%s/%s/", accountHash, imageId);
     }
 }
+
 
 

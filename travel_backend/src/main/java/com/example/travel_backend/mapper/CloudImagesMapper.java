@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper
 public interface CloudImagesMapper {
     List<CloudImagesDTO> getAllImages();
+    List<CloudImagesDTO> getFailedImages();
+    List<CloudImagesDTO> getBackupImagesByIds(List<String> contentIds);
 
     void updateImageUrls(@Param("contentId") String contentId,
                          @Param("firstimage") String firstimage,

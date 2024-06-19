@@ -18,4 +18,10 @@ public class CloudImagesController {
         cloudImagesService.processImages();
         return "Image processing started";
     }
+
+    @GetMapping("/retry-failed-uploads")
+    public String retryFailedUploads() {
+        cloudImagesService.processFailedUploads();
+        return "Retrying failed uploads started";
+    }
 }
