@@ -4,9 +4,13 @@ import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.config.oauth.provider.GoogleMemberInfo;
 import com.example.travel_backend.config.oauth.provider.NaverMemberInfo;
 import com.example.travel_backend.config.oauth.provider.OAuth2MemberInfo;
+import com.example.travel_backend.jwt.JwtToken;
+import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -26,6 +30,9 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     //구글로부터 받은 userRuest 데이터에 대한 후 처리가 되는 함수
     //함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
     @Override 
@@ -36,10 +43,8 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                                         --------여기까지가 userRequest정보-------
             userRequest정보 -> loadUser함수 호출-> 회원 프로필(구글로부터)
          */
-        System.out.println("userRequest.getClientRegistration().getClientId() ==> " + userRequest.getClientRegistration().getClientId());
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println("getAttributes ==>" + oAuth2User.getAttributes());
 
         //회원가입을 진행
         OAuth2MemberInfo oAuth2MemberInfo = null;
@@ -94,7 +99,15 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                     .build();
             return memberRepository.save(newUser);
         });
-        return new PrincipalDetails(userEntity);
+
+        // JWT 토큰 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userEntity, null, new PrincipalDetails(userEntity).getAuthorities());
+        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+
+//        return new PrincipalDetails(userEntity);
+        // 생성된 JWT 토큰을 반환하거나 응답에 포함하는 로직 추가
+        return new PrincipalDetails(userEntity, oAuth2User.getAttributes(), jwtToken);
     }
+
 
 }

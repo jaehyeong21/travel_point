@@ -1,6 +1,8 @@
 package com.example.travel_backend.config;
 
 
+import com.example.travel_backend.handler.PrincipalFailureHandler;
+import com.example.travel_backend.handler.PrincipalSuccessHandler;
 import com.example.travel_backend.jwt.JwtAuthenticationFilter;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,11 @@ public class SecurityConfig  {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private PrincipalSuccessHandler principalSuccessHandler;
 
-//    private PrincipleOauth2MemberService principleOauth2MemberService;
+    @Autowired
+    private PrincipalFailureHandler principalFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -38,22 +43,18 @@ public class SecurityConfig  {
                 .requestMatchers("/loginForm").permitAll()
                 .requestMatchers("/signup/verify").permitAll()
                 .requestMatchers("/signup/request").permitAll()
-//                .requestMatchers("/sign-up/emailCheck").permitAll() // 추가된 부분
-                // USER 권한이 있어야 요청할 수 있음
-//                .requestMatchers("/loginForm/men").hasRole("USER")
-                .anyRequest().permitAll();
-
-        httpSecurity
-                .formLogin().loginPage("/loginForm")
-                .loginProcessingUrl("/login") //login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행 -> Controller에 /login 안만들어도됨
-                .defaultSuccessUrl("/") //로그인이 완료되면 /기본 메인 페이지로 이동, 혹은 어떤 특정 페이지에서 loginForm을 요청하여 로그인하면 해당 페이지로 보내준다.
-
-
-                // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
-//                .anyRequest().authenticated()
-
+//                .requestMatchers("/api/**").authenticated() // /api/** 경로에 대해서만 인증을 요구 특정 경로대해서 요구
+                .anyRequest().permitAll() // 나머지 경로는 인증 없이 접근 가능
                 .and()
-                // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
+                .formLogin()
+                .loginPage("/loginForm")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/")
+                .and()
+                .oauth2Login()
+                .successHandler(principalSuccessHandler)
+                .failureHandler(principalFailureHandler)
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
