@@ -34,6 +34,7 @@ public class FavoritesService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    //찜목록 추가
     @Transactional
     public Favorites addFavorite(int memberId, int destinationId) {
         Optional<Member> memberOptional = memberRepository.findById(memberId);
@@ -58,6 +59,7 @@ public class FavoritesService {
         return favoritesRepository.save(favorite);
     }
 
+    //찜하기 목록 불러오기
     @Transactional(readOnly = true)
     public List<FavoritesDTO> getFavoritesByMember(int memberId) {
         Optional<Member> memberOptional = memberRepository.findById(memberId);
@@ -87,6 +89,7 @@ public class FavoritesService {
         return favoritesDTOList;
     }
 
+    //찜하기 목록 삭제
     @Transactional
     public void deleteFavorite(int favoriteId, String accessToken) {
         String email = jwtTokenProvider.getUsernameFromToken(accessToken);
@@ -114,5 +117,24 @@ public class FavoritesService {
 
         favoritesRepository.deleteById(favoriteId);
         logger.info("Favorite with ID " + favoriteId + " has been deleted.");
+    }
+
+    //찜하기 여부 확인
+    @Transactional(readOnly = true)
+    public boolean isFavorite(int memberId, int destinationId) {
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        if (!memberOptional.isPresent()) {
+            logger.error("Member not found for ID: " + memberId);
+            throw new RuntimeException("Member not found for ID: " + memberId);
+        }
+        Member member = memberOptional.get();
+
+        Optional<Destination> destinationOptional = destinationRepository.findById((long) destinationId);
+        if (!destinationOptional.isPresent()) {
+            logger.error("Destination not found for ID: " + destinationId);
+            throw new RuntimeException("Destination not found for ID: " + destinationId);
+        }
+
+        return favoritesRepository.existsByMemberAndDestination(member, destinationOptional.get());
     }
 }
