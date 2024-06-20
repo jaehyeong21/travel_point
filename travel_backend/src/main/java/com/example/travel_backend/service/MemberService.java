@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -119,7 +120,7 @@ public class MemberService {
         }
     }
 
-    
+
     //로그인 한 상태에서 비밀번호 변경
     @Transactional
     public ApiResponse changePassword(PasswordChangeDto passwordChangeDto, String accessToken) {
@@ -150,7 +151,7 @@ public class MemberService {
             if (!PasswordValidator.isValid(newPassword)) {
                 return ApiResponse.error("PasswordError", "Invalid new password format.");
             }
-            
+
             // 기존 비밀번호와 새로운 비밀번호가 동일하지 않은지 확인
             if (passwordEncoder.matches(newPassword, member.getPassword())) {
                 return ApiResponse.error("PasswordError", "New password must be different from the current password.");
@@ -180,11 +181,19 @@ public class MemberService {
                 Member member = memberOptional.get();
 
                 // 이미지 URL 업데이트
-                String imageUrl = imageMap.get("imageUrl"); // Get imageUrl from Map
+                String imageUrl = imageMap.get("imageUrl");
                 member.setUserImgUrl(imageUrl);
                 memberRepository.save(member);
 
-                return ApiResponse.success("Image uploaded successfully.");
+                // 맵을 생성할 때 null 값이 있는지 확인
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("userImgUrl", member.getUserImgUrl() != null ? member.getUserImgUrl() : "defaultImgUrl");
+                userMap.put("id", member.getId());
+                userMap.put("email", member.getEmail() != null ? member.getEmail() : "defaultEmail");
+                userMap.put("createDate", member.getCreateDate() != null ? member.getCreateDate() : "defaultDate");
+                userMap.put("username", member.getUsername() != null ? member.getUsername() : "defaultUsername");
+
+                return ApiResponse.success(Map.of("user", userMap));
             } else {
                 return ApiResponse.error("MemberError", "Member not found.");
             }
