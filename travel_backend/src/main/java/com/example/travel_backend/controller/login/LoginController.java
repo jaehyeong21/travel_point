@@ -147,6 +147,11 @@ public class LoginController {
             return ResponseEntity.badRequest().body(ApiResponse.error("EmailError", "Invalid Email Format"));
         }
 
+        // 이미 가입된 이메일인지 확인
+        if (memberRepository.findByEmail(userEmail).isPresent()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("EmailExists", "This email is already registered"));
+        }
+
         // 패스워드 형식을 검증
         if (!PasswordValidator.isValid(password)) {
             return ResponseEntity.badRequest().body(ApiResponse.error("PasswordError", "Invalid Password Format"));

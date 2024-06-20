@@ -33,6 +33,7 @@ public class MemberService {
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
+    private final FavoritesService favoritesService;
 
     @Transactional
     public JwtToken login(String email, String password) {
@@ -84,7 +85,7 @@ public class MemberService {
     }
 
 
-    //계정을 삭제
+    // 계정을 삭제
     @Transactional
     public ApiResponse deleteAccount(String passwordJson, String accessToken) {
         try {
@@ -103,11 +104,14 @@ public class MemberService {
 
             Member member = memberOptional.get();
 
-
             if (!passwordEncoder.matches(password, member.getPassword())) {
                 return ApiResponse.error("AUTH002", "Invalid Password");
             }
 
+            // 회원의 모든 찜 목록 삭제
+            favoritesService.deleteAllFavoritesByMemberId(member.getId());
+
+            // 회원 삭제
             memberRepository.delete(member);
 
             return ApiResponse.success("Account deleted successfully");

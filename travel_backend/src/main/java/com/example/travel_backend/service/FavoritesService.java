@@ -137,4 +137,10 @@ public class FavoritesService {
 
         return favoritesRepository.existsByMemberAndDestination(member, destinationOptional.get());
     }
+
+    // 회원의 모든 찜 목록 삭제
+    @Transactional
+    public void deleteAllFavoritesByMemberId(int memberId) {
+        favoritesRepository.deleteByMemberId(memberId);
+    }
 }

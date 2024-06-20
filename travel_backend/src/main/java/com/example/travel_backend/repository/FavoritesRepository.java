@@ -10,4 +10,6 @@ import java.util.List;
 public interface FavoritesRepository extends JpaRepository<Favorites, Integer> {
     List<Favorites> findByMember(Member member);
     boolean existsByMemberAndDestination(Member member, Destination destination);
+    // 회원의 모든 찜 목록 삭제
+    void deleteByMemberId(int memberId);
 }

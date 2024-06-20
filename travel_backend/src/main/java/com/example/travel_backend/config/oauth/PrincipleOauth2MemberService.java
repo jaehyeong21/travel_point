@@ -8,6 +8,7 @@ import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
-@Service //타입은 정해져있다.  -> DefaultOAuth2UserService
+@Slf4j
+@Service
 public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
 
     @Autowired
@@ -33,62 +35,62 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    //구글로부터 받은 userRuest 데이터에 대한 후 처리가 되는 함수
-    //함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
-    @Override 
+    /**
+     * OAuth2 로그인 요청을 처리하는 메서드
+     * @param userRequest OAuth2UserRequest
+     * @return OAuth2User
+     * @throws OAuth2AuthenticationException
+     */
+    @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("Received OAuth2 login request from provider: {}", userRequest.getClientRegistration().getRegistrationId());
 
-        /*
-            구글 로그인 버튼 클릭 -> 구글 로그인 창 -> 로그인 완료 -> code를 리턴(OAuth2-Client 라이브러리) -> AccessToken을 요청
-                                        --------여기까지가 userRequest정보-------
-            userRequest정보 -> loadUser함수 호출-> 회원 프로필(구글로부터)
-         */
-
+        // OAuth2UserRequest에서 사용자 속성 로드
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        log.info("Loaded user attributes: {}", oAuth2User.getAttributes());
 
-        //회원가입을 진행
-        OAuth2MemberInfo oAuth2MemberInfo = null;
+        // 로그인 제공자에 따라 사용자 정보 처리
+        OAuth2MemberInfo oAuth2MemberInfo;
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
-            System.out.println("===========구글 요청============");
             oAuth2MemberInfo = new GoogleMemberInfo(oAuth2User.getAttributes());
+            log.info("Processing Google login for user: {}", oAuth2MemberInfo.getEmail());
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
-            System.out.println("===========네이버 요청============");
-            //리턴타입이 Map이된다.
             oAuth2MemberInfo = new NaverMemberInfo((Map) oAuth2User.getAttributes().get("response"));
+            log.info("Processing Naver login for user: {}", oAuth2MemberInfo.getEmail());
+        } else {
+            log.error("Unsupported provider: {}", userRequest.getClientRegistration().getRegistrationId());
+            throw new OAuth2AuthenticationException("Unsupported provider");
         }
-//        String provider = userRequest.getClientRegistration().getRegistrationId(); //google
+
+        // 사용자 정보 설정
         String provider = oAuth2MemberInfo.getProvider();
-//        String providerId = oAuth2User.getAttribute("sub");
         String providerId = oAuth2MemberInfo.getProviderId();
-        String username = provider + "_" + providerId; // google_sub
-        String password = bCryptPasswordEncoder.encode("겟인데어");
+        String username = provider + "_" + providerId; // 예: google_sub
+        String password = bCryptPasswordEncoder.encode("겟인데어"); // 기본 비밀번호 설정
         String userImgUrl = oAuth2MemberInfo.getUserImgUrl();
-//        String email = oAuth2User.getAttribute("email");
         String email = oAuth2MemberInfo.getEmail();
         String role = "ROLE_USER";
 
-//        Member userEntity = memberRepository.findByUsername(username);
-//        if (userEntity == null) {
-//            userEntity = Member.builder()
-//                    .username(username)
-//                    .password(password)
-//                    .userImgUrl(userImgUrl)
-//                    .email(email)
-//                    .role(role)
-//                    .provider(provider)
-//                    .providerId(providerId)
-//                    .build();
-//            memberRepository.save(userEntity);
-//        }
-//
-//        return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
-//        return super.loadUser(userRequest);
+        // 이메일로 기존 사용자 조회
+        Optional<Member> userEntityOptional = memberRepository.findByEmail(email);
+        Member userEntity;
 
-        Optional<Member> userEntityOptional = memberRepository.findByUsername(username);
-
-        Member userEntity = userEntityOptional.orElseGet(() -> {
-            System.out.println("사용자가 존재하지 않으므로 새 사용자 생성");
-            Member newUser = Member.builder()
+        if (userEntityOptional.isPresent()) {
+            userEntity = userEntityOptional.get();
+            // 기존 사용자가 같은 제공자로 가입된 경우 정보 업데이트
+            if (userEntity.getProvider().equals(provider)) {
+                log.info("Existing user found. Updating information for user: {}", email);
+                userEntity.setUserImgUrl(userImgUrl);
+                memberRepository.save(userEntity);
+            } else {
+                // 다른 제공자로 가입된 경우 예외 처리
+                log.error("Email {} already registered with different provider", email);
+                throw new OAuth2AuthenticationException("Email already registered with different provider");
+            }
+        } else {
+            // 새로운 사용자 생성
+            log.info("No existing user found. Creating new user: {}", email);
+            userEntity = Member.builder()
                     .username(username)
                     .password(password) // 비밀번호는 인코딩하여 저장
                     .userImgUrl(userImgUrl)
@@ -97,17 +99,15 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            return memberRepository.save(newUser);
-        });
+            memberRepository.save(userEntity);
+        }
 
         // JWT 토큰 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(userEntity, null, new PrincipalDetails(userEntity).getAuthorities());
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+        log.info("Generated JWT token for user: {}", email);
 
-//        return new PrincipalDetails(userEntity);
-        // 생성된 JWT 토큰을 반환하거나 응답에 포함하는 로직 추가
+        // PrincipalDetails 객체 생성 및 반환
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes(), jwtToken);
     }
-
-
 }
