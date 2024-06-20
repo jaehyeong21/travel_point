@@ -1,5 +1,6 @@
 package com.example.travel_backend.config.auth;
 
+import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.model.Member;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class PrincipalDetails implements UserDetails, OAuth2User {
     private Member member;//콤포지션
     private Map<String, Object> attributes;
+    private JwtToken jwtToken;
 
     //일반 로그인
     public PrincipalDetails(Member member) {
@@ -24,6 +26,13 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
+    }
+
+    // OAuth 로그인 + JWT 토큰
+    public PrincipalDetails(Member member, Map<String, Object> attributes, JwtToken jwtToken) {
+        this.member = member;
+        this.attributes = attributes;
+        this.jwtToken = jwtToken;
     }
 
     //해당 User의 권한을 리턴

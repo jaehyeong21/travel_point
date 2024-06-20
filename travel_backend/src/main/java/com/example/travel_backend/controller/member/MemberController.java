@@ -36,6 +36,11 @@ public class MemberController {
             // Retrieve token from Authorization header
             String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
 
+            // Ensure token format
+            if (accessToken.split("\\.").length != 3) {
+                throw new IllegalArgumentException("Invalid JWT token format.");
+            }
+
             ApiResponse response = memberService.uploadImage(imageMap, accessToken);
 
             log.debug("Upload image request processed successfully.");
