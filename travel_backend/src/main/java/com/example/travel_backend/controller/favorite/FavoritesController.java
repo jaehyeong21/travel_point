@@ -5,14 +5,10 @@ import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.FavoritesDTO;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Favorites;
-import com.example.travel_backend.model.Member;
-import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.service.FavoritesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +17,7 @@ import java.util.List;
 
 @Tag(name = "Favorites", description = "Favorites API")
 @RestController
-@RequestMapping("/api/favorites")
+@RequestMapping("/favorites")
 @RequiredArgsConstructor
 public class FavoritesController {
 
@@ -51,6 +47,17 @@ public class FavoritesController {
         try {
             List<FavoritesDTO> favorites = favoritesService.getFavoritesByMember(memberId);
             return ResponseEntity.ok(ApiResponse.success(favorites));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "찜하기 여부 확인", description = "회원 ID와 목적지 ID를 사용하여 찜하기 여부를 확인합니다.")
+    @GetMapping("/isFavorite")
+    public ResponseEntity<ApiResponse> isFavorite(@RequestParam int memberId, @RequestParam int destinationId) {
+        try {
+            boolean isFavorite = favoritesService.isFavorite(memberId, destinationId);
+            return ResponseEntity.ok(ApiResponse.success(isFavorite));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
         }
