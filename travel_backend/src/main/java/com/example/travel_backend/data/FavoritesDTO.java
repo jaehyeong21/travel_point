@@ -18,4 +18,5 @@ public class FavoritesDTO {
     private String destinationLocation;
     private String destinationDescription;
     private String destinationFirstImage;
+    private String contentId;
 }
