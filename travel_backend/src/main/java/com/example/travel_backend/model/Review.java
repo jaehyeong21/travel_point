@@ -1,10 +1,7 @@
 package com.example.travel_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -38,5 +35,12 @@ public class Review {
 
     @JsonProperty
     private Integer count;
+
+    @JsonProperty
+    private String imageUrl;
+
+    @ManyToOne
+    @JsonProperty
+    private Destination contentId;
 
 }
