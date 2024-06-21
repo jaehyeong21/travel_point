@@ -83,6 +83,7 @@ public class FavoritesService {
             dto.setDestinationLocation(fav.getDestination().getLocation());
             dto.setDestinationDescription(fav.getDestination().getDestinationDescription());
             dto.setDestinationFirstImage(fav.getDestination().getFirstimage());
+            dto.setContentId(fav.getDestination().getContentId());
             favoritesDTOList.add(dto);
         }
 
