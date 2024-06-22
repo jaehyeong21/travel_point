@@ -158,13 +158,10 @@ public class FavoritesService {
     public void deleteAllFavoritesByMemberId(int memberId) {
         favoritesRepository.deleteByMemberId(memberId);
     }
-<<<<<<< HEAD
 
     // 회원 유효성 확인
     public boolean isMemberValid(String email, int memberId) {
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         return memberOptional.isPresent() && memberOptional.get().getId() == memberId;
     }
-=======
->>>>>>> db217b87462a03f693a79c84df9b7eb299d5c92b
 }
