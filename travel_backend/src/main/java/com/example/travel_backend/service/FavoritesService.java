@@ -1,7 +1,9 @@
 package com.example.travel_backend.service;
 
+import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.FavoritesDTO;
 import com.example.travel_backend.jwt.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.travel_backend.model.Destination;
@@ -11,8 +13,12 @@ import com.example.travel_backend.repository.DestinationRepository;
 import com.example.travel_backend.repository.FavoritesRepository;
 import com.example.travel_backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,10 +57,15 @@ public class FavoritesService {
         }
         Destination destination = destinationOptional.get();
 
-        Favorites favorite = Favorites.builder()
-                .member(member)
-                .destination(destination)
-                .build();
+        // 중복 체크
+        if (favoritesRepository.existsByMemberAndDestination(member, destination)) {
+            logger.error("Favorite already exists for member ID: " + memberId + " and destination ID: " + destinationId);
+            throw new RuntimeException("Favorite already exists for member ID: " + memberId + " and destination ID: " + destinationId);
+        }
+
+        Favorites favorite = new Favorites();
+        favorite.setMember(member);
+        favorite.setDestination(destination);
 
         return favoritesRepository.save(favorite);
     }
@@ -92,7 +103,7 @@ public class FavoritesService {
 
     //찜하기 목록 삭제
     @Transactional
-    public void deleteFavorite(int favoriteId, String accessToken) {
+    public void deleteFavorite(int memberId, int destinationId, String accessToken) {
         String email = jwtTokenProvider.getUsernameFromToken(accessToken);
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
@@ -102,22 +113,25 @@ public class FavoritesService {
         }
 
         Member member = memberOptional.get();
-        Optional<Favorites> favoriteOptional = favoritesRepository.findById(favoriteId);
+        if (member.getId() != memberId) {
+            logger.error("Unauthorized attempt to delete favorite for member ID: " + memberId);
+            throw new RuntimeException("Unauthorized attempt to delete favorite for member ID: " + memberId);
+        }
 
+        Optional<Destination> destinationOptional = destinationRepository.findById((long) destinationId);
+        if (!destinationOptional.isPresent()) {
+            logger.error("Destination not found for ID: " + destinationId);
+            throw new RuntimeException("Destination not found for ID: " + destinationId);
+        }
+
+        Optional<Favorites> favoriteOptional = favoritesRepository.findByMemberAndDestination(member, destinationOptional.get());
         if (!favoriteOptional.isPresent()) {
-            logger.error("Favorite not found for ID: " + favoriteId);
-            throw new RuntimeException("Favorite not found for ID: " + favoriteId);
+            logger.error("Favorite not found for member ID: " + memberId + " and destination ID: " + destinationId);
+            throw new RuntimeException("Favorite not found for member ID: " + memberId + " and destination ID: " + destinationId);
         }
 
-        Favorites favorite = favoriteOptional.get();
-
-        if (favorite.getMember().getId() != member.getId()) {
-            logger.error("Unauthorized attempt to delete favorite with ID: " + favoriteId);
-            throw new RuntimeException("Unauthorized attempt to delete favorite with ID: " + favoriteId);
-        }
-
-        favoritesRepository.deleteById(favoriteId);
-        logger.info("Favorite with ID " + favoriteId + " has been deleted.");
+        favoritesRepository.delete(favoriteOptional.get());
+        logger.info("Favorite for member ID " + memberId + " and destination ID " + destinationId + " has been deleted.");
     }
 
     //찜하기 여부 확인
@@ -137,5 +151,17 @@ public class FavoritesService {
         }
 
         return favoritesRepository.existsByMemberAndDestination(member, destinationOptional.get());
+    }
+
+    // 회원의 모든 찜 목록 삭제
+    @Transactional
+    public void deleteAllFavoritesByMemberId(int memberId) {
+        favoritesRepository.deleteByMemberId(memberId);
+    }
+
+    // 회원 유효성 확인
+    public boolean isMemberValid(String email, int memberId) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        return memberOptional.isPresent() && memberOptional.get().getId() == memberId;
     }
 }

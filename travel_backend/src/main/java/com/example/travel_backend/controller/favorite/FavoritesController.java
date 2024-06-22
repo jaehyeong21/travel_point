@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@Tag(name = "Favorites", description = "Favorites API")
+@Tag(name = "Favorites", description = "찜하기/북마크")
 @RestController
 @RequestMapping("/favorites")
 @RequiredArgsConstructor
@@ -59,20 +59,38 @@ public class FavoritesController {
             boolean isFavorite = favoritesService.isFavorite(memberId, destinationId);
             return ResponseEntity.ok(ApiResponse.success(isFavorite));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
+            return ResponseEntity.ok(ApiResponse.success(false));
         }
     }
 
     @Operation(summary = "찜하기 삭제",
-            description = "찜하기 ID를 사용하여 찜하기 목록을 삭제합니다.\n\n" +
-                    "Example request parameter:\n" +
-                    "`favoriteId=4`")
-    @DeleteMapping("/delete/{favoriteId}")
-    public ResponseEntity<ApiResponse> deleteFavorite(@PathVariable int favoriteId, @RequestHeader("Authorization") String authorizationHeader) {
+            description = "회원 ID와 목적지 ID를 사용하여 찜하기 목록을 삭제합니다.\n\n" +
+                    "Example request parameters:\n" +
+                    "`memberId=1&destinationId=1`")
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse> deleteFavorite(@RequestParam int memberId, @RequestParam int destinationId, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
-            favoritesService.deleteFavorite(favoriteId, token);
+            favoritesService.deleteFavorite(memberId, destinationId, token);
             return ResponseEntity.ok(ApiResponse.success(null));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "회원의 모든 찜 목록 삭제", description = "회원 ID를 사용하여 해당 회원의 모든 찜 목록을 삭제합니다.\n\n" +
+            "Example request parameter:\n" +
+            "`memberId=1`")
+    @DeleteMapping("/deleteAll/{memberId}")
+    public ResponseEntity<ApiResponse> deleteAllFavoritesByMemberId(@PathVariable int memberId, @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            String email = jwtTokenProvider.getUsernameFromToken(token);
+            if (email == null || !favoritesService.isMemberValid(email, memberId)) {
+                return ResponseEntity.status(403).body(ApiResponse.error("FORBIDDEN", "Unauthorized request"));
+            }
+            favoritesService.deleteAllFavoritesByMemberId(memberId);
+            return ResponseEntity.ok(ApiResponse.success("All favorites have been deleted for member ID: " + memberId));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
         }
