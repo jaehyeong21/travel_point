@@ -15,6 +15,7 @@ public interface FavoritesRepository extends JpaRepository<Favorites, Integer> {
 
     // 특정 회원과 목적지로 찜 목록 존재 여부 확인
     boolean existsByMemberAndDestination(Member member, Destination destination);
+<<<<<<< HEAD
 
     //특정 회원과 목적지의 찜 목록을 조회하는 메서드
     Optional<Favorites> findByMemberAndDestination(Member member, Destination destination);
@@ -22,4 +23,8 @@ public interface FavoritesRepository extends JpaRepository<Favorites, Integer> {
     // 특정 회원의 모든 찜 목록 삭제
     void deleteByMemberId(int memberId);
 
+=======
+    // 회원의 모든 찜 목록 삭제
+    void deleteByMemberId(int memberId);
+>>>>>>> db217b87462a03f693a79c84df9b7eb299d5c92b
 }
