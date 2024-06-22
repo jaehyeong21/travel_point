@@ -113,4 +113,14 @@ public class SwaggerConfig {
                 .packagesToScan("com.example.travel_backend.controller.favorite")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi Review() {
+        return GroupedOpenApi.builder()
+                .group("리뷰 관리")
+                .pathsToMatch("/review/*")
+                .packagesToScan("com.example.travel_backend.controller.review")
+                .build();
+    }
+
 }

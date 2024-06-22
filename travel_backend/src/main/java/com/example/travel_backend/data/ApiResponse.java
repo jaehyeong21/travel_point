@@ -17,6 +17,14 @@ public class ApiResponse {
         return new ApiResponse(true, null, null, result);
     }
 
+    public static ApiResponse success(String message, Object result) {
+        ApiResponse response = new ApiResponse();
+        response.setResponse(true);
+        response.setMessage(message);
+        response.setResult(result);
+        return response;
+    }
+
     public static ApiResponse error(String errorCode, String message) {
         return new ApiResponse(false, errorCode, message, null);
     }
