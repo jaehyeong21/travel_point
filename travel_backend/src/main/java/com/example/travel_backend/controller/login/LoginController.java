@@ -4,6 +4,7 @@ import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.LoginDto;
 import com.example.travel_backend.jwt.JwtToken;
+import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.service.MailService;
@@ -39,6 +40,9 @@ public class LoginController {
 
     @Autowired
     private MailService mailService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
 
     // 로그인
@@ -85,6 +89,17 @@ public class LoginController {
         result.put("token", jwtToken);
 
         return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse> refreshAccessToken(@RequestBody Map<String, String> tokenMap) {
+        String refreshToken = tokenMap.get("refreshToken");
+        try {
+            JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
+            return ResponseEntity.ok(ApiResponse.success(newJwtToken));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+        }
     }
 
     //회원가입 요청(이메일)
