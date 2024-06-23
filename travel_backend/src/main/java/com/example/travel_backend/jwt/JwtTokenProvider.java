@@ -42,8 +42,8 @@ public class JwtTokenProvider {
 
         long now = (new Date()).getTime();
 
-        // Access Token: 15초
-        Date accessTokenExpiresIn = new Date(now + 15000); // 15000밀리초 = 15초
+        // Access Token: 1시간
+        Date accessTokenExpiresIn = new Date(now + 3600000); // 3600000밀리초 = 1시간
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName()) // 토큰의 주체를 설정 (사용자 이름)
                 .claim("auth", authorities) // 권한 정보를 클레임에 추가
@@ -53,6 +53,7 @@ public class JwtTokenProvider {
 
         // Refresh Token: 1주일
         String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName()) // Refresh Token에 주체를 설정 (사용자 이름)
                 .setExpiration(new Date(now + 604800000)) // 604800000밀리초 = 7일
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
