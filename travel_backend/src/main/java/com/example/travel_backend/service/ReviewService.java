@@ -1,9 +1,6 @@
 package com.example.travel_backend.service;
 
-
-import com.example.travel_backend.data.ApiResponse;
-import com.example.travel_backend.data.ReviewRequestDTO;
-import com.example.travel_backend.data.ReviewResponseDTO;
+import com.example.travel_backend.data.*;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Destination;
 import com.example.travel_backend.model.Member;
@@ -84,13 +81,17 @@ public class ReviewService {
         review.setDestination(destination);
         review.setMember(member);
         review.setCreateDate(new Timestamp(System.currentTimeMillis()));
+        review.setModifyDate(new Timestamp(System.currentTimeMillis())); // Set modifyDate at creation
 
         reviewRepository.save(review);
-        return ApiResponse.success("Review created successfully", review);
+
+        ReviewResponseDTO responseDTO = convertToResponseDTO(review);
+
+        return ApiResponse.success("Review created successfully", responseDTO);
     }
 
     @Transactional
-    public Review updateReview(int id, String content, int rate, String imageUrl, String accessToken) {
+    public ApiResponse updateReview(int id, String content, int rate, String imageUrl, String accessToken) {
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (!reviewOptional.isPresent()) {
             throw new RuntimeException("Review not found with id " + id);
@@ -107,8 +108,13 @@ public class ReviewService {
         review.setContent(content);
         review.setRate(rate);
         review.setImageUrl(imageUrl);
+        review.setModifyDate(new Timestamp(System.currentTimeMillis())); // Update modifyDate
 
-        return reviewRepository.save(review);
+        reviewRepository.save(review);
+
+        ReviewResponseDTO responseDTO = convertToResponseDTO(review);
+
+        return ApiResponse.success(responseDTO);
     }
 
     @Transactional
@@ -130,6 +136,9 @@ public class ReviewService {
     }
 
     public ReviewResponseDTO convertToResponseDTO(Review review) {
+        MemberDto memberDto = MemberDto.toDto(review.getMember());
+        DestinationDto destinationDto = DestinationDto.toDto(review.getDestination());
+
         ReviewResponseDTO dto = new ReviewResponseDTO();
         dto.setId(review.getId());
         dto.setContent(review.getContent());
@@ -138,6 +147,11 @@ public class ReviewService {
         dto.setImageUrl(review.getImageUrl());
         dto.setMemberEmail(review.getMember().getEmail());
         dto.setReviewCount(review.getCount());
+        dto.setModifyDate(review.getModifyDate());
+        dto.setCreateDate(review.getCreateDate());
+        dto.setUser(memberDto);
+        dto.setDestination(destinationDto); // 추가된 필드
+
         return dto;
     }
 

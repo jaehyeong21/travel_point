@@ -24,6 +24,7 @@ public class MemberDto {
 
     static public MemberDto toDto(Member member) {
         return MemberDto.builder()
+                .id((long) member.getId()) // id 추가
                 .username(member.getUsername())
                 .password(member.getPassword())
                 .userImgUrl(member.getUserImgUrl())
@@ -37,6 +38,7 @@ public class MemberDto {
 
     public Member toEntity() {
         return Member.builder()
+                .id(Math.toIntExact(id)) // id 추가
                 .username(username)
                 .password(password)
                 .userImgUrl(userImgUrl)

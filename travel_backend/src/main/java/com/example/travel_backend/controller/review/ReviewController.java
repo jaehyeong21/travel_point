@@ -137,15 +137,14 @@ public class ReviewController {
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-            Review updatedReview = reviewService.updateReview(
+            ApiResponse response = reviewService.updateReview(
                     id,
                     reviewRequestDTO.getContent(),
                     reviewRequestDTO.getRate(),
                     reviewRequestDTO.getImageUrl(),
                     accessToken
             );
-            ReviewResponseDTO reviewResponseDTO = reviewService.convertToResponseDTO(updatedReview);
-            return ResponseEntity.ok(ApiResponse.success(reviewResponseDTO));
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
         }
