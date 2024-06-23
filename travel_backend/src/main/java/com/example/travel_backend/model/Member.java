@@ -9,8 +9,12 @@ import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.cglib.core.Local;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @Setter
@@ -62,5 +66,10 @@ public class Member {
         this.provider = provider;
         this.providerId = providerId;
         this.createDate = createDate;
+    }
+
+    // 권한 정보를 가져오는 메서드 추가
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(this.role));
     }
 }
