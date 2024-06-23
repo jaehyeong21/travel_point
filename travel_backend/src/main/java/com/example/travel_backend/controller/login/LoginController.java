@@ -91,6 +91,20 @@ public class LoginController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @Operation(summary = "토큰 갱신",
+            description = "Refresh Token을 사용하여 Access Token을 갱신합니다.\n\n" +
+                    "Example request body:\n" +
+                    "```json\n" +
+                    "{\n" +
+                    "  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9...\"\n" +
+                    "}\n" +
+                    "```\n" +
+                    "Headers:\n" +
+                    "```json\n" +
+                    "{\n" +
+                    "  \"Authorization\": \"Bearer eyJhbGciOiJIUzI1NiJ9...\"\n" +
+                    "}\n" +
+                    "```")
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse> refreshAccessToken(@RequestBody Map<String, String> tokenMap) {
         String refreshToken = tokenMap.get("refreshToken");
