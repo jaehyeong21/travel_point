@@ -94,7 +94,7 @@ export default function FestivalRecommendation({ count }: { count: string }) {
           0: {
             slidesPerView: 2,
             slidesPerGroup: 2,
-            spaceBetween: 10,
+            spaceBetween: 15,
           },
           640: {
             slidesPerView: 3,

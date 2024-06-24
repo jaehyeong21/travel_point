@@ -8,6 +8,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: "/api/upload-image",
+        destination: "/api/upload-image",
+      },
+      {
         source: "/api/:path*",
         destination: "https://pingulion.shop/:path*", // 프록시할 외부 API의 주소
       },
@@ -29,9 +33,9 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname:"imagedelivery.net",
-        pathname:"/ftV1RpijrL892iGuP8Q6zQ/**"
-      }
+        hostname: "imagedelivery.net",
+        pathname: "/ftV1RpijrL892iGuP8Q6zQ/**",
+      },
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60, // 이미지 캐시 최소 시간 설정

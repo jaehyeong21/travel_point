@@ -249,3 +249,8 @@ export const fontSpoqaHanSansNeo = localFont({
     },
   ],
 });
+
+export const CharacterIconData = [
+  '/assets/image/characters/m1.png', '/assets/image/characters/m2.png', '/assets/image/characters/m3.png', '/assets/image/characters/m4.png', '/assets/image/characters/m5.png',
+  '/assets/image/characters/w1.png', '/assets/image/characters/w2.png', '/assets/image/characters/w3.png', '/assets/image/characters/w4.png', '/assets/image/characters/w5.png',
+];

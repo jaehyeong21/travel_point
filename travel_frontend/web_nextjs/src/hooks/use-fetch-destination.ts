@@ -26,9 +26,10 @@ export function useFetchDestination({
   areaName,
   count,
   page,
+  random
 }: FetchDestinationProps) {
   return useQuery<DestinationResultType, Error>({
-    queryKey: ["destinationData", { areaName, count, page }],
+    queryKey: ["destinationData", { areaName, count, page, random }],
     queryFn: ({ queryKey }) =>
       fetchDestination(queryKey[1] as FetchDestinationProps),
   });
@@ -85,11 +86,11 @@ export function useFetchFestivalbyId({
   });
 }
 
-export function useFetchNearby({ latitude, longitude, areaCode, count, contentId }: fetchNearbyProps) {
+export function useFetchNearby({ latitude, longitude, areaCode, count, contentId, random }: fetchNearbyProps) {
   return useQuery<DestinationType[], Error>({
     queryKey: [
       "nearbyData",
-      { latitude, longitude, areaCode, count, contentId },
+      { latitude, longitude, areaCode, count, contentId, random : true},
     ],
     queryFn: ({ queryKey }) => fetchNearby(queryKey[1] as fetchNearbyProps),
   });

@@ -14,7 +14,7 @@ export default function RememberMeCheckbox({ register }: RememberMeCheckboxProps
         type="checkbox"
         {...register("rememberMe")}
       />
-      <label className="ml-2 block text-sm text-gray-900" htmlFor="remember-me">
+      <label className="ml-2 block text-xs sm:text-sm text-gray-900" htmlFor="remember-me">
         기억하기
       </label>
     </div>

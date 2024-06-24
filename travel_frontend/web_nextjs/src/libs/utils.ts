@@ -22,19 +22,11 @@ export function calculateStarRating(rating: number) {
   return { fullStars, hasHalfStar, emptyStars };
 }
 
-// 기본 데이터 생성 함수 - 임시
-export function generateData() {
-  return [...Array(4)].map((_, i) => ({
-    location: '강원특별자치도 춘천시',
-    title: `대관령 삼양목장 ${i}`,
-    description: '정답게 이야기를 나눌 수 있는',
-  }));
-}
 
 // 날짜 포맷을 변경하는 함수
 export function formatDateRange(startDate: string, endDate: string): string {
   const formatDate = (date: string) => {
-    const [year, month, day] = date.split('-');
+    const [year, month, day] = date.split("-");
     return `${year}.${month}.${day}`;
   };
 
@@ -42,25 +34,31 @@ export function formatDateRange(startDate: string, endDate: string): string {
 }
 
 // 이벤트 상태를 반환하는 함수
-export function getEventStatus(startDate: string, endDate: string): { status: string, dDay: string } {
+export function getEventStatus(
+  startDate: string,
+  endDate: string
+): { status: string; dDay: string } {
   const currentDate = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);
 
   if (currentDate >= start && currentDate <= end) {
-    return { status: '진행중', dDay: '' };
+    return { status: "진행중", dDay: "" };
   } else if (currentDate < start) {
     const diffTime = start.getTime() - currentDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return { status: '진행 예정', dDay: `D-${diffDays}` };
+    return { status: "진행 예정", dDay: `D-${diffDays}` };
   } else {
-    return { status: '종료', dDay: '' };
+    return { status: "종료", dDay: "" };
   }
 }
 
-
 // cat1, cat2, cat3를 실제 카테고리(한글)로 변경하는 함수
-export function getCategoryName(cat1: string, cat2: string, cat3: string): CategoryName {
+export function getCategoryName(
+  cat1: string,
+  cat2: string,
+  cat3: string
+): CategoryName {
   const category1 = CATEGORIES[cat1];
   if (!category1) return {};
 
@@ -75,7 +73,10 @@ export function getCategoryName(cat1: string, cat2: string, cat3: string): Categ
 }
 
 // throttleHelper - 과한 스크롤 추적 방지
-export function throttleHelper(callback: () => void, waitTime: number): () => void {
+export function throttleHelper(
+  callback: () => void,
+  waitTime: number
+): () => void {
   let timerId: ReturnType<typeof setTimeout> | null = null;
 
   return function () {
@@ -91,17 +92,20 @@ export function throttleHelper(callback: () => void, waitTime: number): () => vo
 // 축제 상세 정보 포매팅
 export function formatFestivalIntro(intro: string): string {
   // Split the intro by new lines and filter out empty lines
-  const lines = intro.trim().split('\n').filter(line => line.trim() !== '');
-  
-  let formattedIntro = '';
-  let currentSection = '';
+  const lines = intro
+    .trim()
+    .split("\n")
+    .filter((line) => line.trim() !== "");
 
-  lines.forEach(line => {
+  let formattedIntro = "";
+  let currentSection = "";
+
+  lines.forEach((line) => {
     if (line.match(/^\d+\./)) {
       // If the line starts with a number followed by a dot, it's a section header
       currentSection = line.trim();
       formattedIntro += `<br><b>${currentSection}</b><br>`;
-    } else if (line.startsWith('-')) {
+    } else if (line.startsWith("-")) {
       // If the line starts with a dash, it's a list item
       formattedIntro += `${line.trim()}<br>`;
     } else {

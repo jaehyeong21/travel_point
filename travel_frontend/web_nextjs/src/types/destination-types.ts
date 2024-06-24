@@ -5,7 +5,8 @@ export interface DestinationType {
   destinationDescription: string;
   contentId: string;
   contentTypeId: string;
-  areaCode: string;
+  areaCode?: string;
+  destinationId?: string;
 }
 
 export interface DestinationResultType {

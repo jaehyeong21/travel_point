@@ -1,5 +1,7 @@
 // src/services/fetch-api.ts
 
+import { getCookie } from "@/libs/cookie";
+
 // DB API 설정
 const username = process.env.NEXT_PUBLIC_API_USERNAME;
 const password = process.env.NEXT_PUBLIC_API_PASSWORD;
@@ -41,21 +43,48 @@ export async function fetchFromApi(
   return response.json();
 }
 
-// 공통 POST API 요청 함수
-export async function fetchFromAuthApi(url: string, data: Record<string, any>) {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: "Basic " + btoa(`${username}:${password}`),
-    },
-    body: JSON.stringify(data),
-  });
+// 공통 API 요청 함수
+// services/fetch-auth.ts
 
-  if (!response.ok) {
-    throw new Error(`API call failed with status: ${response.status}`);
+export async function fetchFromAuthApi(
+  url: string,
+  data: Record<string, any> | null = null,
+  method: "GET" | "POST" | "PUT" | "DELETE" = "POST",
+  params?: string
+) {
+  const accessToken = getCookie("accessToken");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  return response.json();
-}
+  const fetchOptions: RequestInit = {
+    method: method,
+    headers: headers,
+  };
 
+  if (method !== "GET" && data) {
+    fetchOptions.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(params ? `${url}${params}` : url, fetchOptions);
+
+  let responseData;
+  try {
+    responseData = await response.json();
+  } catch (error) {
+    responseData = { message: 'JSON parsing error' };
+  }
+
+  if (!response.ok) {
+    console.error(`API call failed: ${url}`, responseData);
+    throw new Error(
+      `API call failed with status: ${response.status} - ${responseData.message || 'Unknown error'}`
+    );
+  }
+
+  return responseData;
+}

@@ -109,7 +109,7 @@ export default function DestinationCarousel({ image, images, title }: Destinatio
         <CarouselContent className="flex">
           {image && (
             <Image
-              src={`${image}/firstimageLarge`}
+              src={`${image}`}
               alt={`${title} Image`}
               width={800}
               height={550}

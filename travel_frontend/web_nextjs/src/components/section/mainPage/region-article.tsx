@@ -19,13 +19,13 @@ export default function RegionArticle({ region, count }: RegionArticleProps) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 2; // 한 페이지에 표시할 아이템 수
-  
+
   const regionPath = REGIONS.find((r) => r.name === region)?.path || '';
   // 데이터 fetch 훅을 호출합니다.
-  const { data, isLoading, isError } = useFetchDestination({ areaName: regionPath, count: count });  
+  const { data, isLoading, isError } = useFetchDestination({ areaName: regionPath, count: count, random: 'true' });
   // 임시 데이터 뒤집기
   const reversedDestinations = data?.destinations ? [...data.destinations].reverse() : [];
-  
+
   // 다음 페이지로 이동
   const handleNextPage = () => {
     if (data && currentPage < Math.ceil(data.destinations.length / itemsPerPage) - 1) {
@@ -46,7 +46,7 @@ export default function RegionArticle({ region, count }: RegionArticleProps) {
           </button>
         </nav>
       </header>
-      <CardLayout className='gap-6' isTwo>
+      <CardLayout className='gap-4 sm:gap-6' isTwo>
         {isLoading ? (
           [...Array(itemsPerPage)].map((_, i) => (
             <DestinationCard key={i} isLoading />

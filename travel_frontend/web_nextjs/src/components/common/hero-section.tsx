@@ -1,10 +1,11 @@
+'use client';
 import { pageColors } from '@/data/data';
 import React from 'react';
 
 interface HeroSectionProps {
-  page: 'regions' | 'themes' | 'festivals' | 'recommended' | 'mypage' | 'destination' ;
+  page: 'regions' | 'themes' | 'festivals' | 'recommended' | 'mypage' | 'destination';
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }
 
 export default function HeroSection({ title, subtitle, page }: HeroSectionProps) {

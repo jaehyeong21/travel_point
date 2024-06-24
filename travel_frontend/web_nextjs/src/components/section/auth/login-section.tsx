@@ -1,38 +1,251 @@
+'use client';
 // components/section/auth/login-section.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { FieldError } from 'react-hook-form';
 import InputField from '@/components/section/auth/input-field';
 import RememberMeCheckbox from '@/components/section/auth/remember-check';
 import SubmitButton from '@/components/section/auth/submit-button';
-import ForgotPasswordLink from '@/components/section/auth/forget-password';
 import OauthOptions from '@/components/section/auth/oauth-options';
-import { loginApi } from '@/services/fetch-auth';
+import { loginApi, findPasswordVeriApi, findPasswordApi } from '@/services/fetch-auth';
+import { useUserStore } from '@/store/userStore';
+import { setCookie, getCookie, deleteCookie } from '@/libs/cookie';
+import { useRouter } from 'next/navigation';
 
 interface LoginSectionProps {
   toggleForm: () => void;
+  isModal?: boolean;
 }
 
 interface IFormInput {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
-export default function LoginSection({ toggleForm }: LoginSectionProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
+interface IForgotPasswordInput {
+  email: string;
+}
+
+interface IResetPasswordInput {
+  email: string;
+  verificationCode: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export default function LoginSection({ toggleForm, isModal }: LoginSectionProps) {
+  const { register, handleSubmit, setValue, formState: { errors: loginErrors } } = useForm<IFormInput>({ mode: 'onBlur' });
+  const { register: registerForgot, handleSubmit: handleSubmitForgot, formState: { errors: forgotPasswordErrors } } = useForm<IForgotPasswordInput>({ mode: 'onBlur' });
+  const { register: registerReset, handleSubmit: handleSubmitReset, formState: { errors: resetPasswordErrors } } = useForm<IResetPasswordInput>({ mode: 'onBlur' });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(false);
+  const [emailForReset, setEmailForReset] = useState<string>('');
+
+  const setUser = useUserStore((state) => state.setUser);
+  const router = useRouter();
+
+  useEffect(() => {
+    const savedEmail = getCookie('rememberEmail');
+    if (savedEmail) {
+      setValue('email', savedEmail);
+    }
+  }, [setValue]);
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    setLoading(true);
+    setError(null);
+
+    if (data.rememberMe) {
+      setCookie({ name: 'rememberEmail', value: data.email, days: 7 });
+    } else {
+      deleteCookie('rememberEmail');
+    }
+
     try {
       const result = await loginApi({
         email: data.email,
         password: data.password,
       });
-      
-      console.log('Success:', result);
-    } catch (error) {
-      console.error('There was a problem with the fetch operation:', error);
+
+      if (result.response) {
+        const { accessToken, refreshToken } = result.result.token;
+        const user = result.result.user;
+        setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
+        setCookie({ name: 'refreshToken', value: refreshToken, days: 7, secure: true });
+        setCookie({ name: 'user', value: JSON.stringify(user), hours: 2 });
+        setUser(user); // Zustand 스토어에 사용자 정보 저장                
+
+        isModal ? router.back() : router.push('/');
+      } else {
+        setError(`Error: ${result.errorCode} - ${result.message}`);
+        console.error('Login failed:', result.message);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('There was a problem with the fetch operation:', error.message);
+        setError(error.message);
+      } else {
+        console.error('Unexpected error', error);
+        setError('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleForgotPassword = () => {
+    setIsForgotPassword(true);
+  };
+
+  const handleSendVerificationCode: SubmitHandler<IForgotPasswordInput> = async (data) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await findPasswordVeriApi({ email: data.email });
+
+      if (result.response) {
+        setEmailForReset(data.email);
+        setIsResetPassword(true);
+        setIsForgotPassword(false);
+      } else {
+        setError(`Error: ${result.errorCode} - ${result.message}`);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword: SubmitHandler<IResetPasswordInput> = async (data) => {
+    if (data.newPassword !== data.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await findPasswordApi({
+        email: data.email,
+        newPassword: data.newPassword,
+        verificationCode: data.verificationCode,
+      });
+
+      if (result.response) {
+        setIsResetPassword(false);
+        setIsForgotPassword(false);
+      } else {
+        setError(`Error: ${result.errorCode} - ${result.message}`);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isForgotPassword) {
+    return (
+      <>
+        <h2 className="text-center text-3xl font-bold">비밀번호 찾기</h2>
+        <form onSubmit={handleSubmitForgot(handleSendVerificationCode)} className="space-y-6">
+          <InputField
+            label="이메일 주소"
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            register={registerForgot}
+            required
+            error={forgotPasswordErrors.email}
+          />
+          <SubmitButton text="인증번호 보내기" loading={loading} />
+          <button
+            type="button"
+            onClick={() => setIsForgotPassword(false)}
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 mt-2"
+          >
+            로그인페이지로 이동
+          </button>
+          {error && <p className="mt-2 text-center text-red-600">{error}</p>}
+        </form>
+      </>
+    );
+  }
+
+  if (isResetPassword) {
+    return (
+      <>
+        <h2 className="text-center text-3xl font-bold">비밀번호 재설정</h2>
+        <form onSubmit={handleSubmitReset(handleResetPassword)} className="space-y-6">
+          <InputField
+            label="이메일 주소"
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            register={registerReset}
+            required
+            defaultValue={emailForReset}
+            error={resetPasswordErrors.email}
+          />
+          <InputField
+            label="인증번호"
+            id="verificationCode"
+            name="verificationCode"
+            type="text"
+            autoComplete="off"
+            register={registerReset}
+            required
+            error={resetPasswordErrors.verificationCode}
+          />
+          <InputField
+            label="새 비밀번호"
+            id="newPassword"
+            name="newPassword"
+            type="password"
+            autoComplete="new-password"
+            register={registerReset}
+            required
+            error={resetPasswordErrors.newPassword}
+          />
+          <InputField
+            label="새 비밀번호 확인"
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            register={registerReset}
+            required
+            error={resetPasswordErrors.confirmPassword}
+          />
+          <SubmitButton text="비밀번호 재설정" loading={loading} />
+          <button
+            type="button"
+            onClick={() => setIsResetPassword(false)}
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 mt-2"
+          >
+            로그인페이지로 이동
+          </button>
+          {error && <p className="mt-2 text-center text-red-600">{error}</p>}
+        </form>
+      </>
+    );
+  }
 
   return (
     <>
@@ -52,23 +265,26 @@ export default function LoginSection({ toggleForm }: LoginSectionProps) {
           autoComplete="email"
           register={register}
           required
-          error={errors.email as FieldError}
+          error={loginErrors.email}
         />
         <InputField
           label="비밀번호"
           id="password"
           name="password"
           type="password"
-          autoComplete="new-password"
+          autoComplete="current-password"
           register={register}
           required
-          error={errors.password as FieldError}
+          error={loginErrors.password}
         />
         <div className="flex items-center justify-between">
           <RememberMeCheckbox register={register} />
-          <ForgotPasswordLink />
+          <button type="button" onClick={handleForgotPassword} className="font-medium text-xs sm:text-sm text-blue-600 hover:text-blue-500">
+            비밀번호를 잊으셨나요?
+          </button>
         </div>
-        <SubmitButton text="로그인하기" />
+        <SubmitButton text="로그인하기" loading={loading} />
+        {error && <p className="mt-2 text-center text-red-600">{error}</p>}
         <OauthOptions />
       </form>
     </>

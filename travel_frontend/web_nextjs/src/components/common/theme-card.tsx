@@ -104,6 +104,9 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
             watchOverflow={true}
             modules={[Pagination, Keyboard]}
             breakpoints={{
+              0: {
+                spaceBetween: 15,
+              },
               640: {
                 spaceBetween: 20,
               },

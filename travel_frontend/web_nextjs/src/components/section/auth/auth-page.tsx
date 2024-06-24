@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import AuthForm from '@/components/section/auth/auth-form';
 
-interface AuthPageProps {
+export interface AuthPageProps {
   isModal?: boolean;
 }
 
@@ -51,7 +51,7 @@ export default function AuthPage({ isModal }: AuthPageProps) {
             <button className={`${isModal ? 'absolute top-0 right-0' : 'hidden'}`} onClick={backbtn}>
               <X className="size-5 text-gray-900" />
             </button>
-            <AuthForm />
+            <AuthForm isModal={isModal}/>
           </div>
         </div>
       </div>

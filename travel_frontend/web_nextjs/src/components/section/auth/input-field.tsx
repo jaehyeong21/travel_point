@@ -10,10 +10,11 @@ interface InputFieldProps {
   register: UseFormRegister<any>;
   required: boolean;
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
-  watch?: (name: string) => string; // watch 함수 추가
+  watch?: (name: string) => string; 
+  defaultValue?: string;
 }
 
-export default function InputField({ label, id, name, type, autoComplete, register, required, error, watch }: InputFieldProps) {
+export default function InputField({ label, id, name, type, autoComplete, register, required, error, watch, defaultValue }: InputFieldProps) {
   let validationRules: Record<string, any> = { required: `${name} 값을 입력해주세요.` };
 
   if (name === 'email') {
@@ -28,6 +29,8 @@ export default function InputField({ label, id, name, type, autoComplete, regist
     };
   } else if (name === 'confirmPassword' && watch) {
     validationRules = { ...validationRules, validate: (value: string) => value === watch('password') || '비밀번호가 일치하지 않습니다.' };
+  } else if (name === 'verificationCode') {
+    validationRules = { ...validationRules, pattern: { value: /^[a-zA-Z0-9]{8}$/, message: '인증번호는 8자리 영숫자여야 합니다.' } };
   }
 
   return (
@@ -42,6 +45,7 @@ export default function InputField({ label, id, name, type, autoComplete, regist
           id={id}
           type={type}
           required={required}
+          defaultValue={defaultValue}
           {...register(name, validationRules)}
         />
         {error && <p className="text-red-600 text-xs pt-2">{String(error.message)}</p>}

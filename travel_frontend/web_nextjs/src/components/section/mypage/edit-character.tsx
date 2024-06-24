@@ -3,34 +3,62 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DialogTrigger, DialogTitle, DialogDescription, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog";
+import { DialogTrigger, DialogTitle, DialogDescription, DialogHeader, DialogContent, Dialog } from "@/components/ui/dialog";
 import { Sticker } from "lucide-react";
-
-const CharacterIconData = [
-  '/assets/image/characters/m1.png', '/assets/image/characters/m2.png', '/assets/image/characters/m3.png', '/assets/image/characters/m4.png', '/assets/image/characters/m5.png',
-  '/assets/image/characters/w1.png', '/assets/image/characters/w2.png', '/assets/image/characters/w3.png', '/assets/image/characters/w4.png', '/assets/image/characters/w5.png',
-];
+import { uploadImage } from "@/services/fetch-auth";
+import { CharacterIconData } from "@/data/data";
+import { useUserStore } from "@/store/userStore";
+import { setCookie } from "@/libs/cookie";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function EditCharacter() {
+  const { user, updateUserImage } = useUserStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (selectedImage) {
-      console.log("Updating profile image to:", selectedImage);
-
-      setIsOpen(false);
+      try {
+        const responseData = await uploadImage(selectedImage);
+        
+        if (responseData.response) {
+          toast({
+            title: "변경되었습니다.",
+            description: "캐릭터 이미지가 성공적으로 변경되었습니다.",
+          });
+          if (user) {
+            updateUserImage(selectedImage);
+            setCookie({ name: 'user', value: JSON.stringify({ ...user, userImgUrl: selectedImage }), hours: 2 });
+          }
+          setIsOpen(false);
+        } else {
+          toast({
+            title: "오류 발생",
+            description: responseData.message,
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast({
+          title: "오류 발생",
+          description: "이미지 업로드 중 오류가 발생했습니다.",
+        });
+      }
     } else {
-      alert("캐릭터를 선택해주세요.");
+      toast({
+        title: "캐릭터 선택",
+        description: "캐릭터를 선택해주세요.",
+      });
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen} >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div className='border w-40 h-10 flex justify-center items-center space-x-2'>
           <Sticker className='size-6' strokeWidth={1} />

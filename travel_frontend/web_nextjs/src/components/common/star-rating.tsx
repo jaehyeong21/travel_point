@@ -5,11 +5,11 @@ import React from 'react';
 
 interface StarRatingProps {
   rating: number;
-  numPeoPle?: number;
+  numPeople?: number;
   className?: string;
 }
 
-export default function StarRating({ rating, numPeoPle, className }: StarRatingProps) {
+export default function StarRating({ rating, numPeople, className }: StarRatingProps) {
   const { fullStars, hasHalfStar, emptyStars } = calculateStarRating(rating);
 
   return (
@@ -23,7 +23,7 @@ export default function StarRating({ rating, numPeoPle, className }: StarRatingP
           <FaRegStar key={index} className="text-gray-300" />
         ))}
       </div>
-      {numPeoPle && <span className='text-[12px]'>({numPeoPle})</span> }
+      {numPeople && <span className='text-[12px]'>({numPeople})</span> }
     </div>
   );
 }

@@ -12,6 +12,7 @@ export interface FetchDestinationProps {
   count?: string;
   page?: string;
   sort?: string;
+  random?: 'true' | 'false';
 }
 
 export interface fetchThemeDestinationByCatProps {
@@ -31,6 +32,7 @@ export interface fetchNearbyProps {
   latitude?: string;
   longitude?: string;
   areaCode?: string;
+  random?: 'true' | 'false';
   count: string;
   contentId: string;
 }
