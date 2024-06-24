@@ -13,10 +13,11 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByDestinationDestinationIdOrderByCreateDateDesc(Long destinationId);
-    List<Review> findByDestinationDestinationIdOrderByRateDescCountDescCreateDateDesc(Long destinationId);
-    List<Review> findByDestinationDestinationIdOrderByRateAscCountDescCreateDateDesc(Long destinationId);
+    List<Review> findByDestinationDestinationIdOrderByRateDescLikeCountDescCreateDateDesc(Long destinationId);
+    List<Review> findByDestinationDestinationIdOrderByRateAscLikeCountDescCreateDateDesc(Long destinationId);
     long countByDestination(Destination destination);
     boolean existsByMemberAndDestination(Member member, Destination destination);
+    List<Review> findByMemberOrderByCreateDateDesc(Member member);
 
     @Query("SELECT AVG(r.rate) FROM Review r WHERE r.destination.destinationId = :destinationId")
     Double findAverageRatingByDestinationId(@Param("destinationId") Long destinationId);

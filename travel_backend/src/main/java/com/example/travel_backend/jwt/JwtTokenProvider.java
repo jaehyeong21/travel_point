@@ -155,4 +155,13 @@ public class JwtTokenProvider {
 
         return claims.getSubject();
     }
+
+    public int getMemberIdFromToken(String token) {
+        String email = getUsernameFromToken(token);
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        if (memberOptional.isPresent()) {
+            return memberOptional.get().getId();
+        }
+        throw new RuntimeException("Member not found for email: " + email);
+    }
 }

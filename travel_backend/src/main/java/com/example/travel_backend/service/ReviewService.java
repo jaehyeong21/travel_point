@@ -8,16 +8,22 @@ import com.example.travel_backend.model.Review;
 import com.example.travel_backend.repository.DestinationRepository;
 import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.repository.ReviewRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ReviewService {
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -44,11 +50,11 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByDestinationIdOrderByRateDesc(Long destinationId) {
-        return reviewRepository.findByDestinationDestinationIdOrderByRateDescCountDescCreateDateDesc(destinationId);
+        return reviewRepository.findByDestinationDestinationIdOrderByRateDescLikeCountDescCreateDateDesc(destinationId);
     }
 
     public List<Review> getReviewsByDestinationIdOrderByRateAsc(Long destinationId) {
-        return reviewRepository.findByDestinationDestinationIdOrderByRateAscCountDescCreateDateDesc(destinationId);
+        return reviewRepository.findByDestinationDestinationIdOrderByRateAscLikeCountDescCreateDateDesc(destinationId);
     }
 
     @Transactional
@@ -135,6 +141,18 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    public List<Review> getMyReviews(int memberId) {
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        if (!memberOptional.isPresent()) {
+            log.error("Member not found for ID: " + memberId);
+            throw new RuntimeException("Member not found for ID: " + memberId);
+        }
+
+        Member member = memberOptional.get();
+        return reviewRepository.findByMemberOrderByCreateDateDesc(member);
+    }
+
+
     public ReviewResponseDTO convertToResponseDTO(Review review) {
         MemberDto memberDto = MemberDto.toDto(review.getMember());
         DestinationDto destinationDto = DestinationDto.toDto(review.getDestination());
@@ -146,13 +164,19 @@ public class ReviewService {
         dto.setDestinationId(review.getDestination().getDestinationId());
         dto.setImageUrl(review.getImageUrl());
         dto.setMemberEmail(review.getMember().getEmail());
-        dto.setReviewCount(review.getCount());
+        dto.setReviewCount(review.getLikeCount());
         dto.setModifyDate(review.getModifyDate());
         dto.setCreateDate(review.getCreateDate());
         dto.setUser(memberDto);
         dto.setDestination(destinationDto); // 추가된 필드
 
         return dto;
+    }
+
+    // 회원 유효성 확인
+    public boolean isMemberValid(String email, int memberId) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        return memberOptional.isPresent() && memberOptional.get().getId() == memberId;
     }
 
     public long getReviewCountByDestinationId(Long destinationId) {

@@ -6,10 +6,12 @@ import com.example.travel_backend.data.ReviewResponseDTO;
 import com.example.travel_backend.data.ReviewStatsResponseDTO;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Review;
+import com.example.travel_backend.service.MemberService;
 import com.example.travel_backend.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,7 @@ public class ReviewController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
 
     @Operation(summary = "특정 목적지의 리뷰 조회", description = "destination_id를 사용하여 특정 목적지의 리뷰를 최신 날짜 순으로 조회합니다.")
     @GetMapping("/destination/{destinationId}")
@@ -165,6 +168,26 @@ public class ReviewController {
             return ResponseEntity.ok(ApiResponse.success(null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "멤버의 리뷰 목록 가져오기",
+            description = "특정 멤버의 리뷰 목록을 반환합니다.\n\n" +
+                    "Example request:\n" +
+                    "`GET /members/{memberId}`")
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<ApiResponse> getMyReviews(@PathVariable int memberId, @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            String email = jwtTokenProvider.getUsernameFromToken(token);
+            if (email == null || !reviewService.isMemberValid(email, memberId)) {
+                return ResponseEntity.status(403).body(ApiResponse.error("FORBIDDEN", "Unauthorized request"));
+            }
+            List<Review> reviews = reviewService.getMyReviews(memberId);
+            return ResponseEntity.ok(ApiResponse.success(reviews));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("NotFound", e.getMessage()));
         }
     }
 }
