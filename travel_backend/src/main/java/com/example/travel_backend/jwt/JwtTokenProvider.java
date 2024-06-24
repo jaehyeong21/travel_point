@@ -164,4 +164,14 @@ public class JwtTokenProvider {
         }
         throw new RuntimeException("Member not found for email: " + email);
     }
+
+    // token 값으로 해당 user의 역할 정보 조회
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("auth", String.class);
+    }
 }

@@ -8,27 +8,30 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-@Data
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @ManyToOne
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @Column(nullable = false)
     private String reason;
+
+    @Column(nullable = true)
     private String details;
 
     @CreationTimestamp
+    @Column(name = "create_date", nullable = false, updatable = false)
     private Timestamp createDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 }
