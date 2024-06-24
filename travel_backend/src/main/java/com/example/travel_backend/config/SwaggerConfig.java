@@ -123,4 +123,13 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi ReviewLike() {
+        return GroupedOpenApi.builder()
+                .group("리뷰 좋아요 관리")
+                .pathsToMatch("/like/*")
+                .packagesToScan("com.example.travel_backend.controller.like")
+                .build();
+    }
+
 }

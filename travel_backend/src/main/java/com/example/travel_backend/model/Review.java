@@ -23,7 +23,8 @@ public class Review {
     @Column(length = 255)
     private String content;
 
-    private int count;
+    @Column(name = "count", nullable = false)
+    private int likeCount = 0;
 
     @CreationTimestamp
     private Timestamp createDate;
