@@ -141,11 +141,8 @@ public class ReviewService {
 
         System.out.println("Member role: " + member.getRole());
 
-<<<<<<< HEAD
-        if (!review.getMember().equals(member) && !"ADMIN".equalsIgnoreCase(member.getRole())) {
-=======
+
         if (!review.getMember().equals(member) && !"ROLE_ADMIN".equalsIgnoreCase(member.getRole())) {
->>>>>>> feature/review
             System.out.println("Permission denied for user: " + member.getEmail());
             return ApiResponse.error("PermissionError", "You do not have permission to delete this review");
         }
