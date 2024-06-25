@@ -16,7 +16,7 @@ public class ReviewResponseDTO {
     private Long destinationId;
     private String imageUrl;
     private String memberEmail;
-    private long reviewCount;
+    private long likeCount;
     private Timestamp modifyDate;
     private MemberDto user;
     private Timestamp createDate;
