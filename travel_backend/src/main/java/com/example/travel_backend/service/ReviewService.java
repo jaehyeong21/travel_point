@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -142,7 +141,11 @@ public class ReviewService {
 
         System.out.println("Member role: " + member.getRole());
 
+<<<<<<< HEAD
         if (!review.getMember().equals(member) && !"ADMIN".equalsIgnoreCase(member.getRole())) {
+=======
+        if (!review.getMember().equals(member) && !"ROLE_ADMIN".equalsIgnoreCase(member.getRole())) {
+>>>>>>> feature/review
             System.out.println("Permission denied for user: " + member.getEmail());
             return ApiResponse.error("PermissionError", "You do not have permission to delete this review");
         }
