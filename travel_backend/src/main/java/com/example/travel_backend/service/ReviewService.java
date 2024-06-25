@@ -174,7 +174,7 @@ public class ReviewService {
         dto.setDestinationId(review.getDestination().getDestinationId());
         dto.setImageUrl(review.getImageUrl());
         dto.setMemberEmail(review.getMember().getEmail());
-        dto.setReviewCount(review.getLikeCount());
+        dto.setLikeCount(review.getLikeCount());
         dto.setModifyDate(review.getModifyDate());
         dto.setCreateDate(review.getCreateDate());
         dto.setUser(memberDto);
