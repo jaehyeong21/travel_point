@@ -41,4 +41,22 @@ public class ReviewLikeController {
 
         return ResponseEntity.ok(ApiResponse.success("Review liked/unliked successfully"));
     }
+
+    @Operation(summary = "리뷰 좋아요 여부 확인",
+            description = "특정 리뷰에 대해 사용자가 좋아요를 눌렀는지 여부를 확인합니다.\n\n" +
+                    "Example request header:\n" +
+                    "```http\n" +
+                    "Authorization: Bearer <JWT 토큰>\n" +
+                    "```\n" +
+                    "Example request URL:\n" +
+                    "```http\n" +
+                    "GET /review-likes/{reviewId}/is-liked\n" +
+                    "```")
+    @GetMapping("/{reviewId}/is-liked")
+    public ResponseEntity<ApiResponse> isReviewLiked(@PathVariable int reviewId, @RequestHeader("Authorization") String token) {
+        int memberId = jwtTokenProvider.getMemberIdFromToken(token.substring(7));
+        boolean isLiked = reviewLikeService.isReviewLiked(reviewId, memberId);
+
+        return ResponseEntity.ok(ApiResponse.success(isLiked));
+    }
 }

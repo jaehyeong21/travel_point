@@ -132,4 +132,13 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi Report() {
+        return GroupedOpenApi.builder()
+                .group("신고 관리")
+                .pathsToMatch("/report/*")
+                .packagesToScan("com.example.travel_backend.controller.report")
+                .build();
+    }
+
 }

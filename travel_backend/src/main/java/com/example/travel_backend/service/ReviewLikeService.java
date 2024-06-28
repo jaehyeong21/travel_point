@@ -1,18 +1,13 @@
 package com.example.travel_backend.service;
 
 import com.example.travel_backend.jwt.JwtTokenProvider;
-import com.example.travel_backend.model.Member;
 import com.example.travel_backend.model.Review;
 import com.example.travel_backend.model.ReviewLike;
-import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.repository.ReviewLikeRepository;
 import com.example.travel_backend.repository.ReviewRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 
 @Service
@@ -43,5 +38,10 @@ public class ReviewLikeService {
         }
 
         reviewRepository.save(review);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isReviewLiked(int reviewId, int memberId) {
+        return reviewLikeRepository.existsByMemberIdAndReviewId(memberId, reviewId);
     }
 }
