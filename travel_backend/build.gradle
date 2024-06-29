@@ -7,6 +7,14 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+bootJar {
+	enabled = true
+}
+
+jar {
+	enabled = false
+}
+
 java {
 	sourceCompatibility = '17'
 }
