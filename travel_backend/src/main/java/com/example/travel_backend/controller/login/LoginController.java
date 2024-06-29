@@ -110,7 +110,9 @@ public class LoginController {
         String refreshToken = tokenMap.get("refreshToken");
         try {
             JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
-            return ResponseEntity.ok(ApiResponse.success(newJwtToken));
+            Map<String, Object> result = new HashMap<>();
+            result.put("accessToken", newJwtToken.getAccessToken());
+            return ResponseEntity.ok(ApiResponse.success(result));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
         }
