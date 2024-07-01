@@ -21,7 +21,7 @@ public interface FavoritesRepository extends JpaRepository<Favorites, Integer> {
     Optional<Favorites> findByMemberAndDestination(Member member, Destination destination);
 
     // 특정 회원의 모든 찜 목록 삭제
-    void deleteByMemberId(int memberId);
+    void deleteByMember(Member member);
 
 
 }

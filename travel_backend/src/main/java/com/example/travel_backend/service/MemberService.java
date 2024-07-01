@@ -108,9 +108,7 @@ public class MemberService {
                 return ApiResponse.error("AUTH002", "Invalid Password");
             }
 
-            // 회원의 모든 찜 목록 삭제
             favoritesService.deleteAllFavoritesByMemberId(member.getId());
-
             // 회원 삭제
             memberRepository.delete(member);
 

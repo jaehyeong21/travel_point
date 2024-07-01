@@ -76,17 +76,9 @@ public class LoginController {
         // JWT 토큰 생성
         JwtToken jwtToken = memberService.login(userEmail, password);
 
-        // 로그인 성공 응답 생성
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("id", member.getId());
-        userMap.put("createDate", member.getCreateDate());
-        userMap.put("username", member.getUsername());
-        userMap.put("userImgUrl", member.getUserImgUrl());
-        userMap.put("email", member.getEmail());
-
         Map<String, Object> result = new HashMap<>();
-        result.put("user", userMap);
-        result.put("token", jwtToken);
+        result.put("accessToken", jwtToken.getAccessToken());
+        result.put("refreshToken", jwtToken.getRefreshToken());
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
@@ -210,16 +202,10 @@ public class LoginController {
         JwtToken jwtToken = memberService.login(userEmail, password);
 
         // 회원가입 성공 응답 생성
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("id", member.getId());
-        userMap.put("createDate", member.getCreateDate());
-        userMap.put("username", member.getUsername());
-        userMap.put("userImgUrl", "/assets/image/characters/anonymous.png");
-        userMap.put("email", member.getEmail());
-
         Map<String, Object> result = new HashMap<>();
-        result.put("user", userMap);
-        result.put("token", jwtToken);
+        result.put("accessToken", jwtToken.getAccessToken());
+        result.put("refreshToken", jwtToken.getRefreshToken());
+
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }

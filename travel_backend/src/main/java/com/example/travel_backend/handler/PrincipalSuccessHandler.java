@@ -29,16 +29,16 @@ public class PrincipalSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+//        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("userImgUrl", principalDetails.getMember().getUserImgUrl());
-        userMap.put("id", principalDetails.getMember().getId());
-        userMap.put("email", principalDetails.getMember().getEmail());
-        userMap.put("createDate", principalDetails.getMember().getCreateDate().getTime());
-        userMap.put("username", principalDetails.getMember().getUsername());
+//        userMap.put("userImgUrl", principalDetails.getMember().getUserImgUrl());
+//        userMap.put("id", principalDetails.getMember().getId());
+//        userMap.put("email", principalDetails.getMember().getEmail());
+//        userMap.put("createDate", principalDetails.getMember().getCreateDate().getTime());
+//        userMap.put("username", principalDetails.getMember().getUsername());
 
         Map<String, Object> result = new HashMap<>();
         result.put("user", userMap);

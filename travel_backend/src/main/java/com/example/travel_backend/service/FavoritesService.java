@@ -156,7 +156,9 @@ public class FavoritesService {
     // 회원의 모든 찜 목록 삭제
     @Transactional
     public void deleteAllFavoritesByMemberId(int memberId) {
-        favoritesRepository.deleteByMemberId(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found for ID: " + memberId));
+        favoritesRepository.deleteByMember(member);
     }
 
     // 회원 유효성 확인
