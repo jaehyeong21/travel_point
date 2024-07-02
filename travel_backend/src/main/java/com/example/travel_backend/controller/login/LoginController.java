@@ -1,29 +1,24 @@
 package com.example.travel_backend.controller.login;
 
-import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.LoginDto;
 import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
-import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.service.MailService;
 import com.example.travel_backend.service.MemberService;
-import com.example.travel_backend.validator.EmailValidator;
-import com.example.travel_backend.validator.PasswordValidator;
-import io.jsonwebtoken.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController("loginController")
@@ -47,9 +42,9 @@ public class LoginController {
 
     @Operation(summary = "로그인", description = "사용자의 이메일 주소와 비밀번호로 로그인을 진행합니다.")
     @PostMapping("/loginForm")
-    public ResponseEntity<ApiResponse> loginForm(@RequestBody LoginDto loginDto) {
-        ApiResponse response = memberService.login(loginDto.getEmail(), loginDto.getPassword());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse> loginForm(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+        ApiResponse apiResponse = memberService.login(loginDto.getEmail(), loginDto.getPassword(), response);
+        return ResponseEntity.ok(apiResponse);
     }
 
 
@@ -115,6 +110,7 @@ public class LoginController {
             return ResponseEntity.status(500).body(ApiResponse.error("ServerError", "Failed to delete account: " + e.getMessage()));
         }
     }
+
 
 
 }

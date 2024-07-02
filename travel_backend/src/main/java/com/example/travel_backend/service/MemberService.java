@@ -10,6 +10,8 @@ import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +40,7 @@ public class MemberService {
     private final FavoritesService favoritesService;
 
     @Transactional
-    public ApiResponse login(String email, String password) {
+    public ApiResponse login(String email, String password, HttpServletResponse response) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
@@ -48,8 +50,14 @@ public class MemberService {
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
+        // 4. refreshToken을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
+
         Map<String, Object> result = new HashMap<>();
-        result.put("token", jwtToken);
+        result.put("accessToken", jwtToken.getAccessToken());
 
         return ApiResponse.success(result);
     }
@@ -215,6 +223,10 @@ public class MemberService {
                 member.setUserImgUrl(imageUrl);
                 memberRepository.save(member);
 
+                // 새로운 accessToken을 생성
+                Authentication authentication = new UsernamePasswordAuthenticationToken(member.getEmail(), null, new PrincipalDetails(member).getAuthorities());
+                JwtToken newJwtToken = jwtTokenProvider.generateToken(authentication);
+
                 Map<String, Object> userMap = new HashMap<>();
                 userMap.put("userImgUrl", member.getUserImgUrl() != null ? member.getUserImgUrl() : "defaultImgUrl");
                 userMap.put("id", member.getId());
@@ -222,7 +234,11 @@ public class MemberService {
                 userMap.put("createDate", member.getCreateDate() != null ? member.getCreateDate() : "defaultDate");
                 userMap.put("username", member.getUsername() != null ? member.getUsername() : "defaultUsername");
 
-                return ApiResponse.success(Map.of("user", userMap));
+                Map<String, Object> result = new HashMap<>();
+                result.put("user", userMap);
+                result.put("token", newJwtToken); // 새로운 JWT 토큰 추가
+
+                return ApiResponse.success(result);
             } else {
                 return ApiResponse.error("MemberError", "Member not found.");
             }
