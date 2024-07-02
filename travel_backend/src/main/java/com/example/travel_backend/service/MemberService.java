@@ -53,6 +53,7 @@ public class MemberService {
         // 4. refreshToken을 HttpOnly 쿠키에 저장
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
         refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
 
