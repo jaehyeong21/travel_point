@@ -17,7 +17,7 @@ import java.util.Random;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail = "parkjuncheol77@gmail.com";
+    private static final String senderEmail = "our.travelpoint@gmail.com";
 
     // 저장된 인증 코드를 관리하기 위한 Map
     private Map<String, String> verificationCodes = new HashMap<>();
