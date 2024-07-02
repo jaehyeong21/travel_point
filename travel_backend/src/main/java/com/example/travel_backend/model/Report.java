@@ -25,11 +25,12 @@ public class Report {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String reason;
+    private ReportType reportType;
 
-    @Column(nullable = true)
-    private String details;
+    @Column(nullable = false)
+    private String content;
 
     @CreationTimestamp
     @Column(name = "create_date", nullable = false, updatable = false)

@@ -26,15 +26,14 @@ public class ReportController {
             "Example request body:\n" +
             "```json\n" +
             "{\n" +
-            "  \"reason\": \"신고 이유\",\n" +
-            "  \"details\": \"신고 내용\"\n" +
+            "  \"content\": \"신고 내용\",\n" +
+            "  \"reportType\": \"SPAM\"\n" +
             "}\n" +
             "```")
     @PostMapping("/{reviewId}")
     public ResponseEntity<ApiResponse> reportReview(@PathVariable int reviewId, @RequestBody ReportRequestDTO reportRequest, @RequestHeader("Authorization") String token) {
-        String email = jwtTokenProvider.getUsernameFromToken(token.substring(7));
         int memberId = jwtTokenProvider.getMemberIdFromToken(token.substring(7));
-        ApiResponse response = reportService.reportReview(reviewId, reportRequest.getReason(), reportRequest.getDetails(), memberId);
+        ApiResponse response = reportService.reportReview(reviewId, reportRequest.getContent(), reportRequest.getReportType(), memberId);
         return ResponseEntity.ok(response);
     }
 

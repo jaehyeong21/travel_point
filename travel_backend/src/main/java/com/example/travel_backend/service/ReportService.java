@@ -3,6 +3,7 @@ package com.example.travel_backend.service;
 import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.model.Report;
+import com.example.travel_backend.model.ReportType;
 import com.example.travel_backend.model.Review;
 import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.repository.ReportRepository;
@@ -28,7 +29,7 @@ public class ReportService {
     private MemberRepository memberRepository;
 
     @Transactional
-    public ApiResponse reportReview(int reviewId, String reason, String details, int memberId) {
+    public ApiResponse reportReview(int reviewId, String content, ReportType reportType, int memberId) {
         if (reportRepository.existsByMemberIdAndReviewId(memberId, reviewId)) {
             return ApiResponse.error("ReportError", "You have already reported this review.");
         }
@@ -49,8 +50,8 @@ public class ReportService {
         Report report = new Report();
         report.setReview(review);
         report.setMember(member);
-        report.setReason(reason);
-        report.setDetails(details);
+        report.setReportType(reportType);
+        report.setContent(content);
         report.setCreateDate(new Timestamp(System.currentTimeMillis()));
 
         reportRepository.save(report);
