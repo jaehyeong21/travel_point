@@ -1,11 +1,13 @@
 package com.example.travel_backend.service;
 
+import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.data.PasswordChangeDto;
 import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import com.example.travel_backend.validator.EmailValidator;
 import com.example.travel_backend.validator.PasswordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,21 +38,66 @@ public class MemberService {
     private final FavoritesService favoritesService;
 
     @Transactional
-    public JwtToken login(String email, String password) {
+    public ApiResponse login(String email, String password) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
-        // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
         // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member 에 대한 검증 진행
-        // authenticate 메서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드 실행
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
-        return jwtToken;
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("token", jwtToken);
+
+        return ApiResponse.success(result);
     }
 
-    //이메일로 비밀번호 찾기 -> 비밀번호 변경
+    @Transactional
+    public ApiResponse signup(String email, String password, String verificationCode) {
+        if (!EmailValidator.isValidEmail(email)) {
+            return ApiResponse.error("EmailError", "Invalid Email Format");
+        }
+
+        if (memberRepository.findByEmail(email).isPresent()) {
+            return ApiResponse.error("EmailExists", "This email is already registered");
+        }
+
+        if (!PasswordValidator.isValid(password)) {
+            return ApiResponse.error("PasswordError", "Invalid Password Format");
+        }
+
+        String storedVerificationCode = mailService.getStoredVerificationCode(email);
+
+        if (!verificationCode.equals(storedVerificationCode)) {
+            return ApiResponse.error("VerificationError", "Invalid Verification Code");
+        }
+
+        String encPassword = passwordEncoder.encode(password);
+
+        Member member = new Member();
+        member.setEmail(email);
+        member.setPassword(encPassword);
+        member.setRole("USER");
+        memberRepository.save(member);
+
+        JwtToken jwtToken = jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(email, password));
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", member.getId());
+        userMap.put("createDate", member.getCreateDate());
+        userMap.put("username", member.getUsername());
+        userMap.put("userImgUrl", member.getUserImgUrl());
+        userMap.put("email", member.getEmail());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("user", userMap);
+        result.put("token", jwtToken);
+
+        return ApiResponse.success(result);
+    }
+
     @Transactional
     public ApiResponse resetPassword(String email, String verificationCode, String newPassword) {
         String storedVerificationCode = mailService.getStoredVerificationCode(email);
@@ -64,18 +111,14 @@ public class MemberService {
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
 
-            // 새로운 비밀번호 인코딩
             String encodedPassword = passwordEncoder.encode(newPassword);
 
-            // 기존 비밀번호와 새로운 비밀번호가 동일한지 확인
             if (passwordEncoder.matches(newPassword, member.getPassword())) {
                 return ApiResponse.error("PasswordError", "New password must be different from the current password.");
             }
 
-            // 비밀번호 설정
             member.setPassword(encodedPassword);
 
-            // 회원 저장
             memberRepository.save(member);
 
             return ApiResponse.success("Password reset successfully.");
@@ -84,15 +127,11 @@ public class MemberService {
         }
     }
 
-
-    // 계정을 삭제
     @Transactional
     public ApiResponse deleteAccount(String passwordJson, String accessToken) {
         try {
-            // JSON 문자열을 Map<String, String> 객체로 변환합니다.
             Map<String, String> passwordMap = objectMapper.readValue(passwordJson, Map.class);
 
-            // Map에서 password 키에 해당하는 값을 추출합니다.
             String password = passwordMap.get("password");
 
             String email = jwtTokenProvider.getUsernameFromToken(accessToken);
@@ -109,7 +148,6 @@ public class MemberService {
             }
 
             favoritesService.deleteAllFavoritesByMemberId(member.getId());
-            // 회원 삭제
             memberRepository.delete(member);
 
             return ApiResponse.success("Account deleted successfully");
@@ -122,15 +160,12 @@ public class MemberService {
         }
     }
 
-
-    //로그인 한 상태에서 비밀번호 변경
     @Transactional
     public ApiResponse changePassword(PasswordChangeDto passwordChangeDto, String accessToken) {
         try {
             String currentPassword = passwordChangeDto.getCurrentPassword();
             String newPassword = passwordChangeDto.getNewPassword();
 
-            // Validate new password format
             if (!PasswordValidator.isValid(newPassword)) {
                 return ApiResponse.error("PasswordError", "Invalid password format.");
             }
@@ -144,17 +179,14 @@ public class MemberService {
 
             Member member = memberOptional.get();
 
-            //입력받은 비밀번호가 회원의 비밀번호와 일치하는지 검증
             if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
                 return ApiResponse.error("AUTH002", "Invalid current password");
             }
 
-            //패스워드 검증
             if (!PasswordValidator.isValid(newPassword)) {
                 return ApiResponse.error("PasswordError", "Invalid new password format.");
             }
 
-            // 기존 비밀번호와 새로운 비밀번호가 동일하지 않은지 확인
             if (passwordEncoder.matches(newPassword, member.getPassword())) {
                 return ApiResponse.error("PasswordError", "New password must be different from the current password.");
             }
@@ -169,25 +201,20 @@ public class MemberService {
         }
     }
 
-
     @Transactional
     public ApiResponse uploadImage(Map<String, String> imageMap, String accessToken) {
         try {
-            // JWT 토큰에서 이메일 추출
             String email = jwtTokenProvider.getUsernameFromToken(accessToken);
 
-            // 이메일로 회원 조회
             Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
             if (memberOptional.isPresent()) {
                 Member member = memberOptional.get();
 
-                // 이미지 URL 업데이트
                 String imageUrl = imageMap.get("imageUrl");
                 member.setUserImgUrl(imageUrl);
                 memberRepository.save(member);
 
-                // 맵을 생성할 때 null 값이 있는지 확인
                 Map<String, Object> userMap = new HashMap<>();
                 userMap.put("userImgUrl", member.getUserImgUrl() != null ? member.getUserImgUrl() : "defaultImgUrl");
                 userMap.put("id", member.getId());
@@ -204,5 +231,4 @@ public class MemberService {
             return ApiResponse.error("ServerError", "Failed to upload image: " + e.getMessage());
         }
     }
-
 }

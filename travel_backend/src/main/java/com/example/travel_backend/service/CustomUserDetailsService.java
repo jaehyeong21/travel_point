@@ -1,5 +1,6 @@
 package com.example.travel_backend.service;
 
+import com.example.travel_backend.config.auth.PrincipalDetails;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return memberRepository.findByEmail(email)
-                .map(this::createUserDetails)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+        return new PrincipalDetails(member);
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 return
