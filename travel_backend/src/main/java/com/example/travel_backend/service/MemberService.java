@@ -224,19 +224,13 @@ public class MemberService {
                 memberRepository.save(member);
 
                 // 새로운 accessToken을 생성
-                Authentication authentication = new UsernamePasswordAuthenticationToken(member.getEmail(), null, new PrincipalDetails(member).getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        new PrincipalDetails(member), null, new PrincipalDetails(member).getAuthorities()
+                );
                 JwtToken newJwtToken = jwtTokenProvider.generateToken(authentication);
 
-                Map<String, Object> userMap = new HashMap<>();
-                userMap.put("userImgUrl", member.getUserImgUrl() != null ? member.getUserImgUrl() : "defaultImgUrl");
-                userMap.put("id", member.getId());
-                userMap.put("email", member.getEmail() != null ? member.getEmail() : "defaultEmail");
-                userMap.put("createDate", member.getCreateDate() != null ? member.getCreateDate() : "defaultDate");
-                userMap.put("username", member.getUsername() != null ? member.getUsername() : "defaultUsername");
-
                 Map<String, Object> result = new HashMap<>();
-                result.put("user", userMap);
-                result.put("token", newJwtToken); // 새로운 JWT 토큰 추가
+                result.put("accessToken", newJwtToken.getAccessToken());
 
                 return ApiResponse.success(result);
             } else {
@@ -247,4 +241,5 @@ public class MemberService {
             return ApiResponse.error("ServerError", "Failed to upload image: " + e.getMessage());
         }
     }
+
 }

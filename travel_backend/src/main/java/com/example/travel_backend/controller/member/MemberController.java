@@ -48,16 +48,11 @@ public class MemberController {
             ApiResponse apiResponse = memberService.uploadImage(imageMap, accessToken);
 
             if (apiResponse.isResponse()) {
-                JwtToken newJwtToken = (JwtToken) ((Map<String, Object>) apiResponse.getResult()).get("token");
-
-                // Set new refreshToken as HttpOnly cookie
-                Cookie refreshTokenCookie = new Cookie("refreshToken", newJwtToken.getRefreshToken());
-                refreshTokenCookie.setHttpOnly(true);
-                refreshTokenCookie.setPath("/");
-                response.addCookie(refreshTokenCookie);
+                Map<String, Object> resultMap = (Map<String, Object>) apiResponse.getResult();
+                String newAccessToken = (String) resultMap.get("accessToken");
 
                 // Optionally, add new accessToken to the response body
-                ((Map<String, Object>) apiResponse.getResult()).put("accessToken", newJwtToken.getAccessToken());
+                resultMap.put("accessToken", newAccessToken);
             }
 
             log.debug("Upload image request processed successfully.");

@@ -35,6 +35,7 @@ public class JwtTokenProvider {
     }
 
     public JwtToken generateToken(Authentication authentication) {
+        // UserDetails를 PrincipalDetails로 캐스팅합니다.
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.getMember();
         String authorities = authentication.getAuthorities().stream()
@@ -45,7 +46,7 @@ public class JwtTokenProvider {
         Date accessTokenExpiresIn = new Date(now + 7200000); // 2 hours
 
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(member.getEmail())  // 이메일을 subject에 저장
                 .claim("auth", authorities)
                 .claim("id", member.getId())
                 .claim("createDate", member.getCreateDate())
@@ -57,7 +58,7 @@ public class JwtTokenProvider {
                 .compact();
 
         String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(member.getEmail())
                 .setExpiration(new Date(now + 604800000)) // 7 days
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -108,6 +109,7 @@ public class JwtTokenProvider {
                 .collect(Collectors.toList());
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
+        log.debug("Extracted principal from token: {}", principal);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
@@ -144,13 +146,19 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            String email = claims.getSubject();
+            log.debug("Extracted email from token: {}", email);
+            return email;
+        } catch (Exception e) {
+            log.error("Failed to extract email from token", e);
+            return null;
+        }
     }
 
     public int getMemberIdFromToken(String token) {
