@@ -39,6 +39,11 @@ public class LoginController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @GetMapping("/loginForm")
+    public String loginForm() {
+        // 로그인 폼 페이지로 이동
+        return "loginForm";
+    }
 
     @Operation(summary = "로그인", description = "사용자의 이메일 주소와 비밀번호로 로그인을 진행합니다.")
     @PostMapping("/loginForm")

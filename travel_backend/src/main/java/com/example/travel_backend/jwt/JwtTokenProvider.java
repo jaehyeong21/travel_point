@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     }
 
     public JwtToken generateToken(Authentication authentication) {
-        // UserDetails를 PrincipalDetails로 캐스팅합니다.
+        // Authentication 객체의 Principal에서 PrincipalDetails로 캐스팅합니다.
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.getMember();
         String authorities = authentication.getAuthorities().stream()

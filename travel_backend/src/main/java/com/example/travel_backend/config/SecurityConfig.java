@@ -31,20 +31,41 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 //        return httpSecurity
+//        httpSecurity
+//                // REST API이므로 basic auth 및 csrf 보안을 사용하지 않음
+//                .httpBasic().disable()
+//                .csrf().disable()
+//                // JWT를 사용하기 때문에 세션을 사용하지 않음
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeHttpRequests()
+//                // 해당 API에 대해서는 모든 요청을 허가
+//                .requestMatchers("/loginForm").permitAll()
+//                .requestMatchers("/signup/verify").permitAll()
+//                .requestMatchers("/signup/request").permitAll()
+////                .requestMatchers("/api/**").authenticated() // /api/** 경로에 대해서만 인증을 요구 특정 경로대해서 요구
+//                .anyRequest().permitAll() // 나머지 경로는 인증 없이 접근 가능
+//                .and()
+//                .formLogin()
+//                .loginPage("/loginForm")
+//                .loginProcessingUrl("/login")
+//                .defaultSuccessUrl("/")
+//                .and()
+//                .oauth2Login()
+//                .successHandler(principalSuccessHandler)
+//                .failureHandler(principalFailureHandler)
+//                .and()
+//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+//        return httpSecurity.build();
+
         httpSecurity
-                // REST API이므로 basic auth 및 csrf 보안을 사용하지 않음
                 .httpBasic().disable()
                 .csrf().disable()
-                // JWT를 사용하기 때문에 세션을 사용하지 않음
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                // 해당 API에 대해서는 모든 요청을 허가
-                .requestMatchers("/loginForm").permitAll()
-                .requestMatchers("/signup/verify").permitAll()
-                .requestMatchers("/signup/request").permitAll()
-//                .requestMatchers("/api/**").authenticated() // /api/** 경로에 대해서만 인증을 요구 특정 경로대해서 요구
-                .anyRequest().permitAll() // 나머지 경로는 인증 없이 접근 가능
+                .requestMatchers("/loginForm", "/signup/verify", "/signup/request", "/login/oauth2/**").permitAll() // OAuth2 콜백 경로 추가
+                .anyRequest().permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/loginForm")

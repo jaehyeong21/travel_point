@@ -39,6 +39,7 @@ spring:
             scope:
               - profile
               - email
+            redirect-uri: https://pingulion.shop/login/oauth2/code/google
 
           naver:
             client-id: QDtevbGhxq7CXh065YhE
@@ -49,7 +50,8 @@ spring:
               - profile_image
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+#            redirect-uri: http://localhost:3000/login/oauth2/code/naver
+            redirect-uri: https://pingulion.shop/login/oauth2/code/naver
 
         provider:
           naver:
@@ -91,6 +93,8 @@ mail:
   auth-code-expiration-millis: 1800000  # 30 * 60 * 1000 == 30?
 
 logging:
+  file:
+    name: logs/application.log
   level:
     com.example.travel_backend.jwt: DEBUG
     root: INFO

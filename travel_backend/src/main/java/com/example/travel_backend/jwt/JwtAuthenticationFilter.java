@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
-        // 로그 추가: 토큰 정보 출력
         log.debug("JWT Token: {}", token);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
@@ -38,13 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (RuntimeException e) {
-                // 로그 추가: 인증 실패 시
                 log.error("인증 실패: {}", e.getMessage());
             }
-        } else {
-            log.debug("Invalid or missing JWT Token.");
         }
-
         filterChain.doFilter(request, response);
     }
 

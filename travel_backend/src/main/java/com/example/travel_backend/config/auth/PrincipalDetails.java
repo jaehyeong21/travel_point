@@ -3,6 +3,7 @@ package com.example.travel_backend.config.auth;
 import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.model.Member;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -11,18 +12,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@Slf4j
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
-    private Member member;//콤포지션
+    private Member member; // 콤포지션
     private Map<String, Object> attributes;
     private JwtToken jwtToken;
 
-    //일반 로그인
+    // 일반 로그인
     public PrincipalDetails(Member member) {
         this.member = member;
     }
 
-    //OAuth  로그인
+    // OAuth 로그인
     public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
@@ -35,12 +37,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         this.jwtToken = jwtToken;
     }
 
-    //해당 User의 권한을 리턴
+    // 해당 User의 권한을 리턴
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //return 타입을 맞추기 위한 작업
+        // return 타입을 맞추기 위한 작업
         Collection<GrantedAuthority> collect = new ArrayList<>();
-
         collect.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
@@ -60,7 +61,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return member.getUsername();
     }
 
-    //계정 만료
+    // 계정 만료
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -71,7 +72,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return true;
     }
 
-    //비밀번호 1년 혹은 일정 기간이 지났는지.
+    // 비밀번호 1년 혹은 일정 기간이 지났는지.
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
@@ -79,9 +80,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        //우리 사이트 1년동안 회원이 로그인을 안하면 휴먼계정
-
-        //현재 시간들고 와서 1년을 초과하면 return false해주면 됨
+        // 우리 사이트 1년동안 회원이 로그인을 안하면 휴먼계정
+        // 현재 시간들고 와서 1년을 초과하면 return false해주면 됨
         return true;
     }
 
@@ -92,6 +92,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return null;
+        String email = member.getEmail();
+        if (email == null || email.isEmpty()) {
+            log.error("Email is null or empty for member: {}", member);
+            throw new IllegalStateException("Member email cannot be null or empty");
+        }
+        return email;
     }
 }
