@@ -2,6 +2,8 @@ import { CATEGORIES } from "@/data/data";
 import { CategoryName } from "@/types/categoriy-types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import jwt from 'jsonwebtoken';
+import { AccessUserType, User } from "@/types/user-type";
 
 // 클래스 merge
 export function cn(...inputs: ClassValue[]) {
@@ -21,7 +23,6 @@ export function calculateStarRating(rating: number) {
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
   return { fullStars, hasHalfStar, emptyStars };
 }
-
 
 // 날짜 포맷을 변경하는 함수
 export function formatDateRange(startDate: string, endDate: string): string {
@@ -116,3 +117,38 @@ export function formatFestivalIntro(intro: string): string {
 
   return formattedIntro;
 }
+
+// 유저 이메일 마스킹
+export function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  if (localPart.length <= 2) {
+    return email; // 로컬 부분이 2자리 이하인 경우 변경하지 않음
+  }
+  const maskedLocalPart = `${localPart.slice(0, 2)}${"*".repeat(
+    localPart.length - 3
+  )}${localPart.slice(-1)}`;
+  return `${maskedLocalPart}@${domain}`;
+}
+
+export const jwtDecode = (token: string): User | null => {
+  try {
+    const decoded = jwt.decode(token) as AccessUserType | null;
+
+    if (!decoded) {
+      return null;
+    }
+
+    const user: User = {
+      id: decoded.id.toString(), // string으로 변환
+      email: decoded.email,
+      role: decoded.auth, // auth를 role로 매핑
+      userImgUrl: decoded.userImgUrl,
+      createDate: new Date(decoded.createDate).toISOString(), // string으로 변환
+    };
+
+    return user;
+  } catch (error) {
+    console.error('Failed to decode JWT:', error);
+    return null;
+  }
+};

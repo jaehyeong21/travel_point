@@ -31,6 +31,7 @@ export default function KakaoMap({ latitude, longitude, className }: MapProps) {
         level={6} // 지도의 확대 레벨
         center={state}
         isPanto={true}
+        scrollwheel={false}
       >
         <ZoomControl position={"BOTTOMRIGHT"} />
         <MapMarker title='맵 타이틀' position={state} />

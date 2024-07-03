@@ -48,8 +48,7 @@ export default function MypageFooter() {
       if (result.response) {
         clearUser();
         deleteCookie('accessToken');
-        deleteCookie('refreshToken');
-        deleteCookie('user');
+        deleteCookie('refreshToken');        
         toast({
           title: "회원 탈퇴 완료",
           description: "회원 탈퇴가 성공적으로 처리되었습니다. 이용해 주셔서 감사합니다.",
@@ -106,8 +105,7 @@ export default function MypageFooter() {
     try {
       clearUser();
       deleteCookie('accessToken');
-      deleteCookie('refreshToken');
-      deleteCookie('user');
+      deleteCookie('refreshToken');      
       router.push('/');
     } catch (error) {
       console.error('Failed to sign out:', error);

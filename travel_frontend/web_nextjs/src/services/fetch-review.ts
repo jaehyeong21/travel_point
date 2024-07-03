@@ -39,6 +39,7 @@ export async function getRatingsByDestination(destinationId: number) {
     "GET"
   );
 }
+
 // 특정 목적지의 총 리뷰 갯수 조회
 export async function getReviewCountByDestination(destinationId: number) {
   return await fetchFromAuthApi(
@@ -62,6 +63,34 @@ export async function getReviewsByDestinationRateAsc(destinationId: number) {
   return await fetchFromAuthApi(
     `/api/reviews/destination/${destinationId}/rate-asc`,
     null,
+    "GET"
+  );
+}
+
+// 마이페이지 내가 쓴 리뷰 조회
+export async function getMyReviews(memberId: number) {
+  return await fetchFromAuthApi(
+    `/api/reviews/members/${memberId}`,
+    null,
+    "GET"
+  );
+}
+
+
+// 리뷰 좋아요
+export async function getLiked(commentId: Number) {
+  return await fetchFromAuthApi(
+    `/api/review-likes/${commentId}/like`,
+    commentId,
+    "POST"
+  );
+}
+
+// 리뷰 좋아요 확인
+export async function checkLiked(commentId: Number) {
+  return await fetchFromAuthApi(
+    `/api/review-likes/${commentId}/is-liked`,
+    commentId,
     "GET"
   );
 }

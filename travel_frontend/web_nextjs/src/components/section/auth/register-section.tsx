@@ -10,6 +10,7 @@ import { registerApi, registerVerificationApi } from '@/services/fetch-auth';
 import { setCookie } from '@/libs/cookie';
 import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from '@/libs/utils';
 
 interface RegisterSectionProps {
   toggleForm: () => void;
@@ -75,25 +76,24 @@ export default function RegisterSection({ toggleForm, isModal }: RegisterSection
       setLoading(true);
       setError(null);
 
-      const result = await registerVerificationApi({
+      const response = await registerVerificationApi({
         email: emailRef.current,
         password: passwordRef.current,
         verificationCode: data.verificationCode!,
       });
 
-      if (result.response) {
-        const { accessToken, refreshToken } = result.result.token;
-        const user = result.result.user;
-        setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
-        setCookie({ name: 'refreshToken', value: refreshToken, days: 7, secure: true });
-        setCookie({ name: 'user', value: JSON.stringify(user), hours: 2, secure: true });
-        setUser(user); // Zustand 스토어에 사용자 정보 저장
-        // console.log('Verification successful:', result);
+      if (response.response) {
+        const accessToken = response.result.accessToken;        
+        const user = jwtDecode(accessToken);
+        if (user) {
+          setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
+          setUser(user);
+        }
 
         isModal ? router.back() : router.push('/');
       } else {
-        setError(`Error: ${result.errorCode} - ${result.message}`);
-        console.error('Verification failed:', result.message);
+        setError(`Error: ${response.errorCode} - ${response.message}`);
+        console.error('Verification failed:', response.message);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {

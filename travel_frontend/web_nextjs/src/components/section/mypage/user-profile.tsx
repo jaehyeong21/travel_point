@@ -10,10 +10,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { uploadImage } from "@/services/fetch-auth";
 import { uploadImageToCF } from "@/services/img-upload-to-cf";
 
-export function UserProfile() {
-  const user = useUserStore((state) => state.user);
-  const [loading, setLoading] = useState(false);
-  const setUser = useUserStore((state) => state.setUser);
+export function UserProfile() {  
+  const { user, updateUserImage } = useUserStore();
+  const [loading, setLoading] = useState(false);  
   const { toast } = useToast();
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,17 +21,17 @@ export function UserProfile() {
     if (!files || files.length === 0) return;
 
     setLoading(true);
-    
+
     const VARIANT = 'profile';
     try {
       const imageUrl = await uploadImageToCF(files[0], VARIANT);
       if (imageUrl) {
         const responseData = await uploadImage(imageUrl);
         if (responseData.response) {
+          const accessToken = responseData.result.accessToken;
           if (user) {
-            const updatedUser = { ...user, userImgUrl: imageUrl };
-            setUser(updatedUser);
-            setCookie({ name: 'user', value: JSON.stringify(updatedUser), hours: 2 });
+            updateUserImage(imageUrl);            
+            setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
           }
           event.target.value = '';
           toast({

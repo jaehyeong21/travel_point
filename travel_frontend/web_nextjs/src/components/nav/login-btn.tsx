@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUserStore } from "@/store/userStore";
 import { getCookie, deleteCookie } from '@/libs/cookie';
+import { jwtDecode } from "@/libs/utils";
 
 export default function LoginBtn() {
   const router = useRouter();
@@ -20,15 +21,14 @@ export default function LoginBtn() {
   const clearUser = useUserStore((state) => state.clearUser);
 
   useEffect(() => {
-    const fetchUser = () => {
-      const userCookie = getCookie('user');
-      if (userCookie) {
-        setUser(JSON.parse(userCookie));
+    const accessToken = getCookie('accessToken');
+    if (accessToken) {
+      const user = jwtDecode(accessToken);
+      if (user) {
+        setUser(user);
       }
-      setLoading(false);
-    };
-
-    fetchUser();
+    }
+    setLoading(false);
   }, [setUser]);
 
   const openModal = () => {
@@ -42,7 +42,7 @@ export default function LoginBtn() {
 
   const handleLogout = () => {
     clearUser();
-    deleteCookie('accessToken', 'refreshToken', 'user');
+    deleteCookie('accessToken', 'refreshToken');
     setPopoverOpen(false);
     router.push('/');
   };

@@ -9,7 +9,7 @@ const DestinationDescription = lazy(() => import('@/components/section/destinati
 const KakaoMap = lazy(() => import('@/components/common/map'));
 const DestinationInfo = lazy(() => import('@/components/section/destination/destination-info'));
 const Nearby = lazy(() => import('@/components/section/destination/nearby'));
-const DestinationComment = lazy(() => import('@/components/section/destination/destination-comment'));
+const DestinationComment = lazy(() => import('@/components/section/comment/destination-comment'));
 const DestinationBlog = lazy(() => import('@/components/section/destination/destination-blog'));
 const RecentDestinations = lazy(() => import('@/components/section/destination/recent-destinations'));
 

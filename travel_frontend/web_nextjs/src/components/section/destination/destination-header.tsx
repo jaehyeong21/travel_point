@@ -15,9 +15,10 @@ interface DestinationHeaderProps {
   location: string;
   tags?: string[];
   destinationId?: string;
+  isLoading?: boolean;
 }
 
-export default function DestinationHeader({ title, location, tags, contentId, destinationId }: DestinationHeaderProps) {
+export default function DestinationHeader({ title, location, tags, contentId, destinationId, isLoading }: DestinationHeaderProps) {
   const user = useUserStore((state) => state.user);
   const [isBookmarkedState, setIsBookmarkedState] = useState(false);
   const [rating, setRating] = useState<number>(0);
@@ -111,9 +112,10 @@ export default function DestinationHeader({ title, location, tags, contentId, de
         <div className='flex justify-between'>
           <div className='flex xsm:gap-2  xsm:flex-row flex-col'>
             <h2 className='sm:text-xl font-bold'>{title}</h2>
-            <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} />
+            {isLoading ? <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} isLoading /> :
+              <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} />}
           </div>
-          {/* 북마크, 신고하기, url 저장 */}
+          {/* 북마크, url 저장 */}
           <nav className='flex space-x-2 sm:space-x-4'>
             <div className='mini-icon'>
               <Bookmark
@@ -121,7 +123,7 @@ export default function DestinationHeader({ title, location, tags, contentId, de
                 onClick={handleBookmark}
               />
             </div>
-            <div className='mini-icon'><Siren className='size-3.5 xsm:size-4' /></div>
+            {/* <div className='mini-icon'><Siren className='size-3.5 xsm:size-4' /></div> */}
             <div className='mini-icon' onClick={handleCopyClick}>
               <GoCopy className='size-3.5 xsm:size-4' />
             </div>

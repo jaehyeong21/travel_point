@@ -9,13 +9,14 @@ export default function SocialLoginButton({ provider }: { provider: 'Naver' | 'G
   const handleLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // 폼 제출 방지
     if (provider === 'Google') {
-      window.location.href = '';
+      const googleUrl = `https://pingulion.shop/oauth2/authorization/google`;
+      router.push(googleUrl);
     } else if (provider === 'Naver') {
-      window.location.href = '';
+      const naverLoginUrl = `https://pingulion.shop/oauth2/authorization/naver`;
+      router.push(naverLoginUrl);
     } else {
-      window.location.href = '';
+      return;
     }
-    
   };
 
 

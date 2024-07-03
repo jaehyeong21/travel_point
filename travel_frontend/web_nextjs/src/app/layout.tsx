@@ -4,13 +4,15 @@ import SiteHeader from "@/components/site-header";
 import { ViewTransitions } from 'next-view-transitions';
 import QueryProvider from "@/context/query-provider";
 import { cn } from "@/libs/utils";
-import SiteFooter from "@/components/site-footer";
+// import SiteFooter from "@/components/site-footer";
+// import { Toaster } from "@/components/ui/toaster";
 import KbarLayout from "@/components/kbar/kbar-layout";
-import { Toaster } from "@/components/ui/toaster";
 import { fontSpoqaHanSansNeo } from "@/data/data";
 import MobileNav from "@/components/nav/mobile-nav";
 import { metadataLayout } from "@/config/metadata";
 import { ToastProvider } from "@/components/ui/toast";
+import { lazy } from "react";
+import { AuthProvider } from "@/context/auth-context";
 
 export const metadata: Metadata = metadataLayout;
 
@@ -21,7 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
   modal: React.ReactNode;
 }>) {
-
+  const SiteFooter = lazy(() => import('@/components/site-footer'));
+  const Toaster = lazy(() => import('@/components/ui/toaster'));
   return (
     <ViewTransitions>
       <html lang="ko" className="scroll-smooth scroll-pt-20">
@@ -33,6 +36,7 @@ export default function RootLayout({
         <body className={cn('min-h-dvh antialiased', fontSpoqaHanSansNeo.className)}>
           <KbarLayout >
             <QueryProvider>
+              {/* <AuthProvider> */}
               <ToastProvider>
                 {modal}
                 <SiteHeader />
@@ -41,6 +45,7 @@ export default function RootLayout({
                 <MobileNav />
                 <Toaster />
               </ToastProvider>
+              {/* </AuthProvider> */}
             </QueryProvider>
           </KbarLayout>
         </body>

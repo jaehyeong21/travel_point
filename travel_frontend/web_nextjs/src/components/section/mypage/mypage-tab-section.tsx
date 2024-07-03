@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecentDestinationsTab from "@/components/section/mypage/recent-destination-tab";
 import RecommendationTab from "@/components/section/mypage/recommandation-tab";
 import BookmarkTab from "@/components/section/mypage/bookmark-tab";
+import ReviewTab from "./review-tab";
 
 // 탭 섹션을 렌더링하는 함수 
 export default function MypageTabSection() {
@@ -27,9 +28,7 @@ export default function MypageTabSection() {
       {/* 내가 쓴 리뷰 */}
       <TabsContent value="myComments">
         <div className="p-1 sm:p-4">
-          <div className="flex flex-col items-center justify-center text-center space-y-4 text-sm">
-            <p className="text-gray-600">내가 쓴 리뷰가 없습니다.</p>
-          </div>
+          <ReviewTab/>
         </div>
       </TabsContent>
       {/* 최근 본 여행지 */}

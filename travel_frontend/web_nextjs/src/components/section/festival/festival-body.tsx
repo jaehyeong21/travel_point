@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react';
-import DestinationImages from '@/components/section/destination/destination-images';
 import { FestivalDetailType } from '@/types/destination-types';
 import { MdError } from 'react-icons/md';
 import Title from '@/components/common/title';
 import { formatDateRange } from '@/libs/utils';
+import Image from 'next/image';
+import { placeholderImageBase64 } from '@/data/data';
 
 const DestinationDescription = lazy(() => import('@/components/section/destination/destination-description'));
 const KakaoMap = lazy(() => import('@/components/common/map'));
@@ -74,30 +75,40 @@ export default function FestivalBody({ data, isLoading, isError }: FestivalBodyP
     { label: '홈페이지', value: data.homepage },
     { label: '주소', value: data.location },
     { label: '문의 및 안내', value: data.tel },
-    { label: '시간', value: data.useTime.replace('<br>',' ') },
+    { label: '시간', value: data.useTime.replace('<br>', ' ') },
     { label: '날짜', value: formatDateRange(data.startDate, data.endDate) },
-    { label: '이용요금', value: data.charge },    
+    { label: '이용요금', value: data.charge },
   ].filter(detail => detail.value);
 
   const destinationData = {
     location: data.location.split(' ').slice(0, 2).join(' '),
     title: data.title,
     firstImage: data.firstImage,
-    destinationDescription:  data.destinationDescription ? data.destinationDescription.slice(0, 55): '',
+    destinationDescription: data.destinationDescription ? data.destinationDescription.slice(0, 55) : '',
     contentId: data.contentId
   };
-  
+
 
   return (
     <section className="w-full h-full mx-auto xl:flex-grow">
       <div className="flex">
         <main className="flex p-2.5 flex-col sm:p-6 xl:p-0 w-full">
-          <DestinationImages image={data.firstImage} title={data.title} />
+          <Image
+            src={data.firstImage}
+            alt={`${data.title} Image`}
+            width={800}
+            height={550}
+            className="object-cover w-full aspect-[16/11]"
+            sizes="(max-width: 640px) 500px, (max-width: 1200px) 800px, 760px"
+            priority
+            placeholder='blur'
+            blurDataURL={placeholderImageBase64}
+          />
           <Suspense fallback={null}>
-            <DestinationDescription description={data.destinationDescription && data.destinationDescription.replace(/<\/?[^>]+(>|$)/g, "")} festivalIntro={data.introduction}/>
+            <DestinationDescription description={data.destinationDescription && data.destinationDescription.replace(/<\/?[^>]+(>|$)/g, "")} festivalIntro={data.introduction} />
             <KakaoMap latitude={Number(data.mapX)} longitude={Number(data.mapY)} className='my-10' />
-            <DestinationInfo details={destinationDetails} contentTypeId={data.contentId} />            
-            <Nearby count='4' contentId={data.contentId} latitude={Number(data.mapX)} longitude={Number(data.mapY)}/>
+            <DestinationInfo details={destinationDetails} contentTypeId={data.contentId} />
+            <Nearby count='4' contentId={data.contentId} latitude={Number(data.mapX)} longitude={Number(data.mapY)} />
             <DestinationBlog title={data.title} />
           </Suspense>
         </main>

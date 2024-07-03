@@ -10,10 +10,10 @@ export default function OauthOptions() {
         <span className="flex-shrink mx-4 text-gray-500">또는 다음으로 계속</span>
         <div className="flex-grow border-t border-gray-300" />
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <SocialLoginButton provider="Google" />
         <SocialLoginButton provider="Naver" />
-        <SocialLoginButton provider="KaKao" />
+        {/* <SocialLoginButton provider="KaKao" /> */}
       </div>
     </>
   );

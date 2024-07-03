@@ -21,7 +21,7 @@ export default function DestinationContent({ slug }: { slug: string }) {
     <>
       {isLoading ? (
         <>
-          <DestinationHeader title={title || 'Loading...'} location={location || 'Loading...'} />
+          <DestinationHeader title={title || 'Loading...'} location={location || 'Loading...'} isLoading/>
           <DestinationBody isLoading />
         </>
       ) : isError ? (

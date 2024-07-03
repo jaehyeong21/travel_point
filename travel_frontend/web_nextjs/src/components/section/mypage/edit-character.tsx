@@ -25,15 +25,16 @@ export default function EditCharacter() {
     if (selectedImage) {
       try {
         const responseData = await uploadImage(selectedImage);
-        
+        const accessToken = responseData.result.accessToken;
+
         if (responseData.response) {
           toast({
             title: "변경되었습니다.",
             description: "캐릭터 이미지가 성공적으로 변경되었습니다.",
           });
           if (user) {
+            setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
             updateUserImage(selectedImage);
-            setCookie({ name: 'user', value: JSON.stringify({ ...user, userImgUrl: selectedImage }), hours: 2 });
           }
           setIsOpen(false);
         } else {

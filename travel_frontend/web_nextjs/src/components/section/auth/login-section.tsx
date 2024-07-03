@@ -10,6 +10,7 @@ import { loginApi, findPasswordVeriApi, findPasswordApi } from '@/services/fetch
 import { useUserStore } from '@/store/userStore';
 import { setCookie, getCookie, deleteCookie } from '@/libs/cookie';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from '@/libs/utils';
 
 interface LoginSectionProps {
   toggleForm: () => void;
@@ -34,7 +35,7 @@ interface IResetPasswordInput {
 }
 
 export default function LoginSection({ toggleForm, isModal }: LoginSectionProps) {
-  const { register, handleSubmit, setValue, formState: { errors: loginErrors } } = useForm<IFormInput>({ mode: 'onBlur' });
+  const { register, handleSubmit, setValue, formState: { errors: loginErrors } } = useForm<IFormInput>({ mode: 'onBlur', defaultValues: { rememberMe: true } });
   const { register: registerForgot, handleSubmit: handleSubmitForgot, formState: { errors: forgotPasswordErrors } } = useForm<IForgotPasswordInput>({ mode: 'onBlur' });
   const { register: registerReset, handleSubmit: handleSubmitReset, formState: { errors: resetPasswordErrors } } = useForm<IResetPasswordInput>({ mode: 'onBlur' });
 
@@ -65,23 +66,23 @@ export default function LoginSection({ toggleForm, isModal }: LoginSectionProps)
     }
 
     try {
-      const result = await loginApi({
+      const response = await loginApi({
         email: data.email,
         password: data.password,
       });
 
-      if (result.response) {
-        const { accessToken, refreshToken } = result.result.token;
-        const user = result.result.user;
-        setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
-        setCookie({ name: 'refreshToken', value: refreshToken, days: 7, secure: true });
-        setCookie({ name: 'user', value: JSON.stringify(user), hours: 2 });
-        setUser(user); // Zustand 스토어에 사용자 정보 저장                
+      if (response.response) {
+        const accessToken = response.result.accessToken;
+        const user = jwtDecode(accessToken);
+        if (user) {
+          setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
+          setUser(user);
+        }
 
         isModal ? router.back() : router.push('/');
       } else {
-        setError(`Error: ${result.errorCode} - ${result.message}`);
-        console.error('Login failed:', result.message);
+        setError(`Error: ${response.errorCode} - ${response.message}`);
+        console.error('Login failed:', response.message);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
