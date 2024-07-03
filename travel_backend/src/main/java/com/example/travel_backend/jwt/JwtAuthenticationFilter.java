@@ -41,7 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 로그 추가: 인증 실패 시
                 log.error("인증 실패: {}", e.getMessage());
             }
+        } else {
+            log.debug("Invalid or missing JWT Token.");
         }
+
         filterChain.doFilter(request, response);
     }
 

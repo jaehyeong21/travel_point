@@ -29,10 +29,22 @@ public class PrincipalSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        String redirectUrl = "http://localhost:3000/auth/callback?token=" + jwtToken.getAccessToken();
-        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        Map<String, Object> userMap = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
+        ApiResponse apiResponse = ApiResponse.success(result);
+
+        result.put("user", userMap);
+        result.put("token", jwtToken);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+
+//        String redirectUrl = "http://localhost:3000/auth/callback?token=" + jwtToken.getAccessToken();
+//        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
 

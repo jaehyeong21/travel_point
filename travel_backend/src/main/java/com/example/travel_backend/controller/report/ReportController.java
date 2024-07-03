@@ -42,7 +42,7 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getAllReports(@RequestHeader("Authorization") String token) {
         String role = jwtTokenProvider.getRoleFromToken(token.substring(7));
 
-        if (!"ROLE_ADMIN".equals(role)) {
+        if (!"ADMIN".equals(role)) {  // 권한 확인을 ROLE_ADMIN -> ADMIN 으로 변경
             return ResponseEntity.status(403).body(ApiResponse.error("FORBIDDEN", "Unauthorized request"));
         }
 

@@ -171,12 +171,26 @@ public class JwtTokenProvider {
     }
 
     public String getRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        return claims.get("auth", String.class);
+            return claims.get("auth", String.class);
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT Token", e);
+            throw new RuntimeException("Invalid JWT Token");
+        } catch (ExpiredJwtException e) {
+            log.error("Expired JWT Token", e);
+            throw new RuntimeException("Expired JWT Token");
+        } catch (UnsupportedJwtException e) {
+            log.error("Unsupported JWT Token", e);
+            throw new RuntimeException("Unsupported JWT Token");
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty.", e);
+            throw new RuntimeException("JWT claims string is empty.");
+        }
     }
 }

@@ -26,7 +26,7 @@ public class Report {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "report_type")
     private ReportType reportType;
 
     @Column(nullable = false)
