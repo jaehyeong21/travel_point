@@ -108,6 +108,9 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                 userRequest.getAccessToken()
         );
 
+        log.info("Saving OAuth2AuthorizedClient with clientRegistrationId: {}, principalName: {}, accessToken: {}",
+                userRequest.getClientRegistration().getRegistrationId(), principalDetails.getName(), userRequest.getAccessToken().getTokenValue());
+
         authorizedClientService.saveAuthorizedClient(authorizedClient, authentication);
 
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes(), jwtToken);
