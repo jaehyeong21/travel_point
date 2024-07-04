@@ -92,11 +92,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        String email = member.getEmail();
-        if (email == null || email.isEmpty()) {
-            log.error("Email is null or empty for member: {}", member);
+        if (this.member != null && this.member.getEmail() != null && !this.member.getEmail().isEmpty()) {
+            return this.member.getEmail();
+        } else {
+            log.error("Email is null or empty for member: {}", this.member);
             throw new IllegalStateException("Member email cannot be null or empty");
         }
-        return email;
     }
 }

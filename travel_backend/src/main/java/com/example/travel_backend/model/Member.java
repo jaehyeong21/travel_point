@@ -2,10 +2,7 @@ package com.example.travel_backend.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.cglib.core.Local;
@@ -36,9 +33,10 @@ public class Member {
 
     @JsonProperty("userImgUrl")
     @Builder.Default
-    private String userImgUrl  = "/assets/image/characters/anonymous.png";
+    private String userImgUrl = "/assets/image/characters/anonymous.png";
 
     @JsonProperty("email")
+    @Column(nullable = false, unique = true)
     private String email;
 
     @JsonProperty("role")
@@ -55,18 +53,6 @@ public class Member {
 
     @CreationTimestamp
     private Timestamp emailVerified;
-
-
-    public Member(String username, String password, String userImgUrl, String email, String role, String provider, String providerId, Timestamp createDate) {
-        this.username = username;
-        this.password = password;
-        this.userImgUrl = userImgUrl;
-        this.email = email;
-        this.role = role;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.createDate = createDate;
-    }
 
     // 권한 정보를 가져오는 메서드 추가
     public Collection<? extends GrantedAuthority> getAuthorities() {

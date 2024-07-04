@@ -52,34 +52,49 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
             oAuth2MemberInfo = new GoogleMemberInfo(oAuth2User.getAttributes());
             log.info("Processing Google login for user: {}", oAuth2MemberInfo.getEmail());
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
-            oAuth2MemberInfo = new NaverMemberInfo((Map) oAuth2User.getAttributes().get("response"));
+            log.info("Naver attributes map: {}", oAuth2User.getAttributes());
+            oAuth2MemberInfo = new NaverMemberInfo(oAuth2User.getAttributes());
             log.info("Processing Naver login for user: {}", oAuth2MemberInfo.getEmail());
         } else {
             log.error("Unsupported provider: {}", userRequest.getClientRegistration().getRegistrationId());
             throw new OAuth2AuthenticationException("Unsupported provider");
         }
 
+        log.info("OAuth2 Member Info: {}", oAuth2MemberInfo);
+
         String provider = oAuth2MemberInfo.getProvider();
         String providerId = oAuth2MemberInfo.getProviderId();
-        String username = provider + "_" + providerId; // 예: google_sub
-        String password = bCryptPasswordEncoder.encode("겟인데어"); // 기본 비밀번호 설정
+        String username = provider + "_" + providerId;
+        String password = bCryptPasswordEncoder.encode("겟인데어");
         String userImgUrl = oAuth2MemberInfo.getUserImgUrl();
         String email = oAuth2MemberInfo.getEmail();
         String role = "ROLE_USER";
+
+        if (email == null || email.isEmpty()) {
+            log.error("Email is null or empty. Aborting.");
+            throw new OAuth2AuthenticationException("Email is null or empty");
+        }
 
         Optional<Member> userEntityOptional = memberRepository.findByEmail(email);
         Member userEntity;
 
         if (userEntityOptional.isPresent()) {
             userEntity = userEntityOptional.get();
+            log.info("Before update: userEntity = {}", userEntity);
             if (userEntity.getProvider() == null || userEntity.getProvider().equals(provider)) {
                 log.info("Existing user found. Updating information for user: {}", email);
-                userEntity.setUserImgUrl(userImgUrl);
-                userEntity.setProvider(provider); // Ensure provider is set
+                if (userImgUrl != null) {
+                    userEntity.setUserImgUrl(userImgUrl);
+                }
+                userEntity.setProvider(provider);
+                userEntity.setProviderId(providerId);
+                userEntity.setUsername(username);
+                userEntity.setPassword(password);
+                userEntity.setRole(role);
                 memberRepository.save(userEntity);
+                log.info("After update: userEntity = {}", userEntity);
             } else {
-                log.error("Email {} already registered with different provider", email);
-                throw new OAuth2AuthenticationException("Email already registered with different provider");
+                log.info("Email {} already registered with a different provider. Skipping update.", email);
             }
         } else {
             log.info("No existing user found. Creating new user: {}", email);
@@ -93,10 +108,11 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .build();
             memberRepository.save(userEntity);
+            log.info("New user created: userEntity = {}", userEntity);
         }
 
         PrincipalDetails principalDetails = new PrincipalDetails(userEntity, oAuth2User.getAttributes());
-        log.info("PrincipalDetails.getName(): {}", principalDetails.getName()); // 이 부분 추가
+        log.info("PrincipalDetails.getName(): {}", principalDetails.getName());
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
         log.info("Generated JWT token for user: {}", email);
@@ -104,7 +120,7 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
         // OAuth2AuthorizedClient 생성
         OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(
                 userRequest.getClientRegistration(),
-                principalDetails.getName(), // principalName
+                principalDetails.getName(),
                 userRequest.getAccessToken()
         );
 

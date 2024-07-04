@@ -2,6 +2,7 @@ package com.example.travel_backend.config.oauth.provider;
 
 import java.util.Map;
 
+
 /*
 {resultcode=00, message=success,
 response={id=,
@@ -12,15 +13,19 @@ response={id=,
  */
 public class NaverMemberInfo implements OAuth2MemberInfo {
 
-    private Map<String, Object> attributes; //oauth2User.getAttributes()
+    private final Map<String, Object> response;
 
     public NaverMemberInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
+        if (attributes.containsKey("response")) {
+            this.response = (Map<String, Object>) attributes.get("response");
+        } else {
+            throw new IllegalArgumentException("Response attribute is missing");
+        }
     }
 
     @Override
     public String getProviderId() {
-        return (String)attributes.get("id");
+        return (String) response.get("id");
     }
 
     @Override
@@ -30,16 +35,16 @@ public class NaverMemberInfo implements OAuth2MemberInfo {
 
     @Override
     public String getEmail() {
-        return (String)attributes.get("email");
+        return (String) response.get("email");
     }
 
     @Override
     public String getName() {
-        return (String)attributes.get("name");
+        return (String) response.get("name");
     }
 
     @Override
     public String getUserImgUrl() {
-        return (String)attributes.get("profile_image");
+        return (String) response.get("profile_image");
     }
 }
