@@ -62,4 +62,20 @@ public class ReportService {
     public List<Report> getAllReports() {
         return reportRepository.findAllByOrderByCreateDateDesc();
     }
+
+
+
+    @Transactional
+    public ApiResponse deleteReport(int reportId) {
+        Optional<Report> reportOptional = reportRepository.findById(reportId);
+        if (!reportOptional.isPresent()) {
+            return ApiResponse.error("ReportError", "Report not found.");
+        }
+
+        reportRepository.deleteById(reportId);
+        return ApiResponse.success("Report deleted successfully.");
+    }
+
+
+
 }

@@ -49,4 +49,17 @@ public class ReportController {
         List<Report> reports = reportService.getAllReports();
         return ResponseEntity.ok(ApiResponse.success(reports));
     }
+
+    @Operation(summary = "신고 삭제", description = "관리자는 특정 신고를 삭제할 수 있습니다.")
+    @DeleteMapping("/{reportId}")
+    public ResponseEntity<ApiResponse> deleteReport(@PathVariable int reportId, @RequestHeader("Authorization") String token) {
+        String role = jwtTokenProvider.getRoleFromToken(token.substring(7));
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("FORBIDDEN", "Unauthorized request"));
+        }
+
+        ApiResponse response = reportService.deleteReport(reportId);
+        return ResponseEntity.ok(response);
+    }
 }
