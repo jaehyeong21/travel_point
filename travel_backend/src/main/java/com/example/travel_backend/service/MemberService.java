@@ -38,6 +38,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final FavoritesService favoritesService;
+    private final ReviewService reviewService;
+    private final ReportService reportService;
 
     @Transactional
     public ApiResponse login(String email, String password, HttpServletResponse response) {
@@ -135,9 +137,7 @@ public class MemberService {
     public ApiResponse deleteAccount(String passwordJson, String accessToken) {
         try {
             Map<String, String> passwordMap = objectMapper.readValue(passwordJson, Map.class);
-
             String password = passwordMap.get("password");
-
             String email = jwtTokenProvider.getUsernameFromToken(accessToken);
             Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
@@ -151,7 +151,6 @@ public class MemberService {
                 return ApiResponse.error("AUTH002", "Invalid Password");
             }
 
-            favoritesService.deleteAllFavoritesByMemberId(member.getId());
             memberRepository.delete(member);
 
             return ApiResponse.success("Account deleted successfully");

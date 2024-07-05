@@ -217,4 +217,9 @@ public class ReviewService {
     public Integer getMinRatingByDestinationId(Long destinationId) {
         return reviewRepository.findMinRatingByDestinationId(destinationId);
     }
+
+    @Transactional
+    public void deleteReviewsByMember(Member member) {
+        reviewRepository.deleteByMember(member);
+    }
 }

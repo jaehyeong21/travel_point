@@ -76,6 +76,11 @@ public class ReportService {
         return ApiResponse.success("Report deleted successfully.");
     }
 
+    @Transactional
+    public void deleteReportsByMember(Member member) {
+        reportRepository.deleteByMember(member);
+    }
+
 
 
 }

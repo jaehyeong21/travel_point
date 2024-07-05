@@ -1,8 +1,10 @@
 package com.example.travel_backend.service;
 
 import com.example.travel_backend.jwt.JwtTokenProvider;
+import com.example.travel_backend.model.Member;
 import com.example.travel_backend.model.Review;
 import com.example.travel_backend.model.ReviewLike;
+import com.example.travel_backend.repository.MemberRepository;
 import com.example.travel_backend.repository.ReviewLikeRepository;
 import com.example.travel_backend.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class ReviewLikeService {
     private ReviewRepository reviewRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private ReviewLikeRepository reviewLikeRepository;
 
     @Autowired
@@ -25,6 +30,7 @@ public class ReviewLikeService {
     @Transactional
     public void likeReview(int reviewId, int memberId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RuntimeException("Review not found"));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
         if (reviewLikeRepository.existsByMemberIdAndReviewId(memberId, reviewId)) {
             review.setLikeCount(review.getLikeCount() - 1);
@@ -32,8 +38,8 @@ public class ReviewLikeService {
         } else {
             review.setLikeCount(review.getLikeCount() + 1);
             ReviewLike reviewLike = new ReviewLike();
-            reviewLike.setMemberId(memberId);
-            reviewLike.setReviewId(reviewId);
+            reviewLike.setMember(member);
+            reviewLike.setReview(review);
             reviewLikeRepository.save(reviewLike);
         }
 

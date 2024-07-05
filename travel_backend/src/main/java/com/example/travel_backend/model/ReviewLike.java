@@ -1,5 +1,6 @@
 package com.example.travel_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -17,11 +18,15 @@ public class ReviewLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "member_id", nullable = false)
-    private int memberId;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonManagedReference
+    private Member member;
 
-    @Column(name = "review_id", nullable = false)
-    private int reviewId;
+    @ManyToOne
+    @JoinColumn(name = "review_id", nullable = false)
+    @JsonManagedReference
+    private Review review;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

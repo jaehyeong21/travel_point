@@ -1,5 +1,6 @@
 package com.example.travel_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,9 +19,11 @@ public class Favorites {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "id")
+    @JsonManagedReference
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination_id", referencedColumnName = "destination_id")
+    @JsonManagedReference
     private Destination destination;
 }
