@@ -9,6 +9,7 @@ import com.example.travel_backend.service.MailService;
 import com.example.travel_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,12 +58,19 @@ public class LoginController {
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse> refreshAccessToken(@RequestBody Map<String, String> tokenMap) {
         String refreshToken = tokenMap.get("refreshToken");
+
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("InvalidRequest", "Refresh token is missing or empty"));
+        }
+
         try {
             JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
+            log.debug("Generated new JWT token: {}", newJwtToken);
             Map<String, Object> result = new HashMap<>();
             result.put("accessToken", newJwtToken.getAccessToken());
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (RuntimeException e) {
+            log.error("Error refreshing token", e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
         }
     }
@@ -114,6 +122,25 @@ public class LoginController {
             log.error("Error processing delete account request.", e);
             return ResponseEntity.status(500).body(ApiResponse.error("ServerError", "Failed to delete account: " + e.getMessage()));
         }
+    }
+
+    @Operation(summary = "Access Token 존재 여부 확인", description = "Access Token이 존재하는지 여부를 확인합니다.")
+    @GetMapping("/accessToken/exists")
+    public ResponseEntity<ApiResponse> refreshTokenExists(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    String refreshToken = cookie.getValue();
+                    if (jwtTokenProvider.validateToken(refreshToken)) {
+                        return ResponseEntity.ok(ApiResponse.success("Refresh token is valid"));
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+                    }
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("TokenNotFound", "Refresh token not found"));
     }
 
 

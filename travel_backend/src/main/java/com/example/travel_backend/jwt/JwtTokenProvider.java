@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-
     private final Key key;
     private final MemberRepository memberRepository;
 
@@ -35,7 +34,6 @@ public class JwtTokenProvider {
     }
 
     public JwtToken generateToken(Authentication authentication) {
-        // Authentication 객체의 Principal에서 PrincipalDetails로 캐스팅합니다.
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.getMember();
         String authorities = authentication.getAuthorities().stream()
@@ -71,26 +69,37 @@ public class JwtTokenProvider {
     }
 
     public JwtToken refreshToken(String refreshToken) {
+        log.debug("Refreshing token: {}", refreshToken);
         if (validateToken(refreshToken)) {
             Claims claims = parseClaims(refreshToken);
             String username = claims.getSubject();
 
+            log.debug("Claims subject (username): {}", username);
+
             Optional<Member> memberOptional = memberRepository.findByEmail(username);
             if (!memberOptional.isPresent()) {
+                log.error("No member found with email: {}", username);
                 throw new RuntimeException("Invalid Refresh Token");
             }
 
             Member member = memberOptional.get();
+            PrincipalDetails principalDetails = new PrincipalDetails(member);
+
             Collection<? extends GrantedAuthority> authorities = member.getAuthorities();
 
             Collection<GrantedAuthority> grantedAuthorities = authorities.stream()
                     .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                     .collect(Collectors.toList());
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, grantedAuthorities);
 
-            return generateToken(authentication);
+            log.debug("Generating new token for user: {}", username);
+            JwtToken newToken = generateToken(authentication);
+            log.debug("New token generated: {}", newToken);
+
+            return newToken;
         }
+        log.error("Refresh token validation failed");
         throw new RuntimeException("Invalid Refresh Token");
     }
 
@@ -116,6 +125,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
+            log.debug("Validating token: {}", token);
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
