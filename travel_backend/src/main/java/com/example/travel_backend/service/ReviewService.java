@@ -124,30 +124,35 @@ public class ReviewService {
 
     @Transactional
     public ApiResponse deleteReview(int id, String accessToken) {
+        log.debug("Starting deleteReview method");
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (!reviewOptional.isPresent()) {
+            log.error("Review not found with id " + id);
             return ApiResponse.error("ReviewError", "Review not found with id " + id);
         }
 
         Review review = reviewOptional.get();
+        log.debug("Found review: " + review);
 
         String email = jwtTokenProvider.getUsernameFromToken(accessToken);
+        log.debug("Extracted email from token: " + email);
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         if (!memberOptional.isPresent()) {
+            log.error("Member not found with email " + email);
             return ApiResponse.error("MemberError", "Member not found with email " + email);
         }
 
         Member member = memberOptional.get();
+        log.debug("Found member: " + member);
 
-        System.out.println("Member role: " + member.getRole());
-
-
-        if (!review.getMember().equals(member) && !"ROLE_ADMIN".equalsIgnoreCase(member.getRole())) {
-            System.out.println("Permission denied for user: " + member.getEmail());
+        if (!review.getMember().equals(member) && !"ADMIN".equalsIgnoreCase(member.getRole())) {
+            log.error("Permission denied for user: " + member.getEmail());
             return ApiResponse.error("PermissionError", "You do not have permission to delete this review");
         }
 
+        log.debug("Deleting review: " + review);
         reviewRepository.delete(review);
+        log.debug("Review deleted successfully");
 
         return ApiResponse.success("Review deleted successfully", null);
     }
