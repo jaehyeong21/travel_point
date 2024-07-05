@@ -89,11 +89,10 @@ public class LoginController {
 
     @Operation(summary = "회원가입", description = "userEmail, password, userEmail로 발급된 인증번호를 입력받아, 회원가입을 진행합니다.")
     @PostMapping("/signup/verify")
-    public ResponseEntity<ApiResponse> join(@RequestBody LoginDto loginDto) {
-        ApiResponse response = memberService.signup(loginDto.getEmail(), loginDto.getPassword(), loginDto.getVerificationCode());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse> join(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+        ApiResponse apiResponse = memberService.signup(loginDto.getEmail(), loginDto.getPassword(), loginDto.getVerificationCode(), response);
+        return ResponseEntity.ok(apiResponse);
     }
-
 
 
     @Operation(summary = "회원탈퇴", description = "로그인된 사용자가 자신의 비밀번호를 입력하여 회원탈퇴를 진행합니다. Headers에서 Authorization를 Key로 하고 " +

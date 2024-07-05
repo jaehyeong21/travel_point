@@ -41,16 +41,10 @@ public class MemberService {
 
     @Transactional
     public ApiResponse login(String email, String password, HttpServletResponse response) {
-        // 1. username + password 를 기반으로 Authentication 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-
-        // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member 에 대한 검증 진행
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        // 4. refreshToken을 HttpOnly 쿠키에 저장
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
@@ -64,7 +58,7 @@ public class MemberService {
     }
 
     @Transactional
-    public ApiResponse signup(String email, String password, String verificationCode) {
+    public ApiResponse signup(String email, String password, String verificationCode, HttpServletResponse response) {
         if (!EmailValidator.isValidEmail(email)) {
             return ApiResponse.error("EmailError", "Invalid Email Format");
         }
@@ -91,18 +85,19 @@ public class MemberService {
         member.setRole("USER");
         memberRepository.save(member);
 
-        JwtToken jwtToken = jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(email, password));
+        PrincipalDetails principalDetails = new PrincipalDetails(member);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+        JwtToken jwtToken = jwtTokenProvider.generateToken(authenticationToken);
 
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("id", member.getId());
-        userMap.put("createDate", member.getCreateDate());
-        userMap.put("username", member.getUsername());
-        userMap.put("userImgUrl", member.getUserImgUrl());
-        userMap.put("email", member.getEmail());
+        // refreshToken을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("user", userMap);
-        result.put("token", jwtToken);
+        result.put("accessToken", jwtToken.getAccessToken());
 
         return ApiResponse.success(result);
     }
@@ -224,10 +219,8 @@ public class MemberService {
                 member.setUserImgUrl(imageUrl);
                 memberRepository.save(member);
 
-                // 새로운 accessToken을 생성
-                Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        new PrincipalDetails(member), null, new PrincipalDetails(member).getAuthorities()
-                );
+                PrincipalDetails principalDetails = new PrincipalDetails(member);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
                 JwtToken newJwtToken = jwtTokenProvider.generateToken(authentication);
 
                 Map<String, Object> result = new HashMap<>();
@@ -242,5 +235,4 @@ public class MemberService {
             return ApiResponse.error("ServerError", "Failed to upload image: " + e.getMessage());
         }
     }
-
 }

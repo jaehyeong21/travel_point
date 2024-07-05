@@ -44,7 +44,7 @@ public class JwtTokenProvider {
         Date accessTokenExpiresIn = new Date(now + 7200000); // 2 hours
 
         String accessToken = Jwts.builder()
-                .setSubject(member.getEmail())  // 이메일을 subject에 저장
+                .setSubject(member.getEmail())
                 .claim("auth", authorities)
                 .claim("id", member.getId())
                 .claim("createDate", member.getCreateDate())

@@ -1271,3 +1271,352 @@ java.lang.ClassCastException: class java.lang.String cannot be cast to class com
 2024-07-05T18:27:49.157+09:00 DEBUG 9320 --- [http-nio-8080-exec-4] c.e.travel_backend.jwt.JwtTokenProvider  : Validating token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJza3lqb29uMkBuYXZlci5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWQiOjcxLCJjcmVhdGVEYXRlIjoxNzE4OTU5NTAwNjkzLCJ1c2VybmFtZSI6Im5hdmVyX1lwN2xoM05ZTWZlOF93d1NzeW9CdzFQU05QNENWR2EyampwQ1dRVmFXYmsiLCJ1c2VySW1nVXJsIjoiaHR0cHM6Ly9zc2wucHN0YXRpYy5uZXQvc3RhdGljL3B3ZS9hZGRyZXNzL2ltZ19wcm9maWxlLnBuZyIsImVtYWlsIjoic2t5am9vbjJAbmF2ZXIuY29tIiwiZXhwIjoxNzIwMTc4ODUyfQ.ll7_KriG4iBSkXzc0gdgxFxV1PR4isj6m4R2CiBb5a4
 2024-07-05T18:27:49.160+09:00 DEBUG 9320 --- [http-nio-8080-exec-4] c.e.travel_backend.jwt.JwtTokenProvider  : Claims: {sub=skyjoon2@naver.com, auth=ROLE_USER, id=71, createDate=1718959500693, username=naver_Yp7lh3NYMfe8_wwSsyoBw1PSNP4CVGa2jjpCWQVaWbk, userImgUrl=https://ssl.pstatic.net/static/pwe/address/img_profile.png, email=skyjoon2@naver.com, exp=1720178852}
 2024-07-05T18:27:49.160+09:00 DEBUG 9320 --- [http-nio-8080-exec-4] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted principal from token: org.springframework.security.core.userdetails.User [Username=skyjoon2@naver.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]]
+2024-07-05T18:28:39.608+09:00 DEBUG 9320 --- [http-nio-8080-exec-5] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:29:07.249+09:00 DEBUG 9320 --- [http-nio-8080-exec-6] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:29:07.541+09:00 ERROR 9320 --- [http-nio-8080-exec-6] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: java.lang.ClassCastException: class java.lang.String cannot be cast to class com.example.travel_backend.config.auth.PrincipalDetails (java.lang.String is in module java.base of loader 'bootstrap'; com.example.travel_backend.config.auth.PrincipalDetails is in unnamed module of loader 'app')] with root cause
+
+java.lang.ClassCastException: class java.lang.String cannot be cast to class com.example.travel_backend.config.auth.PrincipalDetails (java.lang.String is in module java.base of loader 'bootstrap'; com.example.travel_backend.config.auth.PrincipalDetails is in unnamed module of loader 'app')
+	at com.example.travel_backend.jwt.JwtTokenProvider.generateToken(JwtTokenProvider.java:37) ~[classes/:na]
+	at com.example.travel_backend.service.MemberService.signup(MemberService.java:94) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:756) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:391) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:756) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708) ~[spring-aop-6.0.11.jar:6.0.11]
+	at com.example.travel_backend.service.MemberService$$SpringCGLIB$$0.signup(<generated>) ~[classes/:na]
+	at com.example.travel_backend.controller.login.LoginController.join(LoginController.java:93) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:884) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:797) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1081) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:974) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1011) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.12.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.12.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter.doFilterInternal(DefaultLogoutPageGeneratingFilter.java:58) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:188) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:174) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at com.example.travel_backend.jwt.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:43) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.doFilterInternal(OAuth2AuthorizationRequestRedirectFilter.java:181) ~[spring-security-oauth2-client-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:166) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:894) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1740) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-07-05T18:29:22.539+09:00 DEBUG 9320 --- [http-nio-8080-exec-8] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:29:22.676+09:00 ERROR 9320 --- [http-nio-8080-exec-8] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: java.lang.ClassCastException: class java.lang.String cannot be cast to class com.example.travel_backend.config.auth.PrincipalDetails (java.lang.String is in module java.base of loader 'bootstrap'; com.example.travel_backend.config.auth.PrincipalDetails is in unnamed module of loader 'app')] with root cause
+
+java.lang.ClassCastException: class java.lang.String cannot be cast to class com.example.travel_backend.config.auth.PrincipalDetails (java.lang.String is in module java.base of loader 'bootstrap'; com.example.travel_backend.config.auth.PrincipalDetails is in unnamed module of loader 'app')
+	at com.example.travel_backend.jwt.JwtTokenProvider.generateToken(JwtTokenProvider.java:37) ~[classes/:na]
+	at com.example.travel_backend.service.MemberService.signup(MemberService.java:94) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:756) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:391) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:756) ~[spring-aop-6.0.11.jar:6.0.11]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708) ~[spring-aop-6.0.11.jar:6.0.11]
+	at com.example.travel_backend.service.MemberService$$SpringCGLIB$$0.signup(<generated>) ~[classes/:na]
+	at com.example.travel_backend.controller.login.LoginController.join(LoginController.java:93) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:884) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:797) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1081) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:974) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1011) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.12.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.0.11.jar:6.0.11]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.12.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter.doFilterInternal(DefaultLogoutPageGeneratingFilter.java:58) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:188) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:174) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at com.example.travel_backend.jwt.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:43) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.doFilterInternal(OAuth2AuthorizationRequestRedirectFilter.java:181) ~[spring-security-oauth2-client-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.1.3.jar:6.1.3]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.0.11.jar:6.0.11]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:166) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:894) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1740) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-10.1.12.jar:10.1.12]
+	at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-07-05T18:34:21.171+09:00  INFO 9320 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-05T18:34:21.174+09:00  INFO 9320 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-07-05T18:34:21.232+09:00  INFO 9320 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-07-05T18:34:26.095+09:00  INFO 18888 --- [main] c.e.t.TravelBackendApplication           : Starting TravelBackendApplication using Java 17.0.10 with PID 18888 (C:\Users\skyjo\IdeaProjects\travel_point\travel_backend\out\production\classes started by skyjo in C:\Users\skyjo\IdeaProjects\travel_point\travel_backend)
+2024-07-05T18:34:26.097+09:00  INFO 18888 --- [main] c.e.t.TravelBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2024-07-05T18:34:26.806+09:00  INFO 18888 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-05T18:34:26.874+09:00  INFO 18888 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 62 ms. Found 6 JPA repository interfaces.
+2024-07-05T18:34:27.332+09:00  INFO 18888 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-07-05T18:34:27.338+09:00  INFO 18888 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-07-05T18:34:27.339+09:00  INFO 18888 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.12]
+2024-07-05T18:34:27.420+09:00  INFO 18888 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-07-05T18:34:27.420+09:00  INFO 18888 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1290 ms
+2024-07-05T18:34:27.544+09:00  INFO 18888 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-05T18:34:27.583+09:00  INFO 18888 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.7.Final
+2024-07-05T18:34:27.585+09:00  INFO 18888 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2024-07-05T18:34:27.706+09:00  INFO 18888 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2024-07-05T18:34:27.798+09:00  INFO 18888 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-05T18:34:27.808+09:00  INFO 18888 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-07-05T18:34:28.131+09:00  INFO 18888 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@342723a3
+2024-07-05T18:34:28.134+09:00  INFO 18888 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-07-05T18:34:28.357+09:00  INFO 18888 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2024-07-05T18:34:28.864+09:00  INFO 18888 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-05T18:34:28.867+09:00  INFO 18888 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-05T18:34:29.058+09:00  WARN 18888 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.MemberRepository
+2024-07-05T18:34:29.344+09:00  WARN 18888 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.FavoritesRepository
+2024-07-05T18:34:29.424+09:00  INFO 18888 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-07-05T18:34:29.597+09:00  WARN 18888 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReviewRepository
+2024-07-05T18:34:29.641+09:00  WARN 18888 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReviewLikeRepository
+2024-07-05T18:34:29.743+09:00  WARN 18888 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReportRepository
+2024-07-05T18:34:29.940+09:00  WARN 18888 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-05T18:34:30.195+09:00  INFO 18888 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@38e61b69, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@57753d41, org.springframework.security.web.context.SecurityContextHolderFilter@6b1e72a4, org.springframework.security.web.header.HeaderWriterFilter@6225c800, org.springframework.security.web.authentication.logout.LogoutFilter@43941806, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@65899694, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@453d2a55, com.example.travel_backend.jwt.JwtAuthenticationFilter@464d25b2, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@3abe1c9e, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@9918487, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@23e95661, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1c0455c4, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5c74025e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2bdc2c26, org.springframework.security.web.session.SessionManagementFilter@17f43f4a, org.springframework.security.web.access.ExceptionTranslationFilter@c9a8e12, org.springframework.security.web.access.intercept.AuthorizationFilter@64f3f849]
+2024-07-05T18:34:30.462+09:00  INFO 18888 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-05T18:34:30.468+09:00  INFO 18888 --- [main] c.e.t.TravelBackendApplication           : Started TravelBackendApplication in 4.749 seconds (process running for 5.392)
+2024-07-05T18:34:35.017+09:00  INFO 18888 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-05T18:34:35.017+09:00  INFO 18888 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-07-05T18:34:35.018+09:00  INFO 18888 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-07-05T18:34:35.027+09:00 DEBUG 18888 --- [http-nio-8080-exec-2] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:34:39.763+09:00 DEBUG 18888 --- [http-nio-8080-exec-3] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:34:53.310+09:00 DEBUG 18888 --- [http-nio-8080-exec-4] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
+2024-07-05T18:36:19.269+09:00 DEBUG 18888 --- [http-nio-8080-exec-7] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:36:19.270+09:00 DEBUG 18888 --- [http-nio-8080-exec-7] c.e.travel_backend.jwt.JwtTokenProvider  : Validating token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:36:19.288+09:00 DEBUG 18888 --- [http-nio-8080-exec-7] c.e.travel_backend.jwt.JwtTokenProvider  : Claims: {sub=parkjuncheol7@naver.com, auth=USER, id=103, createDate=1720172093423, userImgUrl=/assets/image/characters/anonymous.png, email=parkjuncheol7@naver.com, exp=1720179293}
+2024-07-05T18:36:19.289+09:00 DEBUG 18888 --- [http-nio-8080-exec-7] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted principal from token: org.springframework.security.core.userdetails.User [Username=parkjuncheol7@naver.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[USER]]
+2024-07-05T18:36:19.299+09:00 DEBUG 18888 --- [http-nio-8080-exec-7] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted email from token: parkjuncheol7@naver.com
+2024-07-05T18:36:23.949+09:00 DEBUG 18888 --- [http-nio-8080-exec-8] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:36:23.950+09:00 DEBUG 18888 --- [http-nio-8080-exec-8] c.e.travel_backend.jwt.JwtTokenProvider  : Validating token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:36:23.952+09:00 DEBUG 18888 --- [http-nio-8080-exec-8] c.e.travel_backend.jwt.JwtTokenProvider  : Claims: {sub=parkjuncheol7@naver.com, auth=USER, id=103, createDate=1720172093423, userImgUrl=/assets/image/characters/anonymous.png, email=parkjuncheol7@naver.com, exp=1720179293}
+2024-07-05T18:36:23.952+09:00 DEBUG 18888 --- [http-nio-8080-exec-8] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted principal from token: org.springframework.security.core.userdetails.User [Username=parkjuncheol7@naver.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[USER]]
+2024-07-05T18:36:23.955+09:00 DEBUG 18888 --- [http-nio-8080-exec-8] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted email from token: parkjuncheol7@naver.com
+2024-07-05T18:37:33.334+09:00  INFO 18888 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-05T18:37:33.336+09:00  INFO 18888 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-07-05T18:37:33.597+09:00  INFO 18888 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-07-05T18:37:38.353+09:00  INFO 14340 --- [main] c.e.t.TravelBackendApplication           : Starting TravelBackendApplication using Java 17.0.10 with PID 14340 (C:\Users\skyjo\IdeaProjects\travel_point\travel_backend\out\production\classes started by skyjo in C:\Users\skyjo\IdeaProjects\travel_point\travel_backend)
+2024-07-05T18:37:38.355+09:00  INFO 14340 --- [main] c.e.t.TravelBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2024-07-05T18:37:39.083+09:00  INFO 14340 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-05T18:37:39.155+09:00  INFO 14340 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 66 ms. Found 6 JPA repository interfaces.
+2024-07-05T18:37:39.646+09:00  INFO 14340 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-07-05T18:37:39.652+09:00  INFO 14340 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-07-05T18:37:39.653+09:00  INFO 14340 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.12]
+2024-07-05T18:37:39.736+09:00  INFO 14340 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-07-05T18:37:39.737+09:00  INFO 14340 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1349 ms
+2024-07-05T18:37:39.863+09:00  INFO 14340 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-05T18:37:39.903+09:00  INFO 14340 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.7.Final
+2024-07-05T18:37:39.905+09:00  INFO 14340 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2024-07-05T18:37:40.013+09:00  INFO 14340 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2024-07-05T18:37:40.098+09:00  INFO 14340 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-05T18:37:40.108+09:00  INFO 14340 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-07-05T18:37:42.114+09:00  INFO 14340 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@58bad46f
+2024-07-05T18:37:42.116+09:00  INFO 14340 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-07-05T18:37:42.571+09:00  INFO 14340 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2024-07-05T18:37:43.065+09:00  INFO 14340 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-05T18:37:43.069+09:00  INFO 14340 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-05T18:37:43.260+09:00  WARN 14340 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.MemberRepository
+2024-07-05T18:37:43.535+09:00  WARN 14340 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.FavoritesRepository
+2024-07-05T18:37:43.613+09:00  INFO 14340 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-07-05T18:37:43.789+09:00  WARN 14340 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReviewRepository
+2024-07-05T18:37:43.836+09:00  WARN 14340 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReviewLikeRepository
+2024-07-05T18:37:43.948+09:00  WARN 14340 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: com.example.travel_backend.repository.ReportRepository
+2024-07-05T18:37:44.133+09:00  WARN 14340 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-05T18:37:44.368+09:00  INFO 14340 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7b01f056, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1caff0db, org.springframework.security.web.context.SecurityContextHolderFilter@71d92487, org.springframework.security.web.header.HeaderWriterFilter@7fda0e30, org.springframework.security.web.authentication.logout.LogoutFilter@67f25c, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@feb0f52, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@2ba0b7cf, com.example.travel_backend.jwt.JwtAuthenticationFilter@65899694, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@602854ed, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@6b1e72a4, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@453d2a55, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1acf7db2, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@252da8f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@31cae1e4, org.springframework.security.web.session.SessionManagementFilter@6faa24, org.springframework.security.web.access.ExceptionTranslationFilter@4a83740e, org.springframework.security.web.access.intercept.AuthorizationFilter@2505480a]
+2024-07-05T18:37:44.626+09:00  INFO 14340 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-05T18:37:44.632+09:00  INFO 14340 --- [main] c.e.t.TravelBackendApplication           : Started TravelBackendApplication in 6.675 seconds (process running for 7.296)
+2024-07-05T18:37:56.388+09:00  INFO 14340 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-05T18:37:56.389+09:00  INFO 14340 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-07-05T18:37:56.390+09:00  INFO 14340 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-07-05T18:37:56.401+09:00 DEBUG 14340 --- [http-nio-8080-exec-1] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:37:56.401+09:00 DEBUG 14340 --- [http-nio-8080-exec-1] c.e.travel_backend.jwt.JwtTokenProvider  : Validating token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImF1dGgiOiJVU0VSIiwiaWQiOjEwMywiY3JlYXRlRGF0ZSI6MTcyMDE3MjA5MzQyMywidXNlckltZ1VybCI6Ii9hc3NldHMvaW1hZ2UvY2hhcmFjdGVycy9hbm9ueW1vdXMucG5nIiwiZW1haWwiOiJwYXJranVuY2hlb2w3QG5hdmVyLmNvbSIsImV4cCI6MTcyMDE3OTI5M30.pauL6ApcymTbPoLAoOAaFInkgA9xZcOEmL3J6W65POI
+2024-07-05T18:37:56.437+09:00 DEBUG 14340 --- [http-nio-8080-exec-1] c.e.travel_backend.jwt.JwtTokenProvider  : Claims: {sub=parkjuncheol7@naver.com, auth=USER, id=103, createDate=1720172093423, userImgUrl=/assets/image/characters/anonymous.png, email=parkjuncheol7@naver.com, exp=1720179293}
+2024-07-05T18:37:56.439+09:00 DEBUG 14340 --- [http-nio-8080-exec-1] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted principal from token: org.springframework.security.core.userdetails.User [Username=parkjuncheol7@naver.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[USER]]
+2024-07-05T18:37:56.503+09:00 DEBUG 14340 --- [http-nio-8080-exec-1] c.e.travel_backend.jwt.JwtTokenProvider  : Extracted email from token: parkjuncheol7@naver.com
