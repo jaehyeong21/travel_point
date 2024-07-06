@@ -14,11 +14,8 @@ export default function SocialLoginButton({ provider }: { provider: 'Naver' | 'G
     } else if (provider === 'Naver') {
       const naverLoginUrl = `https://pingulion.shop/oauth2/authorization/naver`;
       router.push(naverLoginUrl);
-    } else {
-      return;
-    }
+    } 
   };
-
 
   return (
     <button

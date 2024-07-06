@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import StarRating from '@/components/common/star-rating';
-import { Siren, Bookmark } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { GoCopy } from 'react-icons/go';
 import { useToast } from '@/components/ui/use-toast';
 import { bookMarkDestination, isBookmarked, deleteBookmarkbyId } from '@/services/fetch-auth';
@@ -16,9 +16,10 @@ interface DestinationHeaderProps {
   tags?: string[];
   destinationId?: string;
   isLoading?: boolean;
+  isFestival?: boolean;
 }
 
-export default function DestinationHeader({ title, location, tags, contentId, destinationId, isLoading }: DestinationHeaderProps) {
+export default function DestinationHeader({ title, location, tags, contentId, destinationId, isLoading, isFestival }: DestinationHeaderProps) {
   const user = useUserStore((state) => state.user);
   const [isBookmarkedState, setIsBookmarkedState] = useState(false);
   const [rating, setRating] = useState<number>(0);
@@ -112,8 +113,13 @@ export default function DestinationHeader({ title, location, tags, contentId, de
         <div className='flex justify-between'>
           <div className='flex xsm:gap-2  xsm:flex-row flex-col'>
             <h2 className='sm:text-xl font-bold'>{title}</h2>
-            {isLoading ? <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} isLoading /> :
-              <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} />}
+            {!isFestival && (
+              isLoading ? (
+                <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} isLoading />
+              ) : (
+                <StarRating className='xsm:ml-1.5' rating={rating} numPeople={numPeople} />
+              )
+            )}
           </div>
           {/* 북마크, url 저장 */}
           <nav className='flex space-x-2 sm:space-x-4'>

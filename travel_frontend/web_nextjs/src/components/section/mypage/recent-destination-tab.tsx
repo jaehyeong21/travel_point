@@ -49,7 +49,7 @@ export default function RecentDestinationsTab() {
                 title="Remove Destination"
               >
                 <X className="size-3.5" />
-              </button>
+              </button>              
               <DestinationCard
                 imageSrc={item.firstImage}
                 location={item.location}

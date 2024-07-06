@@ -40,7 +40,7 @@ export async function findPasswordApi(data: {
   verificationCode: string;
 }) {
   const url = "/api/password/reset";
-  return fetchFromAuthApi(url, data, "POST");
+  return fetchFromAuthApi(url, data, "PUT");
 }
 
 // 마이페이지 비밀번호 변경

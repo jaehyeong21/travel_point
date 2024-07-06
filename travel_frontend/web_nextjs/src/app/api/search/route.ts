@@ -14,7 +14,7 @@ async function fetchFromNaverAPI(query: string) {
     "X-Naver-Client-Id": clientId,
     "X-Naver-Client-Secret": clientSecret,
     "Content-Type": "application/json",
-  };
+  };  
 
   const apiResponse = await fetch(url, { headers, cache: "no-cache" });
   if (!apiResponse.ok) {

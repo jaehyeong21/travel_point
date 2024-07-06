@@ -4,8 +4,6 @@ import { Separator } from '@/components/ui/separator';
 import { UserProfile } from '@/components/section/mypage/user-profile';
 import MypageTabSection from '@/components/section/mypage/mypage-tab-section';
 
-
-
 export default function MyPageContent() {
   return (
     <>

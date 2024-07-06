@@ -123,7 +123,7 @@ export default function DestinationCard({
               <img
                 width={isSmallSize ? 180 : 300}
                 height={isSmallSize ? 123 : 200}
-                src={isSmallSize ? `${imageSrc}/firstimageSmall` : `${imageSrc}/firstimageMedium` || '/img/sample.avif'}
+                src={Number(contentId) <= 150 ? imageSrc : isSmallSize ? `${imageSrc}/firstimageSmall` : `${imageSrc}/firstimageMedium` || '/img/sample.avif'}
                 alt={`${title} image` || 'sample image'}
                 className={`rounded-sm w-full object-cover aspect-[16/11] h-auto ${imageLoading || imageError ? 'hidden' : ''}`}
                 onLoad={() => setImageLoading(false)}

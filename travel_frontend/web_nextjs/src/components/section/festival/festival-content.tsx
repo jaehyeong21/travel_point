@@ -26,7 +26,7 @@ export default function FestivalContent({ slug }: { slug: string }) {
       ) : (
         data && (
           <>
-            <DestinationHeader title={data.title} location={data.location} />
+            <DestinationHeader title={data.title} location={data.location} isFestival/>
             <FestivalBody data={data} />
           </>
         )
