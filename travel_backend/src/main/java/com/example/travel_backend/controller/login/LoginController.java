@@ -123,8 +123,8 @@ public class LoginController {
         }
     }
 
-    @Operation(summary = "Access Token 존재 여부 확인", description = "Access Token이 존재하는지 여부를 확인합니다.")
-    @GetMapping("/accessToken/exists")
+    @Operation(summary = "Refresh Token 존재 여부 확인", description = "Refresh Token이 존재하는지 여부를 확인합니다.")
+    @GetMapping("/refreshToken/exists")
     public ResponseEntity<ApiResponse> refreshTokenExists(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
