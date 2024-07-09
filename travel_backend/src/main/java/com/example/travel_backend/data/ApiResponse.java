@@ -18,12 +18,16 @@ public class ApiResponse {
     }
 
     public static ApiResponse success(String message, Object result) {
-        ApiResponse response = new ApiResponse();
-        response.setResponse(true);
-        response.setMessage(message);
-        response.setResult(result);
-        return response;
+        return new ApiResponse(true, null, message, result);
     }
+
+//    public static ApiResponse success(String message, Object result) {
+//        ApiResponse response = new ApiResponse();
+//        response.setResponse(true);
+//        response.setMessage(message);
+//        response.setResult(result);
+//        return response;
+//    }
 
     public Object getResult() {
         return result;

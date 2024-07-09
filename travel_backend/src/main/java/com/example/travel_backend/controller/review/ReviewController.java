@@ -10,6 +10,7 @@ import com.example.travel_backend.service.MemberService;
 import com.example.travel_backend.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
@@ -164,8 +166,10 @@ public class ReviewController {
     public ResponseEntity<ApiResponse> deleteReview(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-            reviewService.deleteReview(id, accessToken);
-            return ResponseEntity.ok(ApiResponse.success(null));
+            log.debug("Authorization header: " + authorizationHeader);
+            ApiResponse response = reviewService.deleteReview(id, accessToken);
+            log.debug("ApiResponse returned from service: " + response);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error("NOT_FOUND", e.getMessage()));
         }

@@ -125,36 +125,64 @@ public class ReviewService {
     @Transactional
     public ApiResponse deleteReview(int id, String accessToken) {
         log.debug("Starting deleteReview method");
+        log.debug("Review ID to delete: " + id);
+        log.debug("Access token provided: " + accessToken);
+
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (!reviewOptional.isPresent()) {
             log.error("Review not found with id " + id);
-            return ApiResponse.error("ReviewError", "Review not found with id " + id);
+            ApiResponse response = ApiResponse.error("ReviewError", "Review not found with id " + id);
+            log.debug("ApiResponse before return: " + response);
+            return response;
         }
 
         Review review = reviewOptional.get();
         log.debug("Found review: " + review);
 
         String email = jwtTokenProvider.getUsernameFromToken(accessToken);
+        if (email == null) {
+            log.error("Failed to extract email from token");
+            ApiResponse response = ApiResponse.error("TokenError", "Invalid token");
+            log.debug("ApiResponse before return: " + response);
+            return response;
+        }
         log.debug("Extracted email from token: " + email);
+
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         if (!memberOptional.isPresent()) {
             log.error("Member not found with email " + email);
-            return ApiResponse.error("MemberError", "Member not found with email " + email);
+            ApiResponse response = ApiResponse.error("MemberError", "Member not found with email " + email);
+            log.debug("ApiResponse before return: " + response);
+            return response;
         }
 
         Member member = memberOptional.get();
         log.debug("Found member: " + member);
+        log.debug("Member ID: " + member.getId() + ", Member Role: " + member.getRole());
 
-        if (!review.getMember().equals(member) && !"ADMIN".equalsIgnoreCase(member.getRole())) {
+        // 권한 체크: 리뷰 작성자 또는 ADMIN 역할만 삭제 가능
+        if (!review.getMember().equals(member) && !"ROLE_ADMIN".equalsIgnoreCase(member.getRole())) {
             log.error("Permission denied for user: " + member.getEmail());
-            return ApiResponse.error("PermissionError", "You do not have permission to delete this review");
+            ApiResponse response = ApiResponse.error("PermissionError", "You do not have permission to delete this review");
+            log.debug("ApiResponse before return: " + response);
+            return response;
         }
 
         log.debug("Deleting review: " + review);
         reviewRepository.delete(review);
         log.debug("Review deleted successfully");
 
-        return ApiResponse.success("Review deleted successfully", null);
+        // 자신의 리뷰를 삭제한 경우
+        if (review.getMember().equals(member)) {
+            ApiResponse response = ApiResponse.success("Your review has been deleted successfully", null);
+            log.debug("ApiResponse before return: " + response);
+            return response;
+        }
+
+        // ADMIN이 다른 사용자의 리뷰를 삭제한 경우
+        ApiResponse response = ApiResponse.success("Review deleted successfully by admin", null);
+        log.debug("ApiResponse before return: " + response);
+        return response;
     }
 
     public List<Review> getMyReviews(int memberId) {

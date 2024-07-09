@@ -1,7 +1,6 @@
 package com.example.travel_backend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,6 +17,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Review {
 
     @Id
@@ -35,7 +35,7 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Member member;
 
     @UpdateTimestamp
@@ -52,10 +52,24 @@ public class Review {
     private String imageUrl;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonIgnore
     private List<ReviewLike> reviewLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonIgnore
     private List<Report> reports = new ArrayList<>();
+
+    //StackOverflowError 오류 해결
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", likeCount=" + likeCount +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                ", rate=" + rate +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
 }
