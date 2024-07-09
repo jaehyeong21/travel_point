@@ -61,24 +61,22 @@ public class LoginController {
             for (Cookie cookie : cookies) {
                 if ("refreshToken".equals(cookie.getName())) {
                     String refreshToken = cookie.getValue();
-                    if (refreshToken == null || refreshToken.trim().isEmpty()) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("InvalidRequest", "Refresh token is missing or empty"));
-                    }
-
-                    try {
-                        JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
-                        log.debug("Generated new JWT token: {}", newJwtToken);
-                        Map<String, Object> result = new HashMap<>();
-                        result.put("accessToken", newJwtToken.getAccessToken());
-                        return ResponseEntity.ok(ApiResponse.success(result));
-                    } catch (RuntimeException e) {
-                        log.error("Error refreshing token", e);
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+                    if (refreshToken != null && !refreshToken.trim().isEmpty()) {
+                        try {
+                            JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
+                            log.debug("Generated new JWT token: {}", newJwtToken);
+                            Map<String, Object> result = new HashMap<>();
+                            result.put("accessToken", newJwtToken.getAccessToken());
+                            return ResponseEntity.ok(ApiResponse.success(result));
+                        } catch (RuntimeException e) {
+                            log.error("Error refreshing token", e);
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+                        }
                     }
                 }
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("TokenNotFound", "Refresh token not found"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("InvalidRequest", "Refresh token is missing or empty"));
     }
 
     @Operation(summary = "회원가입 요청", description = "이메일과 비밀번호를 검증하고, 해당 이메일로 인증번호를 발송합니다.")
@@ -116,7 +114,7 @@ public class LoginController {
 
             // Retrieve token from Authorization header
             String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-            log.debug("accessToken =>"+ accessToken);
+            log.debug("accessToken =>" + accessToken);
 
             ApiResponse response = memberService.deleteAccount(password, accessToken);
 

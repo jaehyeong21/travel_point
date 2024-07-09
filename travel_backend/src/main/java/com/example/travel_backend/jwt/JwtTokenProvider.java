@@ -51,6 +51,7 @@ public class JwtTokenProvider {
                 .claim("username", member.getUsername())
                 .claim("userImgUrl", member.getUserImgUrl())
                 .claim("email", member.getEmail())
+                .claim("provider", member.getProvider()) // Add provider claim
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
