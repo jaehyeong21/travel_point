@@ -53,26 +53,32 @@ public class LoginController {
         return ResponseEntity.ok(apiResponse);
     }
 
-
     @Operation(summary = "토큰 갱신", description = "Refresh Token을 사용하여 Access Token을 갱신합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse> refreshAccessToken(@RequestBody Map<String, String> tokenMap) {
-        String refreshToken = tokenMap.get("refreshToken");
+    public ResponseEntity<ApiResponse> refreshAccessToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    String refreshToken = cookie.getValue();
+                    if (refreshToken == null || refreshToken.trim().isEmpty()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("InvalidRequest", "Refresh token is missing or empty"));
+                    }
 
-        if (refreshToken == null || refreshToken.trim().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("InvalidRequest", "Refresh token is missing or empty"));
+                    try {
+                        JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
+                        log.debug("Generated new JWT token: {}", newJwtToken);
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("accessToken", newJwtToken.getAccessToken());
+                        return ResponseEntity.ok(ApiResponse.success(result));
+                    } catch (RuntimeException e) {
+                        log.error("Error refreshing token", e);
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+                    }
+                }
+            }
         }
-
-        try {
-            JwtToken newJwtToken = jwtTokenProvider.refreshToken(refreshToken);
-            log.debug("Generated new JWT token: {}", newJwtToken);
-            Map<String, Object> result = new HashMap<>();
-            result.put("accessToken", newJwtToken.getAccessToken());
-            return ResponseEntity.ok(ApiResponse.success(result));
-        } catch (RuntimeException e) {
-            log.error("Error refreshing token", e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
-        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("TokenNotFound", "Refresh token not found"));
     }
 
     @Operation(summary = "회원가입 요청", description = "이메일과 비밀번호를 검증하고, 해당 이메일로 인증번호를 발송합니다.")
@@ -93,7 +99,6 @@ public class LoginController {
         ApiResponse apiResponse = memberService.signup(loginDto.getEmail(), loginDto.getPassword(), loginDto.getVerificationCode(), response);
         return ResponseEntity.ok(apiResponse);
     }
-
 
     @Operation(summary = "회원탈퇴", description = "로그인된 사용자가 자신의 비밀번호를 입력하여 회원탈퇴를 진행합니다. Headers에서 Authorization를 Key로 하고 " +
             "Bearer " + "+accessToken" + " 값을 Value로 하여 유저를 검증하고, 유저의 비밀번호를 입력받아 탈퇴를 진행합니다." +
@@ -141,7 +146,4 @@ public class LoginController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("TokenNotFound", "Refresh token not found"));
     }
-
-
-
 }
