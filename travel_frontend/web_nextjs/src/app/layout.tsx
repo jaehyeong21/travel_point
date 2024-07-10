@@ -4,8 +4,6 @@ import SiteHeader from "@/components/site-header";
 import { ViewTransitions } from 'next-view-transitions';
 import QueryProvider from "@/context/query-provider";
 import { cn } from "@/libs/utils";
-// import SiteFooter from "@/components/site-footer";
-// import { Toaster } from "@/components/ui/toaster";
 import KbarLayout from "@/components/kbar/kbar-layout";
 import { fontSpoqaHanSansNeo } from "@/data/data";
 import MobileNav from "@/components/nav/mobile-nav";
@@ -36,16 +34,16 @@ export default function RootLayout({
         <body className={cn('min-h-dvh antialiased', fontSpoqaHanSansNeo.className)}>
           <KbarLayout >
             <QueryProvider>
-              {/* <AuthProvider> */}
-              <ToastProvider>
-                {modal}
-                <SiteHeader />
-                {children}
-                <SiteFooter />
-                <MobileNav />
-                <Toaster />
-              </ToastProvider>
-              {/* </AuthProvider> */}
+              <AuthProvider>
+                <ToastProvider>
+                  {modal}
+                  <SiteHeader />
+                  {children}
+                  <SiteFooter />
+                  <MobileNav />
+                  <Toaster />
+                </ToastProvider>
+              </AuthProvider>
             </QueryProvider>
           </KbarLayout>
         </body>

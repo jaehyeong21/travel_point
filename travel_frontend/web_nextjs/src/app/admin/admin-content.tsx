@@ -2,7 +2,7 @@
 'use client';
 import { Separator } from "@/components/ui/separator";
 import { placeholderImageBase64 } from "@/data/data";
-import { checkReports } from "@/services/fetch-admin";
+import { checkReports, deleteReport } from "@/services/fetch-admin";
 import { deleteReview } from "@/services/fetch-review";
 import { useUserStore } from "@/store/userStore";
 import { Comment } from "@/types/comment-type";
@@ -36,7 +36,7 @@ export function AdminContent() {
         const fetchReports = async () => {
           try {
             const response = await checkReports();
-            if (response.response) {              
+            if (response.response) {
               setReports(response.result);
             } else {
               setError(response.message || 'Failed to fetch reports');
@@ -52,12 +52,13 @@ export function AdminContent() {
       }
     }, 100);
 
-    return () => clearTimeout(delayedCheck); 
+    return () => clearTimeout(delayedCheck);
   }, [router, user]);
 
-  const handleDelete = async (id: number) => {
+  const deleteWithReview = async (id: number) => {
     try {
       const res = await deleteReview(id);
+      console.log(res);
       if (res) {
         setReports(reports.filter(report => report.review.id !== id));
       } else {
@@ -68,9 +69,17 @@ export function AdminContent() {
     }
   };
 
-  const passReport = (id: number) => {
-    // passReport 함수 구현 필요
-    console.log('Passing report with id:', id);
+  const deleteOnlyReport = async (id: number) => {
+    try {
+      const res = await deleteReport(id);
+      if (res) {
+        setReports(reports.filter(report => report.id !== id));
+      } else {
+        console.log('리포트 삭제 실패');
+      }
+    } catch (error) {
+      console.error('Failed to pass report:', error);
+    }
   };
 
   // 로딩 상태 처리
@@ -88,60 +97,60 @@ export function AdminContent() {
         )}
         <div>{user && user.username}</div>
         <div>{user && user.email}</div>
-      </div>      
+      </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
+        {error ? (
           <p>Error: {error}</p>
         ) : reports.length > 0 ? (
           reports.map((report) => (
-            <div key={report.id} className="border p-4">
-              <h3 className="font-semibold">신고 유형: {report.reportType}</h3>
-              <p className="text-sm">신고 내용: {report.content}</p>
-              <Separator className="my-2" />
-              <section>
-                <Link href={`/destinations/${report.review.destination.contentId}`}>
-                  <span className="font-semibold">여행지: </span>{report.review.destination.title}
-                </Link>
-                <div className="mt-2 space-y-1.5">
-                  <div className='flex items-center'>
-                    {[...Array(5)].map((_, index) => (
-                      index < report.review.rate
-                        ? <FaStar key={index} className="text-yellow-500" />
-                        : <FaRegStar key={index} className="text-gray-300" />
-                    ))}
+            (
+              <div key={report.id} className="border p-4">
+                <h3 className="font-semibold">신고 유형: {report.reportType}</h3>
+                <p className="text-sm">신고 내용: {report.content}</p>
+                <Separator className="my-2" />
+                <section>
+                  <Link href={`/destinations/${report.review.destination.contentId}`}>
+                    <span className="font-semibold">여행지: </span>{report.review.destination.title}
+                  </Link>
+                  <div className="mt-2 space-y-1.5">
+                    <div className='flex items-center'>
+                      {[...Array(5)].map((_, index) => (
+                        index < report.review.rate
+                          ? <FaStar key={index} className="text-yellow-500" />
+                          : <FaRegStar key={index} className="text-gray-300" />
+                      ))}
+                    </div>
+                    <p className="text-sm">{report.review.content}</p>
+                    {report.review.imageUrl && (
+                      <img
+                        width={420}
+                        height={260}
+                        src={report.review.imageUrl}
+                        alt='댓글 이미지'
+                        className='max-h-[260px]'
+                        onError={(e) => (e.currentTarget.src = placeholderImageBase64)}
+                      />
+                    )}
                   </div>
-                  <p className="text-sm">{report.review.content}</p>
-                  {report.review.imageUrl && (
-                    <img
-                      width={420}
-                      height={260}
-                      src={report.review.imageUrl}
-                      alt='댓글 이미지'
-                      className='max-h-[260px]'
-                      onError={(e) => (e.currentTarget.src = placeholderImageBase64)}
-                    />
-                  )}
-                </div>
-              </section>
-              <div className="mt-4 flex justify-end text-sm">
-                <div className="flex gap-x-2">
-                  <button
-                    onClick={() => passReport(report.id)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                  >
-                    리포트 확인
-                  </button>
-                  <button
-                    onClick={() => handleDelete(report.review.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                  >
-                    리포트 삭제
-                  </button>
+                </section>
+                <div className="mt-4 flex justify-end text-sm font-medium">
+                  <div className="flex gap-x-2">
+                    <button
+                      onClick={() => deleteOnlyReport(report.id)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                      신고만 삭제
+                    </button>
+                    <button
+                      onClick={() => deleteWithReview(report.review.id)}
+                      className="bg-red-500 text-white px-4 py-2 rounded"
+                    >
+                      신고와 리뷰를 함께 삭제
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )
           ))
         ) : (
           <p>No reports found</p>

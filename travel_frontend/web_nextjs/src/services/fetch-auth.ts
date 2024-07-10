@@ -62,7 +62,10 @@ export async function uploadImage(imageUrl: string) {
 
 // 찜하기 확인
 export async function isBookmarked(memberId: number, destinationId: number) {
-  return await fetchFromAuthApi("/api/favorites/isFavorite", { memberId, destinationId }, "GET", 
+  return await fetchFromAuthApi(
+    "/api/favorites/isFavorite",
+    { memberId, destinationId },
+    "GET",
     `?memberId=${memberId}&destinationId=${destinationId}`
   );
 }
@@ -107,13 +110,21 @@ export async function deleteBookmarkbyId(
 }
 
 // 찜하기 전체 삭제
-export async function deleteBookmarkAll(
-  memberId: number,  
-) {
+export async function deleteBookmarkAll(memberId: number) {
   return await fetchFromAuthApi(
     "/api/favorites/deleteAll",
     { memberId },
     "DELETE",
     `/${memberId}`
   );
+}
+
+// accessToken 갱신
+export async function newAccessToken() {
+  return await fetchFromAuthApi("/api/refresh", null, "POST");
+}
+
+// refreshToken 확인하기
+export async function hasRefreshToken() {
+  return await fetchFromAuthApi("/api/refreshToken/exists", null, "GET");
 }

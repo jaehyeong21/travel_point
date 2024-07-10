@@ -12,6 +12,10 @@ const nextConfig = {
         destination: "/api/upload-image",
       },
       {
+        source: "/api/restaurants",
+        destination: "/api/restaurants",
+      },
+      {
         source: "/api/:path*",
         destination: "https://pingulion.shop/:path*", // 프록시할 외부 API의 주소
       },

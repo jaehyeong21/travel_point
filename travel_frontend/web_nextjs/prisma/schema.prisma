@@ -8,43 +8,47 @@ datasource db {
 }
 
 model Member {
-  id            Int       @id @default(autoincrement())
-  createDate    DateTime? @db.DateTime(6)
-  email         String?   @db.VarChar(255)
-  password      String?   @db.VarChar(255)
-  role          String?   @db.VarChar(255)
-  userImgUrl    String?   @db.VarChar(255)
-  username      String?   @db.VarChar(255)
-  emailVerified DateTime? @db.DateTime(6)
-  provider      String?   @db.VarChar(255)
-  providerId    String?   @db.VarChar(255)
+  id            Int            @id @default(autoincrement())
+  createDate    DateTime?      @db.DateTime(6)
+  email         String?        @db.VarChar(255)
+  password      String?        @db.VarChar(255)
+  role          String?        @db.VarChar(255)
+  userImgUrl    String?        @db.VarChar(255)
+  username      String?        @db.VarChar(255)
+  emailVerified DateTime?      @db.DateTime(6)
+  provider      String?        @db.VarChar(255)
+  providerId    String?        @db.VarChar(255)
+  Favorites     Favorites[]
+  Report        Report[]
+  review_likes  review_likes[]
 }
 
-
 model destination {
-  destination_id          BigInt  @id @default(autoincrement())
-  location                String? @db.VarChar(100)
-  cat1                    String? @db.VarChar(15)
-  cat2                    String? @db.VarChar(15)
-  firstimage              String? @db.VarChar(200)
-  firstimage2             String? @db.VarChar(200)
-  firstimage3             String? @db.VarChar(200)
-  firstimage4             String? @db.VarChar(200)
-  firstimage5             String? @db.VarChar(200)
-  location_number         String? @db.VarChar(5)
-  content_id              String? @db.VarChar(20)
-  content_type_id         String? @db.VarChar(5)
-  title                   String? @db.VarChar(200)
-  map_x                   String? @db.VarChar(30)
-  map_y                   String? @db.VarChar(30)
-  homepage                String? @db.VarChar(3000)
-  parking                 String? @db.VarChar(255)
-  use_time                String? @db.VarChar(1000)
-  tel                     String? @db.VarChar(200)
-  destination_description String? @db.VarChar(10000)
-  holiday                 String? @db.VarChar(300)
-  cat3                    String? @db.VarChar(15)
-  area_code               String? @db.VarChar(5)
+  destination_id          BigInt      @id @default(autoincrement())
+  location                String?     @db.VarChar(255)
+  cat1                    String?     @db.VarChar(255)
+  cat2                    String?     @db.VarChar(255)
+  firstimage              String?     @db.VarChar(255)
+  firstimage2             String?     @db.VarChar(255)
+  firstimage3             String?     @db.VarChar(255)
+  firstimage4             String?     @db.VarChar(255)
+  firstimage5             String?     @db.VarChar(255)
+  location_number         String?     @db.VarChar(255)
+  content_id              String?     @db.VarChar(255)
+  content_type_id         String?     @db.VarChar(255)
+  title                   String?     @db.VarChar(255)
+  map_x                   String?     @db.VarChar(255)
+  map_y                   String?     @db.VarChar(255)
+  homepage                String?     @db.Text
+  parking                 String?     @db.VarChar(255)
+  use_time                String?     @db.Text
+  tel                     String?     @db.VarChar(255)
+  destination_description String?     @db.Text
+  holiday                 String?     @db.VarChar(255)
+  cat3                    String?     @db.VarChar(255)
+  area_code               String?     @db.VarChar(255)
+  Favorites               Favorites[]
+  Review                  Review[]
 }
 
 model festival {
@@ -65,4 +69,80 @@ model festival {
   destination_description String? @db.VarChar(10000)
   content_type_id         Int?
   content_id              String? @db.VarChar(255)
+}
+
+model Favorites {
+  favoriteId     Int          @id @default(autoincrement())
+  destination_id BigInt?
+  member_id      Int?
+  destination    destination? @relation(fields: [destination_id], references: [destination_id], onDelete: NoAction, onUpdate: NoAction, map: "FKjt81x7shd4lcubgfkmjt3w7ww")
+  Member         Member?      @relation(fields: [member_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKqogp632x7fulkdw1ep98m9lha")
+
+  @@index([destination_id], map: "FKjt81x7shd4lcubgfkmjt3w7ww")
+  @@index([member_id], map: "FKqogp632x7fulkdw1ep98m9lha")
+}
+
+model Heart {
+  id        Int     @id @default(autoincrement())
+  member_id String? @db.VarChar(255)
+  review_id String? @db.VarChar(255)
+}
+
+model Report {
+  id          Int       @id @default(autoincrement())
+  review_id   Int
+  member_id   Int
+  report_type String    @db.VarChar(255)
+  content     String    @db.Text
+  create_date DateTime? @db.DateTime(6)
+  Review      Review    @relation(fields: [review_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Report_ibfk_1")
+  Member      Member    @relation(fields: [member_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Report_ibfk_2")
+
+  @@index([member_id], map: "member_id")
+  @@index([review_id], map: "review_id")
+}
+
+model Restaurant {
+  id        Int     @id @default(autoincrement())
+  ranking   Int?
+  title     String? @db.VarChar(255)
+  province  String? @db.VarChar(255)
+  city      String? @db.VarChar(255)
+  location  String? @db.VarChar(255)
+  cat2      String? @db.VarChar(255)
+  cat3      String? @db.VarChar(255)
+  visitors  Int?
+  latitude  Float?  @db.Float
+  longitude Float?  @db.Float
+  url       String? @db.VarChar(255)
+  phone     String? @db.VarChar(255)
+}
+
+model Review {
+  id             Int            @id @default(autoincrement())
+  content        String?        @db.VarChar(255)
+  count          Int?
+  createDate     DateTime?      @db.DateTime(6)
+  member_id      String?        @db.VarChar(255)
+  modify_date    DateTime?      @db.DateTime(6)
+  rate           Int?
+  destination_id BigInt
+  image_url      String?        @db.VarChar(255)
+  Report         Report[]
+  destination    destination    @relation(fields: [destination_id], references: [destination_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_destination")
+  review_likes   review_likes[]
+
+  @@index([destination_id], map: "fk_review_destination")
+}
+
+model review_likes {
+  id         Int      @id @default(autoincrement())
+  member_id  Int
+  review_id  Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  Member     Member   @relation(fields: [member_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "review_likes_ibfk_1")
+  Review     Review   @relation(fields: [review_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "review_likes_ibfk_2")
+
+  @@index([member_id], map: "member_id")
+  @@index([review_id], map: "review_id")
 }

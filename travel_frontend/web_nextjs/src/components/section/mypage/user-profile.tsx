@@ -14,6 +14,7 @@ export function UserProfile() {
   const { user, updateUserImage } = useUserStore();
   const [loading, setLoading] = useState(false);  
   const { toast } = useToast();
+  console.log(user);
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (loading) return;

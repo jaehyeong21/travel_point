@@ -24,7 +24,7 @@ export function getStyles(page: PageName, active: boolean) {
 
 export default function RegionSelection({ className, page, title, activeRegion, onRegionChange }: RegionSelectionProps) {
   return (
-    <nav className={cn('mt-4 sm:mt-10 max-w-screen-md mx-auto phone-container', className)}>
+    <nav className={cn('mt-4 sm:mt-10 max-w-screen-md mx-auto phone-container', className)} id='regionSelection'>
       <h2 className="text-center py-8 font-semibold">{title}</h2>
       <ul className="flex flex-wrap justify-center gap-4">
         {page === 'mainpage' ? (
@@ -60,7 +60,7 @@ export default function RegionSelection({ className, page, title, activeRegion, 
           <>
             <li>
               <LinkButton
-                href={`/${page}?region=all`}
+                href={`/${page}?region=all&page=1`}
                 className={`${getStyles(page, activeRegion === 'all')}`}
               >
                 전체
