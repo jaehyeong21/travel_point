@@ -12,6 +12,7 @@ import { placeholderImageBase64 } from '@/data/data';
 import EditComment from '@/components/section/comment/edit-comment';
 import ReportDialog from '@/components/section/comment/report-dialog';
 import DeleteButton from '@/components/section/comment/delete-button';
+import { ToastAction } from '@/components/ui/toast';
 
 interface CommentItemProps {
   className?: string;
@@ -56,6 +57,14 @@ export default function CommentItem({ className, comment, fetchComments, destina
   }, [comment.id, user]);
 
   const handleLike = async () => {
+    if (!user) {
+      toast({
+        title: '로그인이 필요합니다',
+        description: '로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?',
+        action: <ToastAction altText="Goto auth page" onClick={() => { router.push('/auth'); }}>로그인 페이지 이동</ToastAction>,
+      });
+      return;
+    }
     try {
       const response = await getLiked(comment.id);
       if (response.result) {
@@ -74,7 +83,7 @@ export default function CommentItem({ className, comment, fetchComments, destina
   return (
     <li className={`${cn('border-t relative list-none', className)}`}>
       <div className='absolute top-0 left-0'>
-        <img src={comment.user.userImgUrl} alt='character image' width={46} height={46} />
+        <img src={comment.user.userImgUrl} alt='character image' width={46} height={46} className='rounded-full p-1'/>
       </div>
       <div className='w-full py-2 pl-[50px]'>
         <div className='flex justify-between'>

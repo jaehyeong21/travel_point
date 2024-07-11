@@ -26,6 +26,7 @@ export async function getReviewsByDestination(destinationId: number) {
     "GET"
   );
 }
+
 // 리뷰 삭제
 export async function deleteReview(id: number) {
   return await fetchFromAuthApi(`/api/reviews/delete/${id}`, null, "DELETE");

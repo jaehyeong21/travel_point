@@ -1,11 +1,11 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setCookie, getCookie, hasCookie } from '@/libs/cookie';
+import { setCookie } from '@/libs/cookie';
 import { useUserStore } from '@/store/userStore';
-import { fetchFromAuthApi } from '@/services/fetch-api';
 import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from '@/libs/utils';
+import { hasRefreshToken, newAccessToken } from '@/services/fetch-auth';
 
 interface AuthContextType {
   token: string | null;
@@ -16,35 +16,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
 const fetchUserData = async () => {
-  const refreshToken = hasCookie('refreshToken');
-  console.log(refreshToken);
-  const accessToken = hasCookie('accessToken');
-  if (refreshToken && !accessToken) {
-    const response = await fetchFromAuthApi('/refresh', { refreshToken }, 'POST');
-    if (response.response) {
-      const newAccessToken = response.result.accessToken;
-      const expiresIn = 2 * 60 * 60 * 1000; // 2 hours
-      setCookie({ name: 'accessToken', value: newAccessToken, hours: 2, secure: true });
-      const user = jwtDecode(newAccessToken);
-      return {
-        token: newAccessToken,
-        tokenExpiry: Date.now() + expiresIn,
-        user: user,
-      };
-    } else {
-      throw new Error('Failed to refresh token');
-    }
+  const response = await newAccessToken();
+  if (response.response) {
+    const newAccessToken = response.result.accessToken;
+    const expiresIn = 2 * 60 * 60 * 1000; // 2 hours
+    setCookie({ name: 'accessToken', value: newAccessToken, hours: 2, secure: true });
+    const user = jwtDecode(newAccessToken);
+    return {
+      token: newAccessToken,
+      tokenExpiry: Date.now() + expiresIn,
+      user: user,
+    };
   } else {
-    throw new Error('No refresh token found');
+    throw new Error('Failed to refresh token');
   }
 };
 
@@ -56,24 +41,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // 클라이언트 측에서만 실행
-    const storedToken = getCookie('accessToken');
-    if (storedToken) {
-      setToken(storedToken);
-      const user = jwtDecode(storedToken);
-      if (user) {
-        setCookie({ name: 'accessToken', value: storedToken, hours: 2, secure: true });
-        setUser(user);
-      }
-    } else {
-      const refreshToken = getCookie('refreshToken');
-      if (refreshToken) {
+    const checkAuth = async () => {
+      if (await hasRefreshToken()) {
         refetch();
+        
       } else {
         clearUser();
         router.push('/auth');
       }
-    }
+    };
+
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setUser, clearUser, router]);
 
   const { refetch } = useQuery({
@@ -109,7 +88,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     refreshUserData();
   }, [refetch, setUser, clearUser, router]);
 
-  // Schedule a query to refresh the token 1 minute before it expires
   useEffect(() => {
     if (tokenExpiry) {
       const timeout = setTimeout(() => {
@@ -126,3 +104,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
+// export const useAuth = () => {
+//   const context = useContext(AuthContext);
+//   if (!context) {
+//     throw new Error('useAuth must be used within an AuthProvider');
+//   }
+//   return context;
+// };

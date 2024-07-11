@@ -123,7 +123,7 @@ export default function DestinationComment({ destinationId }: { destinationId: s
     if (!user) {
       toast({
         title: '로그인이 필요합니다',
-        description: '댓글 작성은 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?',
+        description: '로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?',
         action: <ToastAction altText="Goto auth page" onClick={() => { router.push('/auth'); }}>로그인 페이지 이동</ToastAction>,
       });
     }

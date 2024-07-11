@@ -5,6 +5,7 @@ import { filterArray } from '@/libs/utils';
 import { MdError } from 'react-icons/md';
 import Title from '@/components/common/title';
 
+
 const DestinationDescription = lazy(() => import('@/components/section/destination/destination-description'));
 const KakaoMap = lazy(() => import('@/components/common/map'));
 const DestinationInfo = lazy(() => import('@/components/section/destination/destination-info'));
@@ -12,6 +13,7 @@ const Nearby = lazy(() => import('@/components/section/destination/nearby'));
 const DestinationComment = lazy(() => import('@/components/section/comment/destination-comment'));
 const DestinationBlog = lazy(() => import('@/components/section/destination/destination-blog'));
 const RecentDestinations = lazy(() => import('@/components/section/destination/recent-destinations'));
+const RestaurantRank = lazy(()=>import('@/components/section/destination/restaurant-rank'));
 
 interface DestinationBodyProps {
   data?: DestinationDetailType;
@@ -78,7 +80,7 @@ export default function DestinationBody({ data, isLoading, isError }: Destinatio
     { label: '주소', value: data.location },
     { label: '문의 및 안내', value: data.tel },
     { label: '시간', value: data.use_time },
-    { label: '주차', value: data.parking },
+    { label: '주차', value: data.parking.replace('<br>', ' ') },
     // { label: '이용요금', value: data.?? },
     // { label: '행사내용', value: data.destinationDescription },
   ].filter(detail => detail.value);
@@ -102,6 +104,7 @@ export default function DestinationBody({ data, isLoading, isError }: Destinatio
             <DestinationInfo details={destinationDetails} contentTypeId={data.contentTypeId} />
             <DestinationComment destinationId={data.destinationId} />
             <Nearby count='4' contentId={data.contentId} latitude={Number(data.mapY)} longitude={Number(data.mapX)} />
+            <RestaurantRank location={data.location}/>
             <DestinationBlog title={data.title} />
           </Suspense>
         </main>

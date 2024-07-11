@@ -33,3 +33,8 @@ export async function reportReview({
 export async function checkReports() {
   return await fetchFromAuthApi(`/api/reports`, null, "GET");
 }
+
+// 신고 삭제
+export async function deleteReport(reportId: number) {
+  return await fetchFromAuthApi(`/api/reports/${reportId}`, null, "DELETE");
+}

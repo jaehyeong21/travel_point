@@ -56,7 +56,7 @@ export default function DestinationBlogPage({ title }: DestinationBlogPageProps)
 
   return (
     <div className='py-8'>
-      <Title className='justify-between pl-2' naverImg>{title} 블로그 리뷰</Title>
+      <Title className='justify-between pl-2' naverImg>{title.length > 15 ? `${title.slice(0, 15)} ...` : title} 블로그 리뷰</Title>      
       <div className='border rounded-sm'>
         {blogData.items.map((item: BlogPost, index: number) => (
           <div className='flex flex-col p-2.5' key={index}>
