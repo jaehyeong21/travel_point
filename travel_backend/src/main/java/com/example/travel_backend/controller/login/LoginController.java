@@ -130,18 +130,38 @@ public class LoginController {
     @GetMapping("/refreshToken/exists")
     public ResponseEntity<ApiResponse> refreshTokenExists(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        Map<String, Object> result = new HashMap<>();
+
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("refreshToken".equals(cookie.getName())) {
                     String refreshToken = cookie.getValue();
-                    if (jwtTokenProvider.validateToken(refreshToken)) {
-                        return ResponseEntity.ok(ApiResponse.success("Refresh token is valid"));
+                    if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+                        result.put("message", "Refresh token is valid");
+                        return ResponseEntity.ok(ApiResponse.success(result));
                     } else {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("InvalidToken", "Refresh token is invalid or expired"));
+                        result.put("message", "Refresh token is invalid or expired");
+                        return ResponseEntity.ok(ApiResponse.success(result));
                     }
                 }
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("TokenNotFound", "Refresh token not found"));
+
+        result.put("message", "Refresh token not found");
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @Operation(summary = "로그아웃", description = "Refresh Token을 삭제합니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
+        // Refresh Token 쿠키를 삭제하기 위해 유효 기간을 0으로 설정
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);  // 쿠키 삭제
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok(ApiResponse.success("Successfully logged out"));
     }
 }

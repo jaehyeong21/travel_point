@@ -36,4 +36,6 @@ public class ApiResponse {
     public static ApiResponse error(String errorCode, String message) {
         return new ApiResponse(false, errorCode, message, null);
     }
+
+
 }
