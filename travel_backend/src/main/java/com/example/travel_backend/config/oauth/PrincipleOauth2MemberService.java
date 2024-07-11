@@ -8,6 +8,8 @@ import com.example.travel_backend.jwt.JwtToken;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,6 +41,9 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
 
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
+
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -124,11 +129,18 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
                 userRequest.getAccessToken()
         );
 
-        log.info("Saving OAuth2AuthorizedClient with clientRegistrationId: {}, principalName: {}, accessToken: {}",
-                userRequest.getClientRegistration().getRegistrationId(), principalDetails.getName(), userRequest.getAccessToken().getTokenValue());
 
         authorizedClientService.saveAuthorizedClient(authorizedClient, authentication);
 
+        // Refresh Token을 HttpOnly, Secure 옵션을 적용하여 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // HTTPS 사용 시 적용
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        httpServletResponse.addCookie(refreshTokenCookie);
+
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes(), jwtToken);
     }
+
 }
