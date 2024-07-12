@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -43,20 +44,29 @@ public class MemberService {
 
     @Transactional
     public ApiResponse login(String email, String password, HttpServletResponse response) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+        try {
+            log.info("Attempting to authenticate user: {}", email);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
+            Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
+            refreshTokenCookie.setPath("/");
+            response.addCookie(refreshTokenCookie);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("accessToken", jwtToken.getAccessToken());
+            Map<String, Object> result = new HashMap<>();
+            result.put("accessToken", jwtToken.getAccessToken());
 
-        return ApiResponse.success(result);
+            return ApiResponse.success(result);
+        } catch (BadCredentialsException e) {
+            log.error("Login failed for user: {}", email);
+            return ApiResponse.success("아이디 혹은 비밀번호가 틀립니다.", null);
+        } catch (Exception e) {
+            log.error("An error occurred during login for user: {}", email, e);
+            return ApiResponse.error("AUTH004", "로그인 중 오류가 발생했습니다.");
+        }
     }
 
     @Transactional
