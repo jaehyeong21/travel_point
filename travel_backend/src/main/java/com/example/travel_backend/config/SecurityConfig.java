@@ -1,10 +1,13 @@
 package com.example.travel_backend.config;
 
 
+import com.example.travel_backend.data.ApiResponse;
 import com.example.travel_backend.handler.PrincipalFailureHandler;
 import com.example.travel_backend.handler.PrincipalSuccessHandler;
 import com.example.travel_backend.jwt.JwtAuthenticationFilter;
 import com.example.travel_backend.jwt.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,6 +78,23 @@ public class SecurityConfig  {
                 .oauth2Login()
                 .successHandler(principalSuccessHandler)
                 .failureHandler(principalFailureHandler)
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    // 쿠키 삭제
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    // 응답 객체 생성
+                    ApiResponse apiResponse = ApiResponse.success("Successfully logged out", null);
+
+                    // JSON 응답 반환
+                    response.getWriter().write(new ObjectMapper().writeValueAsString(apiResponse));
+                    response.getWriter().flush();
+                })
+                .deleteCookies("refreshToken")
+                .invalidateHttpSession(true)
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

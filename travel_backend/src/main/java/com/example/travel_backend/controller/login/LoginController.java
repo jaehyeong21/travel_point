@@ -153,15 +153,26 @@ public class LoginController {
 
     @Operation(summary = "로그아웃", description = "Refresh Token을 삭제합니다.")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
-        // Refresh Token 쿠키를 삭제하기 위해 유효 기간을 0으로 설정
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);  // 쿠키 삭제
-        response.addCookie(refreshTokenCookie);
+    public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+        // 쿠키에서 refreshToken을 가져옴
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    // Refresh Token 쿠키를 삭제하기 위해 유효 기간을 0으로 설정
+                    cookie.setValue(null);
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    cookie.setHttpOnly(true);
+                    cookie.setSecure(true);  // Secure 옵션 추가
+                    response.addCookie(cookie);
 
-        return ResponseEntity.ok(ApiResponse.success("Successfully logged out"));
+                    return ResponseEntity.ok(ApiResponse.success("Successfully logged out"));
+                }
+            }
+        }
+
+        // Refresh Token 쿠키가 없을 경우
+        return ResponseEntity.ok(ApiResponse.success("No refresh token to logout"));
     }
 }
