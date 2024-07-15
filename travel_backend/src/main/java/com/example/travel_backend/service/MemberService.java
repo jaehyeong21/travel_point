@@ -57,61 +57,67 @@ public class MemberService {
             response.addCookie(refreshTokenCookie);
 
             Map<String, Object> result = new HashMap<>();
-            result.put("accessToken", jwtToken.getAccessToken());
+            result.put("accessToken", jwtToken.getAccessToken()); // jwtToken이 제대로 초기화되었는지 확인합니다.
 
             return ApiResponse.success(result);
         } catch (BadCredentialsException e) {
-            log.error("Login failed for user: {}", email);
-            return ApiResponse.success("아이디 혹은 비밀번호가 틀립니다.", null);
+            log.error("사용자 로그인 실패: {}", email);
+            return ApiResponse.error("AUTH003", "유효하지 않은 자격 증명입니다."); // 적절한 오류 메시지를 반환합니다.
         } catch (Exception e) {
-            log.error("An error occurred during login for user: {}", email, e);
-            return ApiResponse.error("AUTH004", "로그인 중 오류가 발생했습니다.");
+            log.error("로그인 중 오류 발생: {}", email, e);
+            return ApiResponse.error("AUTH004", "로그인 중 오류가 발생했습니다."); // 기타 예외 처리를 추가합니다.
         }
     }
 
     @Transactional
     public ApiResponse signup(String email, String password, String verificationCode, HttpServletResponse response) {
-        if (!EmailValidator.isValidEmail(email)) {
-            return ApiResponse.error("EmailError", "Invalid Email Format");
+        try{
+            if (!EmailValidator.isValidEmail(email)) {
+                return ApiResponse.error("EmailError", "Invalid Email Format");
+            }
+
+            if (memberRepository.findByEmail(email).isPresent()) {
+                return ApiResponse.error("EmailExists", "This email is already registered");
+            }
+
+            if (!PasswordValidator.isValid(password)) {
+                return ApiResponse.error("PasswordError", "Invalid Password Format");
+            }
+
+            String storedVerificationCode = mailService.getStoredVerificationCode(email);
+
+            if (!verificationCode.equals(storedVerificationCode)) {
+                return ApiResponse.error("VerificationError", "Invalid Verification Code");
+            }
+
+            String encPassword = passwordEncoder.encode(password);
+
+            Member member = new Member();
+            member.setEmail(email);
+            member.setPassword(encPassword);
+            member.setRole("USER");
+            memberRepository.save(member);
+
+            PrincipalDetails principalDetails = new PrincipalDetails(member);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            JwtToken jwtToken = jwtTokenProvider.generateToken(authenticationToken);
+
+            // refreshToken을 HttpOnly 쿠키에 저장
+            Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
+            refreshTokenCookie.setPath("/");
+            response.addCookie(refreshTokenCookie);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("accessToken", jwtToken.getAccessToken()); // jwtToken이 제대로 초기화되었는지 확인합니다.
+
+            return ApiResponse.success(result);
+        } catch (Exception e) {
+            log.error("회원가입 중 오류 발생: {}", email, e);
+            return ApiResponse.error("SIGNUP001", "회원가입 중 오류가 발생했습니다."); // 기타 예외 처리를 추가합니다.
         }
 
-        if (memberRepository.findByEmail(email).isPresent()) {
-            return ApiResponse.error("EmailExists", "This email is already registered");
-        }
-
-        if (!PasswordValidator.isValid(password)) {
-            return ApiResponse.error("PasswordError", "Invalid Password Format");
-        }
-
-        String storedVerificationCode = mailService.getStoredVerificationCode(email);
-
-        if (!verificationCode.equals(storedVerificationCode)) {
-            return ApiResponse.error("VerificationError", "Invalid Verification Code");
-        }
-
-        String encPassword = passwordEncoder.encode(password);
-
-        Member member = new Member();
-        member.setEmail(email);
-        member.setPassword(encPassword);
-        member.setRole("USER");
-        memberRepository.save(member);
-
-        PrincipalDetails principalDetails = new PrincipalDetails(member);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-        JwtToken jwtToken = jwtTokenProvider.generateToken(authenticationToken);
-
-        // refreshToken을 HttpOnly 쿠키에 저장
-        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);  // Secure 옵션 추가
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("accessToken", jwtToken.getAccessToken());
-
-        return ApiResponse.success(result);
     }
 
     @Transactional

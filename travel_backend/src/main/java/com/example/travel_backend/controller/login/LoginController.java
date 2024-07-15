@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -174,5 +176,29 @@ public class LoginController {
 
         // Refresh Token 쿠키가 없을 경우
         return ResponseEntity.ok(ApiResponse.success("No refresh token to logout"));
+    }
+
+
+    @Operation(summary = "refreshToken발급", description = "Refresh Token을 발급받습니다.")
+    @GetMapping("/request-refresh-token")
+    public ResponseEntity<?> requestRefreshToken(Authentication authentication, HttpServletResponse response) {
+        try {
+            if (authentication instanceof OAuth2AuthenticationToken) {
+                OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
+                JwtToken jwtToken = jwtTokenProvider.generateToken(authToken);
+                log.info("Generated new JWT token for user: {}", authToken.getName());
+
+                // 새로운 Refresh Token을 쿠키에 저장
+                response.addHeader("Authorization", "Bearer " + jwtToken.getAccessToken());
+
+                return ResponseEntity.ok().build();
+            } else {
+                log.error("Unsupported authentication type: {}", authentication.getClass().getName());
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception e) {
+            log.error("Failed to generate JWT token for refresh: {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
