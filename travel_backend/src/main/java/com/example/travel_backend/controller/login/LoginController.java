@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -183,22 +184,35 @@ public class LoginController {
     @GetMapping("/request-refresh-token")
     public ResponseEntity<?> requestRefreshToken(Authentication authentication, HttpServletResponse response) {
         try {
+            JwtToken jwtToken;
             if (authentication instanceof OAuth2AuthenticationToken) {
                 OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-                JwtToken jwtToken = jwtTokenProvider.generateToken(authToken);
+                jwtToken = jwtTokenProvider.generateToken(authToken);
                 log.info("Generated new JWT token for user: {}", authToken.getName());
-
-                // 새로운 Refresh Token을 쿠키에 저장
-                response.addHeader("Authorization", "Bearer " + jwtToken.getAccessToken());
-
-                return ResponseEntity.ok().build();
+            } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) authentication;
+                jwtToken = jwtTokenProvider.generateToken(authToken);
+                log.info("Generated new JWT token for user: {}", authToken.getName());
             } else {
                 log.error("Unsupported authentication type: {}", authentication.getClass().getName());
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.ok(ApiResponse.error("AUTH_ERROR", "Unsupported authentication type"));
             }
+
+            // 새로운 Refresh Token을 쿠키에 저장
+            Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true); // HTTPS를 사용하는 경우에만 설정
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setDomain("travel-point-umber.vercel.app");
+            refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일간 유효
+
+            response.addCookie(refreshTokenCookie);
+            log.info("Refresh token cookie created and added to response for user: {}", authentication.getName());
+
+            return ResponseEntity.ok(ApiResponse.success("Refresh token generated successfully", null));
         } catch (Exception e) {
             log.error("Failed to generate JWT token for refresh: {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.ok(ApiResponse.error("TOKEN_GENERATION_FAILED", "Failed to generate JWT token for refresh"));
         }
     }
 }

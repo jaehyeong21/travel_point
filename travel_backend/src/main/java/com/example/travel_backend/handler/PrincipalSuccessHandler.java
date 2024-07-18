@@ -6,6 +6,7 @@ import com.example.travel_backend.model.Member;
 import com.example.travel_backend.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -54,11 +55,27 @@ public class PrincipalSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
             member = new Member();
             member.setEmail(email);
             member.setUsername((String) attributes.get("name"));
-            member.setUserImgUrl((String) attributes.get("profile_image")); // 추가
+            member.setUserImgUrl((String) attributes.get("profile_image"));
             memberRepository.save(member);
         }
 
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+
+        log.info("Generated access token: {}", jwtToken.getAccessToken());
+        log.info("Generated refresh token: {}", jwtToken.getRefreshToken());
+
+        // Refresh Token을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setDomain("travel-point-umber.vercel.app");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+        refreshTokenCookie.setAttribute("SameSite", "None");
+
+        response.addCookie(refreshTokenCookie);
+        log.info("Refresh token cookie created and added to response for user: {}", email);
+
         response.sendRedirect("https://travel-point-umber.vercel.app/oauth-success?token=" + jwtToken.getAccessToken());
     }
 

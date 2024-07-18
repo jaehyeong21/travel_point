@@ -34,8 +34,19 @@ public class JwtTokenProvider {
     }
 
     public JwtToken generateToken(Authentication authentication) {
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        Member member = principalDetails.getMember();
+        Object principal = authentication.getPrincipal();
+        Member member;
+
+        if (principal instanceof PrincipalDetails) {
+            member = ((PrincipalDetails) principal).getMember();
+        } else if (principal instanceof User) {
+            String email = ((User) principal).getUsername();
+            member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        } else {
+            throw new IllegalArgumentException("Unexpected principal type: " + principal.getClass().getName());
+        }
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -61,6 +72,9 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(now + 604800000)) // 7 days
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+        log.info("Generated access token: {}", accessToken);
+        log.info("Generated refresh token: {}", refreshToken);
 
         return JwtToken.builder()
                 .grantType("Bearer")

@@ -107,3 +107,6 @@
 2024-07-15T22:08:00.053+09:00 ERROR 23672 --- [http-nio-8080-exec-1] c.e.t.controller.login.LoginController   : Failed to generate JWT token for refresh: Cannot invoke "Object.getClass()" because "authentication" is null
 2024-07-15T22:09:32.564+09:00 DEBUG 23672 --- [http-nio-8080-exec-4] c.e.t.jwt.JwtAuthenticationFilter        : JWT Token: null
 2024-07-15T22:09:32.566+09:00 ERROR 23672 --- [http-nio-8080-exec-4] c.e.t.controller.login.LoginController   : Failed to generate JWT token for refresh: Cannot invoke "Object.getClass()" because "authentication" is null
+2024-07-15T22:16:12.515+09:00  INFO 23672 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-15T22:16:12.518+09:00  INFO 23672 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-07-15T22:16:12.589+09:00  INFO 23672 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

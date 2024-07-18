@@ -7,7 +7,6 @@ import com.example.travel_backend.handler.PrincipalSuccessHandler;
 import com.example.travel_backend.jwt.JwtAuthenticationFilter;
 import com.example.travel_backend.jwt.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +30,10 @@ public class SecurityConfig  {
 
     @Autowired
     private PrincipalFailureHandler principalFailureHandler;
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -65,6 +69,8 @@ public class SecurityConfig  {
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .cors().configurationSource(corsConfigurationSource) // CORS 설정 추가
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/loginForm", "/signup/verify", "/signup/request", "/login/oauth2/**").permitAll() // OAuth2 콜백 경로 추가
