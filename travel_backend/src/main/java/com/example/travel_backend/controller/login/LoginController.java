@@ -168,6 +168,7 @@ public class LoginController {
                     cookie.setPath("/");
                     cookie.setHttpOnly(true);
                     cookie.setSecure(true);  // Secure 옵션 추가
+                    cookie.setDomain("travel-point-umber.vercel.app"); // domain 추가
                     response.addCookie(cookie);
 
                     return ResponseEntity.ok(ApiResponse.success("Successfully logged out"));
