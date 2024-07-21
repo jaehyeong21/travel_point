@@ -73,7 +73,7 @@ public class SecurityConfig  {
                 .cors().configurationSource(corsConfigurationSource) // CORS 설정 추가
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/loginForm", "/signup/verify", "/signup/request", "/login/oauth2/**").permitAll() // OAuth2 콜백 경로 추가
+                .requestMatchers("/loginForm", "/signup/verify", "/signup/request", "/login/oauth2/**", "/oauth-success/**").permitAll() // OAuth2 콜백 경로 추가
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

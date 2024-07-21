@@ -155,20 +155,22 @@ public class LoginController {
     }
 
     @Operation(summary = "로그아웃", description = "Refresh Token을 삭제합니다.")
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/logout")
+    public ResponseEntity<ApiResponse> logoutGet(HttpServletRequest request, HttpServletResponse response) {
+        log.info("======logOutGet====");
         // 쿠키에서 refreshToken을 가져옴
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("refreshToken".equals(cookie.getName())) {
+                    log.info("================logout============");
                     // Refresh Token 쿠키를 삭제하기 위해 유효 기간을 0으로 설정
-                    cookie.setValue(null);
+                    cookie.setValue("");
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
                     cookie.setHttpOnly(true);
                     cookie.setSecure(true);  // Secure 옵션 추가
-                    cookie.setDomain("travel-point-umber.vercel.app"); // domain 추가
+                    cookie.setDomain(".travel-point-umber.vercel.app");
                     response.addCookie(cookie);
 
                     return ResponseEntity.ok(ApiResponse.success("Successfully logged out"));

@@ -69,12 +69,13 @@ public class PrincipalSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setDomain("travel-point-umber.vercel.app");
+//        refreshTokenCookie.setDomain("travel-point-umber.vercel.app");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         refreshTokenCookie.setAttribute("SameSite", "None");
 
         response.addCookie(refreshTokenCookie);
-        log.info("Refresh token cookie created and added to response for user: {}", email);
+        log.info("PrincipalSuccessHandler setDomain :" + refreshTokenCookie.getDomain());
+        log.info("PrincipalSuccessHandler - Refresh token cookie created and added to response for user: {}", email);
 
         response.sendRedirect("https://travel-point-umber.vercel.app/oauth-success?token=" + jwtToken.getAccessToken());
     }

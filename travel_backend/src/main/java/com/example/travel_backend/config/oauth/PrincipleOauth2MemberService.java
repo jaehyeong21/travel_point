@@ -133,14 +133,15 @@ public class PrincipleOauth2MemberService extends DefaultOAuth2UserService {
         authorizedClientService.saveAuthorizedClient(authorizedClient, authentication);
 
         // Refresh Token을 HttpOnly, Secure 옵션을 적용하여 쿠키에 저장
-        log.info("Creating refresh token cookie for user: {}", email);
+        log.info("PrincipleOauth2MemberService - Creating refresh token cookie for user: {}", email);
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true); // HTTPS 사용 시 적용
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        refreshTokenCookie.setAttribute("SameSite", "None");
         httpServletResponse.addCookie(refreshTokenCookie);
-        log.info("Refresh token cookie created and added to response for user: {}", email);
+        log.info("PrincipleOauth2MemberService - Refresh token cookie created and added to response for user: {}", email);
 
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes(), jwtToken);
     }
