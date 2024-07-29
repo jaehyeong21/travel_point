@@ -139,10 +139,10 @@ export default function CommentItem({ className, comment, fetchComments, destina
                 <div className='py-2'>
                   <img
                     width={420}
-                    height={260}
+                    // height={260}
                     src={comment.imageUrl}
                     alt='댓글 이미지'
-                    className='max-h-[260px]'
+                    className='max-h-[280px]'
                     onError={(e) => (e.currentTarget.src = placeholderImageBase64)}
                   />
                 </div>

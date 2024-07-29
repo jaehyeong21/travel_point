@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import { LiaSpinnerSolid } from "react-icons/lia";
 import EditCharacter from "@/components/section/mypage/edit-character";
@@ -9,12 +9,24 @@ import { setCookie } from "@/libs/cookie";
 import { useToast } from "@/components/ui/use-toast";
 import { uploadImage } from "@/services/fetch-auth";
 import { uploadImageToCF } from "@/services/img-upload-to-cf";
+import { useRouter } from "next/navigation";
 
-export function UserProfile() {  
+export function UserProfile() {
   const { user, updateUserImage } = useUserStore();
-  const [loading, setLoading] = useState(false);  
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  console.log(user);
+  const router = useRouter();
+
+  // user아니면 마이페이지 /으로 이동
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user) {
+        router.push('/');
+      }
+    }, 100); 
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
+  }, [router, user]);
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (loading) return;
@@ -31,7 +43,7 @@ export function UserProfile() {
         if (responseData.response) {
           const accessToken = responseData.result.accessToken;
           if (user) {
-            updateUserImage(imageUrl);            
+            updateUserImage(imageUrl);
             setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
           }
           event.target.value = '';

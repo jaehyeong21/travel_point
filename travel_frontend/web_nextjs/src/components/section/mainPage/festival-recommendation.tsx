@@ -56,6 +56,7 @@ export default function FestivalRecommendation({ count }: { count: string }) {
   const navBtn = (
     <div className='flex gap-x-4 absolute z-10 right-2 md:right-0 top-1'>
       <button
+        data-test="festival-prev-btn"
         onClick={goPrev}
         aria-label='Previous slide'
         disabled={swiperState.isBeginning}
@@ -64,6 +65,7 @@ export default function FestivalRecommendation({ count }: { count: string }) {
         <ChevronLeft />
       </button>
       <button
+        data-test="festival-next-btn"
         onClick={goNext}
         aria-label='Next slide'
         disabled={swiperState.isEnd}
@@ -128,6 +130,7 @@ export default function FestivalRecommendation({ count }: { count: string }) {
             data.destinations.map((item, i) => (
               <SwiperSlide key={i}>
                 <DestinationCard
+                  data-test={`festival-card-${i}`}
                   FestivalDate={{ startDate: item.startDate, endDate: item.endDate }}
                   priority={false}
                   location={item.location}

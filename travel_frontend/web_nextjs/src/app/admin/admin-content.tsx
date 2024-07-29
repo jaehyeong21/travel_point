@@ -29,8 +29,8 @@ export function AdminContent() {
   const router = useRouter();
 
   useEffect(() => {
-    const delayedCheck = setTimeout(() => {
-      if (!user || user.role !== "ADMIN") {
+    const delayedCheck = setTimeout(() => {      
+      if (!user || (user.role !== 'ADMIN' && user.role !== 'ROLE_ADMIN')) {
         router.push('/');
       } else {
         const fetchReports = async () => {

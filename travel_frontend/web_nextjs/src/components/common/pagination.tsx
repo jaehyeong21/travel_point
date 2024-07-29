@@ -37,7 +37,7 @@ export function renderPageNumbers({ pageNumbers, currentPage, totalPages, onPage
   if (totalPages < 1) return null;
 
   return (
-    <div className="hidden sm:flex">
+    <>
       {totalPages !== 4 && showLeftEllipsis && (
         <>
           <PaginationItem>
@@ -100,6 +100,6 @@ export function renderPageNumbers({ pageNumbers, currentPage, totalPages, onPage
           ) : null}
         </>
       )}
-    </div>
+    </>
   );
-}
+};

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { setCookie } from '@/libs/cookie';
 import { useUserStore } from '@/store/userStore';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { jwtDecode } from '@/libs/utils';
 import { hasRefreshToken, newAccessToken } from '@/services/fetch-auth';
 
@@ -38,65 +38,66 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [tokenExpiry, setTokenExpiry] = useState<number | null>(null);
   const setUser = useUserStore((state) => state.setUser);
   const clearUser = useUserStore((state) => state.clearUser);
-  const router = useRouter();
+
+  const { refetch }: UseQueryResult<{ token: string; tokenExpiry: number; user: any }, Error> = useQuery({
+    queryKey: ['accessToken'],
+    queryFn: fetchUserData,
+    enabled: false,
+    retry: false,
+  });
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (await hasRefreshToken()) {
-        refetch();
-        
-      } else {
+      try {
+        const refreshToken = await hasRefreshToken();
+        if (refreshToken.result.message === 'Refresh token not found') {
+          clearUser();
+          return;
+        }
+
+        if (refreshToken.result.message === 'Refresh token is valid') {
+          const { data } = await refetch();
+          if (data) {
+            setToken(data.token);
+            setTokenExpiry(data.tokenExpiry);
+            if (data.user) {
+              setUser(data.user);
+            } else {
+              clearUser();
+            }
+          } else {
+            clearUser();
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
         clearUser();
-        router.push('/auth');
       }
     };
 
     checkAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setUser, clearUser, router]);
-
-  const { refetch } = useQuery({
-    queryKey: ['refreshToken'],
-    queryFn: fetchUserData,
-    enabled: false,
-  });
-
-  useEffect(() => {
-    const refreshUserData = async () => {
-      try {
-        const data = await refetch();
-        if (data.data) {
-          setToken(data.data.token);
-          setTokenExpiry(data.data.tokenExpiry);
-          if (data.data.user) {
-            setUser(data.data.user);
-          } else {
-            clearUser();
-            router.push('/auth');
-          }
-        } else {
-          clearUser();
-          router.push('/auth');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        clearUser();
-        router.push('/auth');
-      }
-    };
-
-    refreshUserData();
-  }, [refetch, setUser, clearUser, router]);
+  }, [clearUser, refetch, setUser]);
 
   useEffect(() => {
     if (tokenExpiry) {
-      const timeout = setTimeout(() => {
-        refetch();
-      }, tokenExpiry - Date.now() - 60 * 1000);
+      const timeLeft = tokenExpiry - Date.now();
+      if (timeLeft <= 60 * 1000) { // 1분 이하일 때만 갱신
+        const timeout = setTimeout(() => {
+          refetch().catch((error) => {
+            if (error.message.includes('TokenNotFound')) {
+              console.warn('Refresh token not found, proceeding without login');
+              clearUser();
+            } else {
+              console.error('Error refreshing token:', error);
+              clearUser();
+            }
+          });
+        }, timeLeft);
 
-      return () => clearTimeout(timeout);
+        return () => clearTimeout(timeout);
+      }
     }
-  }, [tokenExpiry, refetch]);
+  }, [tokenExpiry, refetch, clearUser]);
 
   return (
     <AuthContext.Provider value={{ token, setToken, tokenExpiry, setTokenExpiry }}>
@@ -105,10 +106,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// export const useAuth = () => {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth must be used within an AuthProvider');
-//   }
-//   return context;
-// };
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

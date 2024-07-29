@@ -37,7 +37,7 @@ export default function KakaoMap({ latitude, longitude, className }: MapProps) {
         <MapMarker title='맵 타이틀' position={state} />
       </Map>
       <div className="absolute inset-x-0 top-0 bg-white z-10 py-1.5 text-center font-semibold">여행지 주변 지도</div>
-      <button onClick={resetCenter} className="border bg-white p-1 absolute top-1.5 right-0 z-20 hidden sm:block">
+      <button onClick={resetCenter} className="border bg-white p-1 absolute top-1.5 right-0 z-20 hidden sm:block" aria-label="여행지로 중심 이동하기">
         <p className="text-xs">여행지로 중심 이동하기</p>
       </button>
     </div>

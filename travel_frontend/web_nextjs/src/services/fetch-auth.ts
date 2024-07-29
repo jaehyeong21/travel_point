@@ -1,9 +1,9 @@
-import { fetchFromAuthApi } from "@/services/fetch-api";
+import { fetchdWithCredentials, fetchFromAuthApi } from "@/services/fetch-api";
 
 // 로그인 API 요청 함수
 export async function loginApi(data: { email: string; password: string }) {
   const url = "/api/loginForm";
-  return fetchFromAuthApi(url, data);
+  return fetchFromAuthApi(url, data, "POST");
 }
 
 // 회원가입 API 요청 함수
@@ -26,6 +26,17 @@ export async function deleteAccountApi(password: string) {
   const url = "/api/deleteAccount";
   return fetchFromAuthApi(url, { password }, "DELETE");
 }
+
+export async function deleteRefreshToken(){
+  const url ="/api/logout";
+  return fetchdWithCredentials(url);
+}
+
+// // 로그아웃(refreshToken삭제)
+// export async function deleteRefreshToken() {
+//   const url = "/api/logout";
+//   return fetchFromAuthApi(url, null, "POST");
+// }
 
 // 비밀번호 찾기 요청(인증 번호 요청)
 export async function findPasswordVeriApi(data: { email: string }) {
@@ -127,4 +138,9 @@ export async function newAccessToken() {
 // refreshToken 확인하기
 export async function hasRefreshToken() {
   return await fetchFromAuthApi("/api/refreshToken/exists", null, "GET");
+}
+
+// Oauth인 경우 refreshToken 요청
+export async function requestRefreshToken() {
+  return await fetchFromAuthApi("/api/request-refresh-token", null, "GET");
 }

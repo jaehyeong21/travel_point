@@ -14,7 +14,7 @@ interface InputFieldProps {
   defaultValue?: string;
 }
 
-export default function InputField({ label, id, name, type, autoComplete, register, required, error, watch, defaultValue }: InputFieldProps) {
+export default function InputField({ label, id, name, type, autoComplete, register, required, error, watch, defaultValue, ...props }: InputFieldProps) {
   let validationRules: Record<string, any> = { required: `${name} 값을 입력해주세요.` };
 
   if (name === 'email') {
@@ -34,7 +34,7 @@ export default function InputField({ label, id, name, type, autoComplete, regist
   }
 
   return (
-    <div className="">
+    <div className="" {...props}>
       <label className="block text-sm font-medium text-gray-700" htmlFor={id}>
         {label}
       </label>

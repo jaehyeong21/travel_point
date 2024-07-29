@@ -82,11 +82,12 @@ export default function DestinationCard({
   const formattedDateRange = FestivalDate ? formatDateRange(FestivalDate.startDate, FestivalDate.endDate) : null;
   return (
     <div className={`${cn('flex-1', className)}`} {...props}>
-      <Link href={
-        Number(contentId) < 100 ?
-          `/festivals/${contentId}?title=${title}&location=${location}`
-          : `/destinations/${contentId}?title=${title}&location=${location}`
-      }>
+      <Link
+        href={
+          Number(contentId) < 100 ?
+            `/festivals/${contentId}?title=${title}&location=${location}`
+            : `/destinations/${contentId}?title=${title}&location=${location}`
+        }>
         <div className='relative'>
           {FestivalDate ? (
             <Image

@@ -141,6 +141,21 @@
       padding-right: 20px;
     }
   }
+
+  .short-border-b {
+    position: relative;
+  }
+  
+  .short-border-b::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 97.2%;
+    transform: translateX(-50%);
+    border-bottom: 1px solid rgb(229 231 235/70);
+    
+  }
 }
 /* textarea 태그 사이즈 조절 금지 */
 textarea {

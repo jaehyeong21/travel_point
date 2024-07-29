@@ -143,7 +143,8 @@ export const jwtDecode = (token: string): User | null => {
       email: decoded.email,
       role: decoded.auth, // auth를 role로 매핑
       userImgUrl: decoded.userImgUrl,
-      createDate: new Date(decoded.createDate).toISOString(), // string으로 변환
+      createDate: new Date(decoded.createDate).toISOString(), // string으로 변환      
+      provider: decoded.provider
     };
 
     return user;

@@ -5,23 +5,45 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from '@/libs/utils';
 import { setCookie } from '@/libs/cookie';
 import { LiaSpinnerSolid } from 'react-icons/lia';
+import { fetchdWithCredentials } from '@/services/fetch-api';
 
-const OauthSuccess = () => {
+export default function OauthSuccess() {
   const setUser = useUserStore((state) => state.setUser);
   const router = useRouter();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const handleOauthSuccess = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
 
-    if (token) {
-      const user = jwtDecode(token);
-      if (user) {
-        setCookie({ name: 'accessToken', value: token, hours: 2, secure: true });
-        setUser(user);
+      if (token) {
+        const user = jwtDecode(token);
+        if (user) {
+          setCookie({ name: 'accessToken', value: token, hours: 2, secure: true });
+          setUser(user);
+
+          try {
+            const response = await fetchdWithCredentials('/api/request-refresh-token');
+            // 응답에서 필요한 데이터가 있을 경우 처리
+            console.log('Refresh token requested successfully:', response);
+          } catch (error) {
+            console.error('Failed to request refresh token:', error);
+          }
+
+          router.push('/');
+        } else {
+          console.error('Failed to decode token');
+          router.push('/');
+        }
+      } else {
+        console.error('Token not found in URL');
         router.push('/');
       }
-    }
+    };
+
+    const timer = setTimeout(handleOauthSuccess, 100); // 100ms 딜레이
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, [router, setUser]);
 
   return (
@@ -33,5 +55,3 @@ const OauthSuccess = () => {
     </div>
   );
 };
-
-export default OauthSuccess;

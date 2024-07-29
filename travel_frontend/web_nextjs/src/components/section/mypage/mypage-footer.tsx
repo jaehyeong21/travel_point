@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import InputField from '@/components/section/auth/input-field';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { deleteAccountApi, changePasswordApi } from '@/services/fetch-auth';
+import { deleteAccountApi, changePasswordApi, deleteRefreshToken } from '@/services/fetch-auth';
 import { useToast } from '@/components/ui/use-toast';
 
 interface IFormInput {
@@ -32,9 +32,10 @@ export default function MypageFooter() {
   const clearUser = useUserStore((state) => state.clearUser);
   const router = useRouter();
   const { toast } = useToast();
+  const user = useUserStore((state) => state.user);
 
   const handleDeleteUser: SubmitHandler<IFormInput> = async (data) => {
-    if (data.password !== data.confirmPassword) {
+    if (!user?.provider && data.password !== data.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
@@ -43,12 +44,11 @@ export default function MypageFooter() {
     setError(null);
 
     try {
-      const result = await deleteAccountApi(data.password);
-
+      const result = user?.provider ? await deleteAccountApi('Oauth비밀번호?') : await deleteAccountApi(data.password);
       if (result.response) {
         clearUser();
         deleteCookie('accessToken');
-        deleteCookie('refreshToken');        
+        deleteCookie('refreshToken');
         toast({
           title: "회원 탈퇴 완료",
           description: "회원 탈퇴가 성공적으로 처리되었습니다. 이용해 주셔서 감사합니다.",
@@ -84,7 +84,7 @@ export default function MypageFooter() {
 
       if (result.response) {
         setPasswordChangeSuccess('비밀번호가 성공적으로 변경되었습니다.');
-        setDialogOpen(true);        
+        setDialogOpen(true);
       } else {
         setPasswordChangeError(`Error: ${result.errorCode} - ${result.message}`);
         setDialogOpen(true); // Error 시 다이얼로그를 유지함
@@ -103,17 +103,19 @@ export default function MypageFooter() {
 
   const handleLogout = async () => {
     try {
-      clearUser();
-      deleteCookie('accessToken');
-      deleteCookie('refreshToken');      
-      router.push('/');
+      const logout = await deleteRefreshToken();
+      if (logout.response) {
+        clearUser();
+        deleteCookie('accessToken');
+        // deleteCookie('refreshToken');
+        router.push('/');
+      }
     } catch (error) {
       console.error('Failed to sign out:', error);
     }
   };
 
   return (
-
     <div className='relative flex justify-between items-start max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0 mx-auto mb-8'>
       <div className='flex flex-col space-y-2'>
         <AlertDialog>
@@ -128,26 +130,28 @@ export default function MypageFooter() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <form onSubmit={handleSubmit(handleDeleteUser)} className="space-y-6">
-              <InputField
-                label="비밀번호"
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                register={register}
-                required
-                error={errors.password}
-              />
-              <InputField
-                label="비밀번호 확인"
-                id="confirm-password"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                register={register}
-                required
-                error={errors.confirmPassword}
-              />
+              {!user?.provider && <>
+                <InputField
+                  label="비밀번호"
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  register={register}
+                  required
+                  error={errors.password}
+                />
+                <InputField
+                  label="비밀번호 확인"
+                  id="confirm-password"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  register={register}
+                  required
+                  error={errors.confirmPassword}
+                />
+              </>}
               {error && <p className="mt-2 text-center text-red-600">{error}</p>}
               <AlertDialogFooter>
                 <AlertDialogCancel>아니오</AlertDialogCancel>
@@ -161,7 +165,7 @@ export default function MypageFooter() {
         <p className='absolute -bottom-6 text-xs'>탈퇴 후에는 복구가 불가능하니 유의해 주세요.</p>
       </div>
 
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {!user?.provider && <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogTrigger asChild className='max-w-[96px]'>
           <Button variant="outline" size={'sm'}>비밀번호 변경</Button>
         </AlertDialogTrigger>
@@ -210,7 +214,7 @@ export default function MypageFooter() {
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>}
 
       <AlertDialog>
         <AlertDialogTrigger asChild className='max-w-[70px]'>
@@ -226,8 +230,6 @@ export default function MypageFooter() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </div>
-
   );
 }

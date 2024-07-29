@@ -59,7 +59,6 @@ export function hasCookie(name: string): boolean {
   return false;
 }
 
-
 export function deleteCookie(...names: string[]) {
   names.forEach((name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;SameSite=Strict`;

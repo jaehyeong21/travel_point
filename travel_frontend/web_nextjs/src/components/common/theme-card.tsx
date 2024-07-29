@@ -76,6 +76,7 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
           <div className="flex gap-1.5 mr-6">
             {Array.from({ length: totalPages }, (_, index) => (
               <button
+                data-test={`main-${theme}-btn-${index}`}
                 key={index}
                 onClick={() => handlePageClick(index)}
                 className={`size-5 text-sm transition-all font-semibold rounded-full ${currentPage === index ? 'bg-slate-800/95 text-slate-100' : 'text-slate-600'}`}
@@ -134,6 +135,7 @@ export default function ThemeCard({ themeImages, isSecondCard = false, theme, co
               data && data.destinations.map((item, index) => (
                 <SwiperSlide key={index}>
                   <DestinationCard
+                    data-test={`main-${theme}-card-${index}`}
                     priority={false}
                     imageSrc={item.firstImage}
                     location={item.location}

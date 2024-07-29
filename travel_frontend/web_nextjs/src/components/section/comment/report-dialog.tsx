@@ -62,7 +62,7 @@ export default function ReportDialog({ comment }: ReportDialogProps) {
   return (
     <AlertDialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
       <AlertDialogTrigger asChild>
-        <button><PiSirenFill className='size-4 cursor-pointer' /></button>
+        <button><PiSirenFill className='size-4 cursor-pointer' aria-label='리뷰 신고하기' /></button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

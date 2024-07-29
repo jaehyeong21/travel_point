@@ -20,6 +20,7 @@ export default async function MyPage() {
           <MyPageContent />
         </Suspense>
       </PageLayout>
+      {/* 마이페이지 하단 - 회원탈퇴,비밀번호변경,로그아웃 */}
       <MypageFooter />
     </main>
   );

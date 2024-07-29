@@ -3,6 +3,7 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
+  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
@@ -19,8 +20,7 @@ export default function DestinationPagination({ currentPage, totalPages, onPageC
   const [isDisabled, setIsDisabled] = useState(false);
   const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
-  if (totalPages < 1) return;
-
+  if (totalPages < 1) return null;
 
   const handlePageChange = (page: number) => {
     if (!isDisabled) {
@@ -28,13 +28,13 @@ export default function DestinationPagination({ currentPage, totalPages, onPageC
       onPageChange(page);
       setTimeout(() => {
         setIsDisabled(false);
-      }, 800); //무한 클릭 방지
+      }, 800); // 무한 클릭 방지
     }
   };
 
   return (
     <Pagination className="flex justify-center mt-5">
-      <PaginationContent className=''>
+      <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
             href={createPageUrl ? createPageUrl(`${Math.max(currentPage - 1, 1)}`) : '#mainSection'}
@@ -43,6 +43,7 @@ export default function DestinationPagination({ currentPage, totalPages, onPageC
               handlePageChange(Math.max(currentPage - 1, 1));
             }}
             disabled={currentPage === 1 || isDisabled}
+            aria-disabled={currentPage === 1 || isDisabled}
           />
         </PaginationItem>
 
@@ -52,12 +53,13 @@ export default function DestinationPagination({ currentPage, totalPages, onPageC
         <PaginationItem>
           <PaginationNext
             className='sm:mx-0 ml-7 mr-3'
-            href={createPageUrl ? createPageUrl(Math.min(currentPage + 1, totalPages)) : '#mainSection'}
+            href={createPageUrl ? createPageUrl(`${Math.min(currentPage + 1, totalPages)}`) : '#mainSection'}
             onClick={(e) => {
               e.preventDefault();
               handlePageChange(Math.min(currentPage + 1, totalPages));
             }}
             disabled={currentPage === totalPages || isDisabled}
+            aria-disabled={currentPage === totalPages || isDisabled}
           />
         </PaginationItem>
       </PaginationContent>

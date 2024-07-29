@@ -83,7 +83,7 @@ export default function RegisterSection({ toggleForm, isModal }: RegisterSection
       });
 
       if (response.response) {
-        const accessToken = response.result.accessToken;        
+        const accessToken = response.result.accessToken;
         const user = jwtDecode(accessToken);
         if (user) {
           setCookie({ name: 'accessToken', value: accessToken, hours: 2, secure: true });
@@ -92,7 +92,11 @@ export default function RegisterSection({ toggleForm, isModal }: RegisterSection
 
         isModal ? router.back() : router.push('/');
       } else {
-        setError(`Error: ${response.errorCode} - ${response.message}`);
+        if (response.message === '유효하지 않은 자격 증명입니다.') {
+          setError(`아이디 혹은 비밀번호가 틀렸습니다.`);
+        } else {
+          setError(`Error: ${response.message}`);
+        }
         console.error('Verification failed:', response.message);
       }
     } catch (error: unknown) {
@@ -154,7 +158,7 @@ export default function RegisterSection({ toggleForm, isModal }: RegisterSection
             <Separator />
             <SubmitButton text="회원가입" loading={loading} />
             {error && <p className="mt-2 text-center text-red-600">{error}</p>}
-            <OauthOptions />
+            {/* <OauthOptions /> */}
           </form>
         </>
       ) : (

@@ -35,7 +35,7 @@ export default function DeleteButton({ comment, fetchComments }: DeleteButtonPro
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button className='flex '><IoMdTrash className='size-4 cursor-pointer' /></button>
+        <button className='flex'><IoMdTrash className='size-4 cursor-pointer' aria-label='리뷰 삭제 버튼'/></button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

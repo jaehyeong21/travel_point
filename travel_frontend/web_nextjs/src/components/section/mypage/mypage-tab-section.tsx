@@ -8,8 +8,6 @@ import ReviewTab from "./review-tab";
 
 // 탭 섹션을 렌더링하는 함수 
 export default function MypageTabSection() {
-  const ITEM_PER_PAGE = 6;  
-  
   // const { currentPage, setCurrentPage, totalPages, paginatedData } = usePaginatedData(data, ITEM_PER_PAGE);
   return (
     <Tabs defaultValue="myFavs" className="w-full rounded-none" id='mainSection'>
@@ -22,13 +20,13 @@ export default function MypageTabSection() {
       {/* 내가 찜한 여행지 */}
       <TabsContent value="myFavs">
         <div className="p-1 sm:p-4">
-          <BookmarkTab/>
+          <BookmarkTab />
         </div>
       </TabsContent>
       {/* 내가 쓴 리뷰 */}
       <TabsContent value="myComments">
         <div className="p-1 sm:p-4">
-          <ReviewTab/>
+          <ReviewTab />
         </div>
       </TabsContent>
       {/* 최근 본 여행지 */}
