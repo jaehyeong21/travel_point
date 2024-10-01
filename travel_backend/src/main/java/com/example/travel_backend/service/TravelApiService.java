@@ -154,7 +154,7 @@ public class TravelApiService {
 
     public void updateIntroduceToDb(String contentId) {
         String apiUrl = "http://apis.data.go.kr/B551011/KorService1/detailIntro1?serviceKey=" + serviceKey +
-                "&MobileOS=ETC&MobileApp=travelPoint&contentId=" + contentId + "&_type=json&contentTypeId=12";
+                "&MobileOS=ETC&MobileApp=travelPoint&contentId=" + contentId + "&_type=json&contentTypeId=28";
 
         boolean success = false;
         int retryCount = 0;

@@ -1,0 +1,189 @@
+.dice {
+  position: relative;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  transform-origin: center;
+  will-change: transform;
+  transition: transform 1.6s;
+  -webkit-transition: transform 1.6s; /* Safari & Chrome */
+  -moz-transition: transform 1.6s; /* Firefox */
+  -o-transition: transform 1.6s; /* Opera */
+  transition: transform 1.6s; /* Standard */
+  @apply size-[50px] sm:size-[60px];
+}
+
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #f25f5c;
+  box-shadow: inset 2px 2px #d90429;
+  @apply size-[9px] sm:size-[10px];
+}
+
+.side {
+  position: absolute;
+  background-color: #fff;
+  @apply size-[50px] sm:size-[60px] border border-slate-700/60 rounded-md shadow-lg;
+}
+/* 기본 translateZ 값 */
+.side:nth-child(1) {
+  transform: translateZ(25px);
+}
+
+.side:nth-child(2) {
+  transform: rotateY(90deg) translateZ(25px);
+}
+
+.side:nth-child(3) {
+  transform: rotateY(180deg) translateZ(25px);
+}
+
+.side:nth-child(4) {
+  transform: rotateY(-90deg) translateZ(25px);
+}
+
+.side:nth-child(5) {
+  transform: rotateX(90deg) translateZ(25px);
+}
+
+.side:nth-child(6) {
+  transform: rotateX(-90deg) translateZ(25px);
+}
+
+/* sm: 일때 translateZ 값 변경 */
+@media (min-width: 640px) {
+  .side:nth-child(1) {
+    transform: translateZ(30px);
+  }
+
+  .side:nth-child(2) {
+    transform: rotateY(90deg) translateZ(30px);
+  }
+
+  .side:nth-child(3) {
+    transform: rotateY(180deg) translateZ(30px);
+  }
+
+  .side:nth-child(4) {
+    transform: rotateY(-90deg) translateZ(30px);
+  }
+
+  .side:nth-child(5) {
+    transform: rotateX(90deg) translateZ(30px);
+  }
+
+  .side:nth-child(6) {
+    transform: rotateX(-90deg) translateZ(30px);
+  }
+}
+
+.show-1 {
+  transform: rotateY(0deg) translateZ(0);
+}
+
+.show-2 {
+  transform: rotateY(-90deg) translateZ(0);
+}
+
+.show-3 {
+  transform: rotateY(180deg) translateZ(0);
+}
+
+.show-4 {
+  transform: rotateY(90deg) translateZ(0);
+}
+
+.show-5 {
+  transform: rotateX(-90deg) translateZ(0);
+}
+
+.show-6 {
+  transform: rotateX(90deg) translateZ(0);
+}
+
+.roll-dice {
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+/* Dot positions */
+.one-1 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.two-1,
+.three-1,
+.four-1,
+.five-1,
+.six-1 {
+  top: 25%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+.two-2,
+.three-3,
+.four-4,
+.five-5,
+.six-6 {
+  top: 75%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
+.three-2,
+.five-3 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.four-2,
+.five-2,
+.six-2 {
+  top: 25%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
+.four-3,
+.five-4,
+.six-4 {
+  top: 75%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+.six-3 {
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+.six-4 {
+  top: 50%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
+.six-5 {
+  bottom: 25%;
+  left: 25%;
+  transform: translate(-50%, 50%);
+}
+
+.six-6 {
+  bottom: 25%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}

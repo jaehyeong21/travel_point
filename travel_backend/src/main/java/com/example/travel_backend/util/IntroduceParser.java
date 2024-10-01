@@ -18,7 +18,7 @@ public class IntroduceParser {
                     JsonNode itemNode = itemsNode.get("item");
                     if (itemNode != null && itemNode.isArray()) { // item이 배열일 경우에만 반복
                         for (JsonNode item : itemNode) { // 각 item을 반복하면서 description 값을 가져옴
-                            JsonNode overviewNode = item.get("parking");
+                            JsonNode overviewNode = item.get("parkingleports");
                             if (overviewNode != null) {
                                 return overviewNode.asText();
                             }
@@ -48,7 +48,7 @@ public class IntroduceParser {
                     JsonNode itemNode = itemsNode.get("item");
                     if (itemNode != null && itemNode.isArray()) { // item이 배열일 경우에만 반복
                         for (JsonNode item : itemNode) { // 각 item을 반복하면서 homepage 값을 가져옴
-                            JsonNode homepageNode = item.get("usetime");
+                            JsonNode homepageNode = item.get("usetimeleports");
                             if (homepageNode != null) {
                                 return homepageNode.asText();
                             }
@@ -78,7 +78,7 @@ public class IntroduceParser {
                     JsonNode itemNode = itemsNode.get("item");
                     if (itemNode != null && itemNode.isArray()) { // item이 배열일 경우에만 반복
                         for (JsonNode item : itemNode) { // 각 item을 반복하면서 homepage 값을 가져옴
-                            JsonNode homepageNode = item.get("restdate");
+                            JsonNode homepageNode = item.get("restdateleports");
                             if (homepageNode != null) {
                                 return homepageNode.asText();
                             }

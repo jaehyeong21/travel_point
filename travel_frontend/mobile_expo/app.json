@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Travel-Point",
+    "slug": "travel-point",
+    "version": "1.0.0",
+    "scheme": "travel-point",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.inhwancho.travelpoint"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-chrome-512x512.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.inhwancho.travelpoint"
+    },
+    "web": {
+      "favicon": "./assets/images/apple-touch-icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2f1a1775-7cf1-40d8-befe-a7d9be153dc0"
+      }
+    }
+  }
+}
