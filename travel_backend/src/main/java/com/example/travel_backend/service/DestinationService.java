@@ -5,8 +5,11 @@ import com.example.travel_backend.mapper.DestinationMapper;
 import com.example.travel_backend.model.Destination;
 import com.example.travel_backend.repository.DestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,9 +24,32 @@ public class DestinationService {
         this.destinationRepository = destinationRepository;
     }
 
-    // 리뷰 수에 따라 여행지를 정렬하여 반환하는 메서드
-    public List<Destination> getDestinationsSortedByReviewCount() {
-        return destinationRepository.findAllOrderByReviewCountDesc();
+    public List<TourMainDTO> getDestinationsByLocationSortedByReview(String areaCode, int count, int page) {
+        Pageable pageable = PageRequest.of(page - 1, count);
+        List<Destination> sortedDestinations = destinationRepository.findByAreaCodeOrderByReviewCountDesc(areaCode, pageable);
+        return convertToTourMainDTO(sortedDestinations);
+    }
+
+    private List<TourMainDTO> convertToTourMainDTO(List<Destination> destinations) {
+        List<TourMainDTO> dtoList = new ArrayList<>();
+        for (Destination destination : destinations) {
+            TourMainDTO dto = new TourMainDTO();
+
+            // 기존 필드 설정
+            dto.setLocation(destination.getLocation());
+            dto.setTitle(destination.getTitle());
+            dto.setFirstImage(destination.getFirstimage());
+            dto.setDestinationDescription(destination.getDestinationDescription());
+            dto.setContentId(destination.getContentId());
+            dto.setContentTypeId(destination.getContentTypeId());
+            dto.setAreaCode(destination.getAreaCode());
+
+            // 추가 필드: 리뷰 수 설정
+            dto.setReviewCount(destination.getReviews().size());
+
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 
     // 지역별 총 데이터 수를 계산하는 메서드

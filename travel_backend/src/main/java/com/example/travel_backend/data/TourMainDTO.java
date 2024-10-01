@@ -14,4 +14,5 @@ public class TourMainDTO {
     private String contentId;
     private String contentTypeId;
     private String areaCode;
+    private long reviewCount;  // 리뷰 수 필드 추가
 }

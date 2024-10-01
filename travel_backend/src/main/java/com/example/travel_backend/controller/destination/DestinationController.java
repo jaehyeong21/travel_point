@@ -1,13 +1,13 @@
 package com.example.travel_backend.controller.destination;
 
-import com.example.travel_backend.data.*;
-import com.example.travel_backend.model.Destination;
-import com.example.travel_backend.service.DestinationService;
+import com.example.travel_backend.data.TourDTO;
+import com.example.travel_backend.data.TourMainDTO;
+import com.example.travel_backend.data.TourTitleDTO;
 import com.example.travel_backend.mapper.AreaCodeMapper;
+import com.example.travel_backend.service.DestinationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,13 +24,6 @@ public class DestinationController {
     @Autowired
     public DestinationController(DestinationService destinationService) { // 의존성 주입
         this.destinationService = destinationService;
-    }
-
-    @Operation(summary = "리뷰 수로 정렬된 관광 데이터 호출", description = "리뷰 수를 기준으로 정렬된 모든 관광 데이터를 호출합니다.")
-    @GetMapping("/review-order")
-    public ResponseEntity<ApiResponse> getDestinationsByReviewCount() {
-        List<Destination> destinations = destinationService.getDestinationsSortedByReviewCount();
-        return ResponseEntity.ok(ApiResponse.success(destinations));
     }
 
     @Operation(summary = "관광 데이터 호출", description = "모든 관광 데이터들을 호출합니다.")
@@ -84,6 +77,7 @@ public class DestinationController {
     @GetMapping("/destination/location")
     public Map<String, Object> getDestinationsByLocation(@RequestParam(required = false) String areaName,
                                                          @RequestParam(required = false, defaultValue = "false") boolean random,
+                                                         @RequestParam(required = false) String sortby,
                                                          @RequestParam int count,
                                                          @RequestParam int page) {
         String areaCode = null;
@@ -96,9 +90,15 @@ public class DestinationController {
 
         int totalData = destinationService.countDestinationsByLocation(areaCode);
         int totalPages = (int) Math.ceil((double) totalData / count);
-        int offset = (page - 1) * count;
 
-        List<TourMainDTO> destinations = destinationService.getDestinationsByLocation(areaCode, count, offset, random);
+        List<TourMainDTO> destinations;
+
+        // sortby 값이 'review' 또는 'true'일 경우 후기 수 기준으로 정렬
+        if ("review".equalsIgnoreCase(sortby) || "true".equalsIgnoreCase(sortby)) {
+            destinations = destinationService.getDestinationsByLocationSortedByReview(areaCode, count, page);
+        } else {
+            destinations = destinationService.getDestinationsByLocation(areaCode, count, (page - 1) * count, random);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("totalData", totalData);

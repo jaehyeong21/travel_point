@@ -15,7 +15,8 @@ public interface DestinationMapper {
     // 페이징된 데이터를 가져오는 메서드
     List<TourMainDTO> selectDestinationsByLocation(@Param("areaCode") String areaCode,
                                                    @Param("offset") int offset,
-                                                   @Param("count") int count, boolean random);
+                                                   @Param("count") int count,
+                                                   @Param("random") boolean random);
 
     // 모든 관광지 정보를 가져오는 메서드
     List<TourDTO> selectAllDestinations();
