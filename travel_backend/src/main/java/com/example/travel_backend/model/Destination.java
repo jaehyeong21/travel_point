@@ -2,6 +2,10 @@ package com.example.travel_backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Data
@@ -82,4 +86,8 @@ public class Destination {
 
     @Column(name = "area_code")
     private String areaCode;
+
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
 }

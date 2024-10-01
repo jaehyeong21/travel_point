@@ -16,11 +16,11 @@ spring:
   mvc:
     static-path-pattern: /assets/**
 
-  datasource :
-    driver-class-name : com.mysql.cj.jdbc.Driver
-    url : jdbc:mysql://pingulion.shop/travel
-    username : leejaehyeong
-    password : lee6252
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://pingulion.shop/travel
+    username: leejaehyeong
+    password: lee6252
 
   jpa:
     hibernate:
@@ -50,9 +50,9 @@ spring:
               - profile_image
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: https://travel-point-umber.vercel.app/oauth-success
-#            redirect-uri: http://localhost:3000/login/oauth2/code/naver
-#            redirect-uri: https://travel-point-umber.vercel.app/login/oauth2/code/naver
+            #            redirect-uri: https://travel-point-umber.vercel.app/oauth-success
+            #            redirect-uri: http://localhost:3000/login/oauth2/code/naver
+            redirect-uri: https://travel-point-umber.vercel.app/login/oauth2/code/naver
 
         provider:
           naver:

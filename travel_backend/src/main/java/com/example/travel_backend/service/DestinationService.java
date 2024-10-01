@@ -2,6 +2,8 @@ package com.example.travel_backend.service;
 
 import com.example.travel_backend.data.*;
 import com.example.travel_backend.mapper.DestinationMapper;
+import com.example.travel_backend.model.Destination;
+import com.example.travel_backend.repository.DestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +12,18 @@ import java.util.List;
 @Service
 public class DestinationService {
     private final DestinationMapper destinationMapper;
+    private final DestinationRepository destinationRepository; // JPA Repository 추가
 
     @Autowired
-    public DestinationService(DestinationMapper destinationMapper) {
+    public DestinationService(DestinationMapper destinationMapper, DestinationRepository destinationRepository) {
+
         this.destinationMapper = destinationMapper;
+        this.destinationRepository = destinationRepository;
+    }
+
+    // 리뷰 수에 따라 여행지를 정렬하여 반환하는 메서드
+    public List<Destination> getDestinationsSortedByReviewCount() {
+        return destinationRepository.findAllOrderByReviewCountDesc();
     }
 
     // 지역별 총 데이터 수를 계산하는 메서드
@@ -59,4 +69,6 @@ public class DestinationService {
             return destinationMapper.selectDestinations(contentId, contentTypeId);
         }
     }
+
+
 }
